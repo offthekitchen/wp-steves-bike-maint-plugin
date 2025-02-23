@@ -70,6 +70,8 @@ class Test_Data
 				'bike_desc' => $bike_desc,
 				'bike_make' => $bike_make,
 				'bike_model' => $bike_model,
+				'purchase_date' => date('Y-m-d', strtotime('1995-06-14')),
+				'serial_number' => '12345ABC12334',
 				'bike_status_id' => $status_retired,
 			)
 		);
@@ -88,6 +90,8 @@ class Test_Data
 				'bike_desc' => $bike_desc,
 				'bike_make' => $bike_make,
 				'bike_model' => $bike_model,
+				'purchase_date' => date('Y-m-d', strtotime('2025-02-14')),
+				'serial_number' => '12345XYZ12334',
 				'bike_status_id' => $status_building,
 			)
 		);
@@ -106,6 +110,8 @@ class Test_Data
 				'bike_desc' => $bike_desc,
 				'bike_make' => $bike_make,
 				'bike_model' => $bike_model,
+				'purchase_date' => date('Y-m-d', strtotime('2020-06-10')),
+				'serial_number' => '12345DEF12334',
 				'bike_status_id' => $status_active,
 			)
 		);
@@ -124,6 +130,8 @@ class Test_Data
 				'bike_desc' => $bike_desc,
 				'bike_make' => $bike_make,
 				'bike_model' => $bike_model,
+				'purchase_date' => date('Y-m-d', strtotime('2024-12-10')),
+				'serial_number' => '12345GHI12334',
 				'bike_status_id' => $status_active,
 			)
 		);
@@ -132,20 +140,6 @@ class Test_Data
 		$bike1_id = 1;
 		$bike2_id = 3;
 		$bike3_id = 4;
-		$maintenance_desc = 'Purchased';
-		$bike_miles = 0;
-
-		$wpdb->insert(
-			$maintenance_table_name,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2010-06-14')),
-				'bike_id' => $bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
         $maintenance_desc = 'Rebuilt Drivetrain';
 		$bike_miles = 500;
 
@@ -188,20 +182,6 @@ class Test_Data
 			)
 		);
 
-		$maintenance_desc = 'Purchased';
-		$bike_miles = 0;
-
-		$wpdb->insert(
-			$maintenance_table_name,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-06-24')),
-				'bike_id' => $bike2_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
 		$maintenance_desc = 'Replaced discs and seat';
 		$bike_miles = 206;
 
@@ -211,20 +191,6 @@ class Test_Data
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2024-04-09')),
 				'bike_id' => $bike2_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Purchased';
-		$bike_miles = 0;
-
-		$wpdb->insert(
-			$maintenance_table_name,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2024-01-01')),
-				'bike_id' => $bike3_id,
 				'maintenance_desc' => $maintenance_desc,
 				'bike_miles' => $bike_miles,
 			)

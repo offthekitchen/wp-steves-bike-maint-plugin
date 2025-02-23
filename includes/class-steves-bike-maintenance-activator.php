@@ -55,6 +55,8 @@ class Steves_Bike_Maintenance_Activator
 			 bike_desc varchar(255) DEFAULT '' NOT NULL,
  			 bike_make varchar(15) DEFAULT '' NOT NULL,
   			 bike_model varchar(15) DEFAULT '' NOT NULL,
+			 serial_number varchar(30) DEFAULT '' NOT NULL,
+			 purchase_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			 bike_status_id mediumint(9) NOT NULL,
 			 PRIMARY KEY  (id)
 		   ) $charset_collate;";
