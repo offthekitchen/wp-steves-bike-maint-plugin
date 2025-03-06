@@ -32,6 +32,15 @@ if (!defined('WPINC')) {
  */
 define('STEVES_BIKE_MAINTENANCE_VERSION', '1.0.0');
 
+
+/**
+ * Database constants
+ */
+define ( 'BIKES_TABLE', "wp_bikes");
+define ( 'MAINTENANCE_TABLE', "wp_bike_maintenance");
+define ( 'SPECS_TABLE', "wp_bike_specs");
+define ( 'STATUS_TABLE', "wp_bike_status");
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-plugin-name-activator.php
@@ -72,14 +81,9 @@ function sbm_bike_list($atts)
 
 	$bike_plugin_url = plugin_dir_url(__FILE__);
 
-	$bikes_table_name = $wpdb->prefix . 'bikes';
-	$maintenance_table_name = $wpdb->prefix . 'bike_maintenance';
-	$specs_table_name = $wpdb->prefix . 'bike_specs';
-	$status_table_name = $wpdb->prefix . 'bike_status';
-
-	$aBikes = $wpdb->get_results("SELECT $bikes_table_name.*, $status_table_name.bike_status FROM $bikes_table_name INNER JOIN $status_table_name ON $bikes_table_name.bike_status_id = $status_table_name.id");
-	$aMaintenance = $wpdb->get_results("SELECT * FROM $maintenance_table_name");
-	$aSpecs = $wpdb->get_results("SELECT * FROM $specs_table_name");
+	$aBikes = $wpdb->get_results("SELECT " . BIKES_TABLE . ".*, " . STATUS_TABLE . ".bike_status FROM " . BIKES_TABLE . "  INNER JOIN " . STATUS_TABLE . " ON " . BIKES_TABLE . ".bike_status_id = " . STATUS_TABLE . ".id");
+	$aMaintenance = $wpdb->get_results("SELECT * FROM " . MAINTENANCE_TABLE);
+	$aSpecs = $wpdb->get_results("SELECT * FROM " . SPECS_TABLE);
 
 	// BIKES LIST SECTION
 	$Content = '<section id="bike-list" class="bike-section fade-in">';

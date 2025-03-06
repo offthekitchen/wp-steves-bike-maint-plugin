@@ -39,15 +39,10 @@ class Steves_Bike_Maintenance_Activator
 
 		$steves_bike_plugin_db_version = '1.0';
 
-		$bikes_table_name = $wpdb->prefix . "bikes";
-		$maintenance_table_name = $wpdb->prefix . "bike_maintenance"; 
-		$specs_table_name = $wpdb->prefix . "bike_specs"; 
-		$status_table_name = $wpdb->prefix . "bike_status"; 
-
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// Create bike table
-		$sql = "CREATE TABLE IF NOT EXISTS $bikes_table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS " . BIKES_TABLE . " (
 			 id mediumint(9) NOT NULL AUTO_INCREMENT,
 			 bike_image_id mediumint(9) default 0 NOT NULL,
 			 last_update datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -64,7 +59,7 @@ class Steves_Bike_Maintenance_Activator
 		dbDelta($sql);
 
 		// Create maintenance table
-		$sql = "CREATE TABLE IF NOT EXISTS $maintenance_table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS " . MAINTENANCE_TABLE . " (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			bike_id mediumint(9) NOT NULL,
 			last_update datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -77,7 +72,7 @@ class Steves_Bike_Maintenance_Activator
 		dbDelta($sql);
 
 		// Create specs table
-		$sql = "CREATE TABLE IF NOT EXISTS $specs_table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS " . SPECS_TABLE . " (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			bike_id mediumint(9) NOT NULL,
 			last_update datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -89,7 +84,7 @@ class Steves_Bike_Maintenance_Activator
 		dbDelta($sql);
 
 		// Create status table
-		$sql = "CREATE TABLE IF NOT EXISTS $status_table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS " . STATUS_TABLE . " (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			last_update datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			bike_status varchar(50) DEFAULT '' NOT NULL,

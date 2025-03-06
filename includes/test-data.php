@@ -33,11 +33,6 @@ class Test_Data
 
 		global $wpdb;
 
-		$bikes_table_name = $wpdb->prefix . "bikes";
-		$maintenance_table_name = $wpdb->prefix . "bike_maintenance"; 
-		$specs_table_name = $wpdb->prefix . "bike_specs"; 
-		$status_table_name = $wpdb->prefix . "bike_status"; 
-
 		$status_active = 1;
 		$status_retired = 2;
 		$status_building = 3;
@@ -70,7 +65,7 @@ class Test_Data
 		$bike_model = 'Rockhopper';
 
 		$wpdb->insert(
-			$bikes_table_name,
+			BIKES_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_image_id' => $bike1_image_id,
@@ -90,7 +85,7 @@ class Test_Data
 		$bike_model = 'Outlaw';
 
 		$wpdb->insert(
-			$bikes_table_name,
+			BIKES_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_image_id' => $bike3_image_id,
@@ -110,7 +105,7 @@ class Test_Data
 		$bike_model = 'Trance';
 
 		$wpdb->insert(
-			$bikes_table_name,
+			BIKES_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_image_id' => $bike2_image_id,
@@ -130,7 +125,7 @@ class Test_Data
 		$bike_model = 'Rockhopper';
 
 		$wpdb->insert(
-			$bikes_table_name,
+			BIKES_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_image_id' => $bike4_image_id,
@@ -150,7 +145,7 @@ class Test_Data
 		$bike_model = 'Super Fly';
 
 		$wpdb->insert(
-			$bikes_table_name,
+			BIKES_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				//'bike_image_id' => $bike5_image_id,
@@ -170,7 +165,7 @@ class Test_Data
 		$bike_miles = 1000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2018-09-30')),
@@ -184,7 +179,7 @@ class Test_Data
 		$bike_miles = 2000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-01-25')),
@@ -198,7 +193,7 @@ class Test_Data
 		$bike_miles = 2000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-01-25')),
@@ -212,7 +207,7 @@ class Test_Data
 		$bike_miles = 3000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-03-17')),
@@ -226,7 +221,7 @@ class Test_Data
 		$bike_miles = 4000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-08-01')),
@@ -240,7 +235,7 @@ class Test_Data
 		$bike_miles = 4500;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-08-14')),
@@ -254,7 +249,7 @@ class Test_Data
 		$bike_miles = 7602;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2022-10-26')),
@@ -268,7 +263,7 @@ class Test_Data
 		$bike_miles = 8011;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2023-12-13')),
@@ -282,7 +277,7 @@ class Test_Data
 		$bike_miles = 8134;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2023-12-16')),
@@ -296,7 +291,7 @@ class Test_Data
 		$bike_miles = 9192;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2025-02-08')),
@@ -311,7 +306,7 @@ class Test_Data
 		$bike_miles = 0;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2024-04-09')),
@@ -326,7 +321,7 @@ class Test_Data
 		$bike_miles = 500;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2020-12-25')),
@@ -340,7 +335,7 @@ class Test_Data
 		$bike_miles = 700;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-04-24')),
@@ -354,7 +349,7 @@ class Test_Data
 		$bike_miles = 1000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2021-07-20')),
@@ -368,7 +363,7 @@ class Test_Data
 		$bike_miles = 1500;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2022-07-14')),
@@ -382,7 +377,7 @@ class Test_Data
 		$bike_miles = 1500;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2022-12-19')),
@@ -396,7 +391,7 @@ class Test_Data
 		$bike_miles = 3000;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2023-06-09')),
@@ -410,7 +405,7 @@ class Test_Data
 		$bike_miles = 3992;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2023-10-21')),
@@ -424,7 +419,7 @@ class Test_Data
 		$bike_miles = 5734;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2023-10-21')),
@@ -439,7 +434,7 @@ class Test_Data
 		$bike_miles = 1235;
 
 		$wpdb->insert(
-			$maintenance_table_name,
+			MAINTENANCE_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'maintenance_date' => date('Y-m-d', strtotime('2024-10-26')),
@@ -456,7 +451,7 @@ class Test_Data
 		 $specs_desc = '26 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -469,7 +464,7 @@ class Test_Data
 		 $specs_desc = '21 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -482,7 +477,7 @@ class Test_Data
 		 $specs_desc = 'rim brakes';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -495,7 +490,7 @@ class Test_Data
 		 $specs_desc = 'Thread Between';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -508,7 +503,7 @@ class Test_Data
 		 $specs_desc = '73mm';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -523,7 +518,7 @@ class Test_Data
 		 $specs_desc = '21.5 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -536,7 +531,7 @@ class Test_Data
 		 $specs_desc = 'Thread Between';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -549,7 +544,7 @@ class Test_Data
 		 $specs_desc = '68mm';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -565,7 +560,7 @@ class Test_Data
 		 $specs_desc = 'Large';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -578,7 +573,7 @@ class Test_Data
 		 $specs_desc = '29 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -591,7 +586,7 @@ class Test_Data
 		 $specs_desc = 'disc brakes';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -604,7 +599,7 @@ class Test_Data
 		 $specs_desc = 'Shimano BP-M05-RX';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -620,7 +615,7 @@ class Test_Data
 		 $specs_desc = '26 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -634,7 +629,7 @@ class Test_Data
 		 $specs_desc = '19.5 inch';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -647,7 +642,7 @@ class Test_Data
 		 $specs_desc = 'rim brakes';
  
 		 $wpdb->insert(
-			 $specs_table_name,
+			 SPECS_TABLE,
 			 array(
 				 'last_update' => current_time('mysql'),
 				 'bike_id' => $bike_id,
@@ -661,7 +656,7 @@ class Test_Data
 		$specs_desc = '29 inch';
 
 		$wpdb->insert(
-			$specs_table_name,
+			SPECS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_id' => $sf_bike_id,
@@ -674,7 +669,7 @@ class Test_Data
 		$specs_desc = '19 inch - XL';
 
 		$wpdb->insert(
-			$specs_table_name,
+			SPECS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_id' => $sf_bike_id,
@@ -687,7 +682,7 @@ class Test_Data
 		$specs_desc = 'Shimano - Disc';
 
 		$wpdb->insert(
-			$specs_table_name,
+			SPECS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_id' => $sf_bike_id,
@@ -698,7 +693,7 @@ class Test_Data
 
 		// INSERT STATUS RECORDS
 		$wpdb->insert(
-			$status_table_name,
+			STATUS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_status' => 'ACTIVE',
@@ -706,7 +701,7 @@ class Test_Data
 		);
 
 		$wpdb->insert(
-			$status_table_name,
+			STATUS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_status' => 'RETIRED',
@@ -715,7 +710,7 @@ class Test_Data
 
 		
 		$wpdb->insert(
-			$status_table_name,
+			STATUS_TABLE,
 			array(
 				'last_update' => current_time('mysql'),
 				'bike_status' => 'BUILDING',
