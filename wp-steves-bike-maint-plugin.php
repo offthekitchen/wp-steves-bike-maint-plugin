@@ -206,7 +206,7 @@ function sbm_bike_list($atts)
 	$Content .= '</section>';
 
 
-	$Content .= "<script type=\"text/javascript\" src=\"{$bike_plugin_url}js/common_functions.js\"></script>";
+	$Content .= "<script type=\"text/javascript\" src=\"{$bike_plugin_url}public/js/steves-bike-maintenance-public.js\"></script>";
 
 	return $Content;
 }
@@ -249,7 +249,7 @@ function run_steves_bike_maintenance()
  */
 function steves_bike_maintenance_enqueue_styles()
 {
-	wp_enqueue_style('steves_bike_maintenance_style', plugin_dir_url(__FILE__) . 'css/steves-bike-maintenance.css');
+	wp_enqueue_style('steves_bike_maintenance_style', plugin_dir_url(__FILE__) . 'public/css/steves-bike-maintenance-public.css');
 }
 
 // Add the custom styles
