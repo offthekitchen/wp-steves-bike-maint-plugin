@@ -36,10 +36,158 @@ define('STEVES_BIKE_MAINTENANCE_VERSION', '1.0.0');
 /**
  * Database constants
  */
-define ( 'BIKES_TABLE', "wp_bikes");
-define ( 'MAINTENANCE_TABLE', "wp_bike_maintenance");
-define ( 'SPECS_TABLE', "wp_bike_specs");
-define ( 'STATUS_TABLE', "wp_bike_status");
+define('BIKES_TABLE', "wp_bikes");
+define('MAINTENANCE_TABLE', "wp_bike_maintenance");
+define('SPECS_TABLE', "wp_bike_specs");
+define('STATUS_TABLE', "wp_bike_status");
+
+add_action('admin_menu', 'bike_maintenance_setup_menu');
+
+//Add Admin Styles
+wp_enqueue_style( 'steves-bike-maintenance', plugins_url( 'admin/css/steves-bike-maintenance-admin.css', __FILE__ ) );
+
+
+/**
+ * Establish the Bike Admin menu
+ */
+function bike_maintenance_setup_menu()
+{
+	global $wp_version;
+
+	// CUSTOM ICON
+	$bikes_icon = plugins_url('img/bikes-admin-icon-16.png', __FILE__);
+
+	add_menu_page(
+		__('My Bikes', 'bike-maint-menu'),
+		__('My Bikes', 'bike-maint-menu'),
+		'manage_options',
+		'my-bikes',
+		'my_bikes',
+		$bikes_icon
+	);
+
+	
+	// Add a submenu for Manage Bikes
+	add_submenu_page('my-bikes', __('Manage Bikes', 'bike-maint-menu'), __('Manage Bikes', 'bike-maint-menu'), 'manage_options', 'manage-bikes', 'manage_bikes');
+
+	// Add a submenu for Manage Specs
+	add_submenu_page('my-bikes', __('Manage Specs', 'bike-maint-menu'), __('Manage Specs', 'bike-maint-menu'), 'manage_options', 'manage-specs', 'manage_specs');
+
+	// Add a submenu for Manage Maintenance Records
+	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'sub-page2', 'manage_maintenance');
+
+	// Add a submenu for Manage Bike Statues
+	add_submenu_page('my-bikes', __('Manage Statuses', 'bike-maint-menu'), __('Manage Statuses', 'bike-maint-menu'), 'manage_options', 'manage-statuses', 'manage_statuses');
+
+	// Add Debugging sybmenu
+/* 	if (GIGPRESS_DEBUG) {
+		require( 'admin/debug.php' );
+		add_submenu_page( 'bikemaint', "BikeMaint &rsaquo; Debug", 'Debug', 'manage_options', "bikemaint-debug", "bikemaint_debug" );
+	} */
+}
+
+/**
+ * The code that ???
+ */
+function my_bikes()
+{
+	$manage_bikes_image = plugins_url('img/default-bike.jpg', __FILE__); 
+	echo "<h1>MY BIKES</H1>";
+	echo "<div class=\"my-bikes-container\">";
+	echo "<div class=\"admin-section manage-bikes\">";
+	echo "<h2>MANAGE BIKES</h2>";
+	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
+	echo "</div>";
+	echo "<div class=\"admin-section manage-specs\">";
+	echo "<h2>MANAGE SPECS</h2>";
+	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
+	echo "</div>";
+	echo "<div class=\"admin-section manage-maintenance\">";
+	echo "<h2>MANAGE MATINTENANCE RECORDS</h2>";
+	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
+	echo "</div>";
+	echo "<div class=\"admin-section manage-statuses\">";
+	echo "<h2>MANAGE BIKE STATUSES</h2>";
+	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
+	echo "</div>";
+	echo "</div>";
+}
+
+/**
+ * The code that ???
+ */
+function manage_bikes()
+{
+	echo "<h1>MANAGE BIKES</H1>";
+	require_once plugin_dir_path(__FILE__) . 'includes/class-bike.php';
+
+	global $wpdb;
+
+	$bike_plugin_url = plugin_dir_url(__FILE__);
+
+	$aBikes = $wpdb->get_results("SELECT " . BIKES_TABLE . ".*, " . STATUS_TABLE . ".bike_status FROM " . BIKES_TABLE . "  INNER JOIN " . STATUS_TABLE . " ON " . BIKES_TABLE . ".bike_status_id = " . STATUS_TABLE . ".id");
+	echo "<H1>MY BIKES</H1>";
+
+	foreach ($aBikes as $oBike) {
+		$Content .= '<article class="bike bike-data">';
+		$image_attributes = wp_get_attachment_image_src($oBike->bike_image_id);
+		$sImageTag = '';
+		if ($image_attributes) {
+			$sImageTag = "<img src=\"{$image_attributes[0]}\" width=\"{$image_attributes[1]}\" height=\"{$image_attributes[2]}\" class=\"bike-image\" />";
+		} else {
+			$sImageTag = "<img src=\"{$bike_plugin_url}img/default-bike.jpg\" class=\"bike-image\" />";
+		}
+		$Content .= $sImageTag;
+		$Content .= '<div class="bike-info">';
+		$Content .= '<div class="bike-header">';
+		$Content .= "<h2 class=\"bike-title\">{$oBike->bike_name}</h2>";
+		$Content .= '<div class="icons-wrapper">';
+		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('maintenance', {$oBike->id}, '{$oBike->bike_name}');\">";
+		$Content .= "<img src=\"{$bike_plugin_url}img/icon-maint.png\" class=\"bike-icon\" />";
+		$Content .= '<p class="icon-subtext">Matinenance</p>';
+		$Content .= '</a>';
+		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('specs', {$oBike->id}, '{$oBike->bike_name}');\">";
+		$Content .= "<img src=\"{$bike_plugin_url}img/icon-specs.png\" class=\"bike-icon\" />";
+		$Content .= '<p class="icon-subtext">Specs</p>';
+		$Content .= '</a>';
+		$Content .= '</div>';
+		$Content .= '</div>';
+		$Content .= '<div class="bike-specs">';
+		$Content .= "<div class=\"bike-make bike-detail\"><b>MAKE:</b> {$oBike->bike_make}</div>";
+		$Content .= "<div class=\"bike-model bike-detail\"><b>MODEL:</b> {$oBike->bike_model} </div>";
+		$Content .= "<div class=\"bike-status bike-detail\"><b>STATUS:</b> {$oBike->bike_status} </div>";
+		$Content .= '</div>';
+		$Content .= '<div class="bike-data">';
+		$Content .= "<div class=\"bike-desc\">{$oBike->bike_desc}</div>";
+		$Content .= '</div>';
+		$Content .= '</div>';
+		$Content .= '</article>';
+	}
+	$Content .= '</section>';
+
+	echo $Content;
+}
+
+function manage_specs()
+{
+	echo "<h1>MANAGE SPECS</H1>";
+}
+
+/**
+ * The code that ???
+ */
+function manage_maintenance()
+{
+	echo "<H1>MANAGE MAINTENANCE RECORDS</H1>";
+
+}
+
+
+function manage_statuses()
+{
+	echo "<H1>MANAGE BIKE STATUSES</H1>";
+
+}
 
 /**
  * The code that runs during plugin activation.

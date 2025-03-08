@@ -73,7 +73,7 @@ class Steves_Bike_Maintenance_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'css/plugin-name-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'css/steves-bike-maintenance-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -96,7 +96,7 @@ class Steves_Bike_Maintenance_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'js/plugin-name-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'js/steves-bike-maintenance-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 
