@@ -45,6 +45,7 @@ add_action('admin_menu', 'bike_maintenance_setup_menu');
 
 //Add Admin Styles
 wp_enqueue_style( 'steves-bike-maintenance', plugins_url( 'admin/css/steves-bike-maintenance-admin.css', __FILE__ ) );
+wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap', [], null );
 
 
 /**
@@ -91,7 +92,7 @@ function bike_maintenance_setup_menu()
  */
 function my_bikes()
 {
-	$manage_bikes_image = plugins_url('img/default-bike.jpg', __FILE__); 
+/* 	$manage_bikes_image = plugins_url('img/default-bike.jpg', __FILE__); 
 	echo "<h1>MY BIKES</H1>";
 	echo "<div class=\"my-bikes-container\">";
 	echo "<div class=\"admin-section manage-bikes\">";
@@ -110,7 +111,9 @@ function my_bikes()
 	echo "<h2>MANAGE BIKE STATUSES</h2>";
 	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
 	echo "</div>";
-	echo "</div>";
+	echo "</div>"; */
+
+	include(plugin_dir_path(__FILE__) . 'admin/partials/steves-bike-maintenance-admin-display.php');
 }
 
 /**
