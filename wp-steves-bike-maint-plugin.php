@@ -32,7 +32,6 @@ if (!defined('WPINC')) {
  */
 define('STEVES_BIKE_MAINTENANCE_VERSION', '1.0.0');
 
-
 /**
  * Database constants
  */
@@ -46,7 +45,6 @@ add_action('admin_menu', 'bike_maintenance_setup_menu');
 //Add Admin Styles
 wp_enqueue_style( 'steves-bike-maintenance', plugins_url( 'admin/css/steves-bike-maintenance-admin.css', __FILE__ ) );
 wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap', [], null );
-
 
 /**
  * Establish the Bike Admin menu
@@ -67,7 +65,6 @@ function bike_maintenance_setup_menu()
 		$bikes_icon
 	);
 
-	
 	// Add a submenu for Manage Bikes
 	add_submenu_page('my-bikes', __('Manage Bikes', 'bike-maint-menu'), __('Manage Bikes', 'bike-maint-menu'), 'manage_options', 'manage-bikes', 'manage_bikes');
 
@@ -75,10 +72,10 @@ function bike_maintenance_setup_menu()
 	add_submenu_page('my-bikes', __('Manage Specs', 'bike-maint-menu'), __('Manage Specs', 'bike-maint-menu'), 'manage_options', 'manage-specs', 'manage_specs');
 
 	// Add a submenu for Manage Maintenance Records
-	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'sub-page2', 'manage_maintenance');
+	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'manage-maint', 'manage_maint');
 
 	// Add a submenu for Manage Bike Statues
-	add_submenu_page('my-bikes', __('Manage Statuses', 'bike-maint-menu'), __('Manage Statuses', 'bike-maint-menu'), 'manage_options', 'manage-statuses', 'manage_statuses');
+	add_submenu_page('my-bikes', __('Manage Data', 'bike-maint-menu'), __('Manage Data', 'bike-maint-menu'), 'manage_options', 'manage-data', 'manage_data');
 
 	// Add Debugging sybmenu
 /* 	if (GIGPRESS_DEBUG) {
@@ -92,28 +89,7 @@ function bike_maintenance_setup_menu()
  */
 function my_bikes()
 {
-/* 	$manage_bikes_image = plugins_url('img/default-bike.jpg', __FILE__); 
-	echo "<h1>MY BIKES</H1>";
-	echo "<div class=\"my-bikes-container\">";
-	echo "<div class=\"admin-section manage-bikes\">";
-	echo "<h2>MANAGE BIKES</h2>";
-	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
-	echo "</div>";
-	echo "<div class=\"admin-section manage-specs\">";
-	echo "<h2>MANAGE SPECS</h2>";
-	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
-	echo "</div>";
-	echo "<div class=\"admin-section manage-maintenance\">";
-	echo "<h2>MANAGE MATINTENANCE RECORDS</h2>";
-	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
-	echo "</div>";
-	echo "<div class=\"admin-section manage-statuses\">";
-	echo "<h2>MANAGE BIKE STATUSES</h2>";
-	echo "<image src=\"$manage_bikes_image\" class=\"admin-image\">";
-	echo "</div>";
-	echo "</div>"; */
-
-	include(plugin_dir_path(__FILE__) . 'admin/partials/steves-bike-maintenance-admin-display.php');
+	include(plugin_dir_path(__FILE__) . 'admin/partials/bike-admin-page.php');
 }
 
 /**
@@ -179,17 +155,16 @@ function manage_specs()
 /**
  * The code that ???
  */
-function manage_maintenance()
+function manage_maint()
 {
 	echo "<H1>MANAGE MAINTENANCE RECORDS</H1>";
 
 }
 
 
-function manage_statuses()
+function manage_data()
 {
-	echo "<H1>MANAGE BIKE STATUSES</H1>";
-
+	include(plugin_dir_path(__FILE__) . 'admin/partials/data-maintenance-page.php');
 }
 
 /**
