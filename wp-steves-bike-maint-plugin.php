@@ -66,19 +66,19 @@ function bike_maintenance_setup_menu()
 	);
 
 	// Add a submenu for Manage Bikes
-	add_submenu_page('my-bikes', __('Manage Bikes', 'bike-maint-menu'), __('Manage Bikes', 'bike-maint-menu'), 'manage_options', 'manage-bikes', 'manage_bikes');
+	add_submenu_page('my-bikes', __('Manage Bikes', 'bike-maint-menu'), __('Manage Bikes', 'bike-maint-menu'), 'manage_options', 'bikes-admin', 'bikes_admin');
 
 	// Add a submenu for Manage Specs
-	add_submenu_page('my-bikes', __('Manage Specs', 'bike-maint-menu'), __('Manage Specs', 'bike-maint-menu'), 'manage_options', 'manage-specs', 'manage_specs');
+	add_submenu_page('my-bikes', __('Manage Specs', 'bike-maint-menu'), __('Manage Specs', 'bike-maint-menu'), 'manage_options', 'specs-admin', 'specs_admin');
 
 	// Add a submenu for Manage Maintenance Records
-	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'manage-maint', 'manage_maint');
+	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'maint-admin', 'maint_admin');
 
 	// Add a submenu for Manage Bike Statues
-	add_submenu_page('my-bikes', __('Manage Data', 'bike-maint-menu'), __('Manage Data', 'bike-maint-menu'), 'manage_options', 'manage-data', 'manage_data');
+	add_submenu_page('my-bikes', __('Manage Data', 'bike-maint-menu'), __('Manage Data', 'bike-maint-menu'), 'manage_options', 'data-admin', 'data_admin');
 
 	// Add Debugging sybmenu
-/* 	if (GIGPRESS_DEBUG) {
+	/* 	if (GIGPRESS_DEBUG) {
 		require( 'admin/debug.php' );
 		add_submenu_page( 'bikemaint', "BikeMaint &rsaquo; Debug", 'Debug', 'manage_options', "bikemaint-debug", "bikemaint_debug" );
 	} */
@@ -89,82 +89,34 @@ function bike_maintenance_setup_menu()
  */
 function my_bikes()
 {
-	include(plugin_dir_path(__FILE__) . 'admin/partials/bike-admin-page.php');
+	include(plugin_dir_path(__FILE__) . 'admin/partials/my-bikes-page.php');
 }
 
 /**
  * The code that ???
  */
-function manage_bikes()
+function bikes_admin()
 {
-	echo "<h1>MANAGE BIKES</H1>";
-	require_once plugin_dir_path(__FILE__) . 'includes/class-bike.php';
-
-	global $wpdb;
-
-	$bike_plugin_url = plugin_dir_url(__FILE__);
-
-	$aBikes = $wpdb->get_results("SELECT " . BIKES_TABLE . ".*, " . STATUS_TABLE . ".bike_status FROM " . BIKES_TABLE . "  INNER JOIN " . STATUS_TABLE . " ON " . BIKES_TABLE . ".bike_status_id = " . STATUS_TABLE . ".id");
-	echo "<H1>MY BIKES</H1>";
-
-	foreach ($aBikes as $oBike) {
-		$Content .= '<article class="bike bike-data">';
-		$image_attributes = wp_get_attachment_image_src($oBike->bike_image_id);
-		$sImageTag = '';
-		if ($image_attributes) {
-			$sImageTag = "<img src=\"{$image_attributes[0]}\" width=\"{$image_attributes[1]}\" height=\"{$image_attributes[2]}\" class=\"bike-image\" />";
-		} else {
-			$sImageTag = "<img src=\"{$bike_plugin_url}img/default-bike.jpg\" class=\"bike-image\" />";
-		}
-		$Content .= $sImageTag;
-		$Content .= '<div class="bike-info">';
-		$Content .= '<div class="bike-header">';
-		$Content .= "<h2 class=\"bike-title\">{$oBike->bike_name}</h2>";
-		$Content .= '<div class="icons-wrapper">';
-		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('maintenance', {$oBike->id}, '{$oBike->bike_name}');\">";
-		$Content .= "<img src=\"{$bike_plugin_url}img/icon-maint.png\" class=\"bike-icon\" />";
-		$Content .= '<p class="icon-subtext">Matinenance</p>';
-		$Content .= '</a>';
-		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('specs', {$oBike->id}, '{$oBike->bike_name}');\">";
-		$Content .= "<img src=\"{$bike_plugin_url}img/icon-specs.png\" class=\"bike-icon\" />";
-		$Content .= '<p class="icon-subtext">Specs</p>';
-		$Content .= '</a>';
-		$Content .= '</div>';
-		$Content .= '</div>';
-		$Content .= '<div class="bike-specs">';
-		$Content .= "<div class=\"bike-make bike-detail\"><b>MAKE:</b> {$oBike->bike_make}</div>";
-		$Content .= "<div class=\"bike-model bike-detail\"><b>MODEL:</b> {$oBike->bike_model} </div>";
-		$Content .= "<div class=\"bike-status bike-detail\"><b>STATUS:</b> {$oBike->bike_status} </div>";
-		$Content .= '</div>';
-		$Content .= '<div class="bike-data">';
-		$Content .= "<div class=\"bike-desc\">{$oBike->bike_desc}</div>";
-		$Content .= '</div>';
-		$Content .= '</div>';
-		$Content .= '</article>';
-	}
-	$Content .= '</section>';
-
-	echo $Content;
+	include(plugin_dir_path(__FILE__) . 'admin/partials/bikes-admin-page.php');
 }
 
-function manage_specs()
+function specs_admin()
 {
-	echo "<h1>MANAGE SPECS</H1>";
+	include(plugin_dir_path(__FILE__) . 'admin/partials/specs-admin-page.php');
 }
 
 /**
  * The code that ???
  */
-function manage_maint()
+function maint_admin()
 {
-	echo "<H1>MANAGE MAINTENANCE RECORDS</H1>";
-
+	include(plugin_dir_path(__FILE__) . 'admin/partials/maint-admin-page.php');
 }
 
 
-function manage_data()
+function data_admin()
 {
-	include(plugin_dir_path(__FILE__) . 'admin/partials/data-maintenance-page.php');
+	include(plugin_dir_path(__FILE__) . 'admin/partials/data-admin-page.php');
 }
 
 /**
@@ -349,8 +301,6 @@ add_action('activated_plugin', 'save_output_buffer_to_file');
 
 register_activation_hook(__FILE__, 'activate_steves_bike_maintenance');
 register_deactivation_hook(__FILE__, 'deactivate_steves_bike_maintenance');
-
-
 
 /**
  * The core plugin class that is used to define internationalization,
