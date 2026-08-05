@@ -46,6 +46,27 @@ add_action('admin_menu', 'bike_maintenance_setup_menu');
 wp_enqueue_style( 'steves-bike-maintenance', plugins_url( 'admin/css/steves-bike-maintenance-admin.css', __FILE__ ) );
 wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap', [], null );
 
+
+
+function steves_bike_maintenance_plugin_enqueue_media_uploader_scripts( $hook ) {
+    // Only enqueue the script on your specific plugin's admin page (e.g., 'toplevel_page_my-plugin-settings').
+    // You can use a conditional check here to limit where the script is loaded.
+    
+    // Ensure the media library scripts are loaded.
+    wp_enqueue_media(); 
+
+    // Enqueue your custom JavaScript file
+    wp_enqueue_script( 
+        'steves-bike-maintenance-plugin-admin-script', 
+        plugins_url( '/js/admin.js', __FILE__ ), // Path to your admin.js file
+        array( 'jquery' ), // Dependency on jQuery
+        '1.0', // Version number
+        true // Load in the footer
+    );
+}
+add_action( 'admin_enqueue_scripts', 'steves_bike_maintenance_plugin_enqueue_media_uploader_scripts' );
+
+add_action( 'admin_post_bike_admin_form_submit', 'handle_bike_admin_form_submission' );
 /**
  * Establish the Bike Admin menu
  */
@@ -82,6 +103,34 @@ function bike_maintenance_setup_menu()
 		require( 'admin/debug.php' );
 		add_submenu_page( 'bikemaint', "BikeMaint &rsaquo; Debug", 'Debug', 'manage_options', "bikemaint-debug", "bikemaint_debug" );
 	} */
+}
+
+function handle_bike_admin_form_submission() {
+    // 1. Verify nonce
+    if ( ! isset( $_POST['bike_admin_form_nonce_field'] ) || ! wp_verify_nonce( $_POST['bike_admin_form_nonce_field'], 'bike_admin_form_nonce_action' ) ) {
+        // Handle error (optional, you can redirect with an error message)
+        wp_die( 'Security check failed' );
+    }
+
+    // Check user capabilities if necessary
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'You do not have sufficient permissions to access this page.' );
+    }
+
+    // 2. Sanitize and validate the data
+    $bike_name = sanitize_text_field( $_POST['bike_name'] );
+    $bike_make = sanitize_text_field( $_POST['bike_make'] );
+
+    // 3. Process the data (example: save as a plugin option)
+    update_option( 'bike_name', $bike_name );
+    update_option( 'bike_make', $bike_name );
+
+    // 4. Redirect back to the form page (append a query arg for success message)
+    $redirect_url = admin_url( 'admin.php?page=bikes-admin&status=success' ); // Replace 'your_custom_plugin_page'
+    wp_redirect( esc_url_raw( $redirect_url ) );
+
+    // 5. Die after redirect
+    die();
 }
 
 /**

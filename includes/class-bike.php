@@ -19,6 +19,7 @@ class Bike
     var $sBikeMake = NULL;
     var $sBikeModel = NULL;
     var $nBikeImageId = 0;
+    var $sSerialNumber = NULL;
     var $dtLastUpdate = NULL;
    
 

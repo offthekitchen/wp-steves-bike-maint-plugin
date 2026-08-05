@@ -444,6 +444,20 @@ class Test_Data
 			)
 		);
 
+		$maintenance_desc = 'Replaced broken spoke on rear wheel and trued wheel';
+		$bike_miles = 2538;
+
+		$wpdb->insert(
+			MAINTENANCE_TABLE,
+			array(
+				'last_update' => current_time('mysql'),
+				'maintenance_date' => date('Y-m-d', strtotime('2024-10-26')),
+				'bike_id' => $ynot_bike_id,
+				'maintenance_desc' => $maintenance_desc,
+				'bike_miles' => $bike_miles,
+			)
+		);
+
 		 // INSERT SPECS RECORDS - Ye Olde Townie
 		 $bike_id = 1;
 
