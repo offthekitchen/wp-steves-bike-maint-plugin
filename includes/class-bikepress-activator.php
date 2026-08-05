@@ -6,8 +6,8 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
-class Steves_Bike_Maintenance_Activator
+class BikePress_Activator
 {
 
 	/**
@@ -37,7 +37,7 @@ class Steves_Bike_Maintenance_Activator
 
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-		$steves_bike_plugin_db_version = '1.0';
+		$bikepress_db_version = '1.0';
 
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -97,7 +97,9 @@ class Steves_Bike_Maintenance_Activator
 		require_once(plugin_dir_path( __FILE__ ) . '/test-data.php');
 		Test_Data::insert_test_data();
 
-		add_option('steves_bike_plugin_db_version', $steves_bike_plugin_db_version);
+		// Prefer BikePress option key; remove legacy key if present.
+		delete_option( 'steves_bike_plugin_db_version' );
+		add_option( 'bikepress_db_version', $bikepress_db_version );
 
 	}
 	

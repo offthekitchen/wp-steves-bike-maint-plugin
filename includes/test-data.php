@@ -6,16 +6,16 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  */
 
 /**
  * This class conmtrols the injection of test data
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
 class Test_Data

@@ -6,8 +6,8 @@
  * @link       http://example.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/admin
+ * @package    BikePress
+ * @subpackage BikePress/admin
  */
 
 /**
@@ -16,20 +16,20 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/admin
+ * @package    BikePress
+ * @subpackage BikePress/admin
  * @author     Your Name <email@example.com>
  */
-class Steves_Bike_Maintenance_Admin {
+class BikePress_Admin {
 
 	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $Steves_Bike_Maintenance    The ID of this plugin.
+	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
-	private $Steves_Bike_Maintenance;
+	private $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -44,12 +44,12 @@ class Steves_Bike_Maintenance_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $Steves_Bike_Maintenance       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string    $plugin_name    The name of this plugin.
+	 * @param      string    $version        The version of this plugin.
 	 */
-	public function __construct( $Steves_Bike_Maintenance, $version ) {
+	public function __construct( $plugin_name, $version ) {
 
-		$this->Steves_Bike_Maintenance = $Steves_Bike_Maintenance;
+		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
 	}
@@ -65,15 +65,15 @@ class Steves_Bike_Maintenance_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Steves_Bike_Maintenance_Loader as all of the hooks are defined
+		 * defined in BikePress_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Steves_Bike_Maintenance_Loader will then create the relationship
+		 * The BikePress_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'css/steves-bike-maintenance-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/bikepress-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -88,15 +88,15 @@ class Steves_Bike_Maintenance_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Steves_Bike_Maintenance_Loader as all of the hooks are defined
+		 * defined in BikePress_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Steves_Bike_Maintenance_Loader will then create the relationship
+		 * The BikePress_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->Steves_Bike_Maintenance, plugin_dir_url( __FILE__ ) . 'js/steves-bike-maintenance-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bikepress-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 

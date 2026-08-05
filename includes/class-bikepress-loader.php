@@ -6,8 +6,8 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  */
 
 /**
@@ -18,11 +18,11 @@
  * run function to execute the list of actions and filters.
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
-class Steves_Bike_Maintenance_Loader {
+class BikePress_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.

@@ -9,18 +9,18 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  */
 
 /**
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
-class Steves_Bike_Maintenance_i18n {
+class BikePress_i18n {
 
 
 	/**
@@ -31,7 +31,7 @@ class Steves_Bike_Maintenance_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'steves-bike-maintenance',
+			'bikepress',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

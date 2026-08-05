@@ -1,14 +1,14 @@
 ---
-name: bike-plugin-dev
+name: bikepress-dev
 description: >-
-  Gated incremental development workflow for the Steve's Bike Maintenance
-  WordPress plugin. Use when the user requests a new feature, bugfix, change,
-  enhancement, or any plugin development work; when analyzing requirements;
-  planning implementation; creating version/feature/bugfix branches; building
-  a plugin zip; updating version docs; committing; pushing; or opening a PR.
+  Gated incremental development workflow for the BikePress WordPress plugin.
+  Use when the user requests a new feature, bugfix, change, enhancement, or
+  any plugin development work; when analyzing requirements; planning
+  implementation; creating version/feature/bugfix branches; building a plugin
+  zip; updating version docs; committing; pushing; or opening a PR.
 ---
 
-# Bike Plugin Development Workflow
+# BikePress Development Workflow
 
 This skill defines the **only** process for features and bugfixes in this repo.
 It is intentionally slow and approval-gated so the user can learn and stay in control.
@@ -80,20 +80,20 @@ Workflow progress:
 ### Steps
 
 1. If the latest version branch (e.g. version 3 or version 4.3) or any of its feature or bugfix sub-branches are not merged, that version is in progress. If it is in progress, ask the user if they want to include this request in that version.
-2. If they say yes, then just create the new feature or bugfix branch off of the latest version branch (e.g. `versionx.x/bugfix-[name]` or `versionx.x/feature-[name]` where `x.x` = in progress version number and `[name]` = meaningful name).
+2. If they say yes, then just create the new feature or bugfix branch off of the latest version branch (e.g. `versionx.x-bugfix-[name]` or `versionx.x-feature-[name]` where `x.x` = in progress version number and `[name]` = meaningful name).
 3. If they say no, then ask them if they want to merge the in progress version, and if so, walk them through getting all the changes in that version merged all the way back up to main.
 4. If they are not including this change in an in progress version, ask them if this is to be included in a minor or major release.
-5. Once they indicate whether this is a new major or minor version, increment either the major or minor number and create a new feature or bugfix branch off of the main branch (e.g. `versionx.x` where `x.x` = new version number).
-6. Change to this new version branch and branch again off of it for the change (e.g. `versionx.x/bugfix-[name]` or `versionx.x/feature-[name]` where `x.x` = new version number and `[name]` = meaningful name). For example, if the latest release was version 4.2 and they indicated that this will be in a minor release create a `version4.3/bugfix-[name]` or `version4.3/feature-[name]` branch. If they indicated that this is a major release, create a `version5.0/bugfix-[name]` or `version5.0/feature-[name]` branch.
+5. Once they indicate whether this is a new major or minor version, increment either the major or minor number and create a new version branch off of the main branch (e.g. `versionx.x` where `x.x` = new version number).
+6. Change to this new version branch and branch again off of it for the change (e.g. `versionx.x-bugfix-[name]` or `versionx.x-feature-[name]` where `x.x` = new version number and `[name]` = meaningful name). For example, if the latest release was version 4.2 and they indicated that this will be in a minor release create a `version4.3-bugfix-[name]` or `version4.3-feature-[name]` branch. If they indicated that this is a major release, create a `version5.0-bugfix-[name]` or `version5.0-feature-[name]` branch.
 7. Check out the newly created branch.
 
 ### Agent notes — detecting “in progress”
 
 Run git (see Git notes below) and determine:
 
-- **Version branches**: names like `version1`, `version-2`, `version-3`, `version4.3`, `version5.0` (normalize when comparing).
+- **Version branches**: names like `version1`, `version-2`, `version-3`, `version4.0`, `version4.3` (normalize when comparing).
 - **Latest version branch**: highest major.minor (treat `version-3` / `version3` as `3.0` if no minor is present).
-- **In progress**: latest version branch (or any `versionX.Y/feature-*` / `versionX.Y/bugfix-*` child) is **not** fully merged into `main`.
+- **In progress**: latest version branch (or any `versionX.Y-feature-*` / `versionX.Y-bugfix-*` child) is **not** fully merged into `main`.
 
 Also check for uncommitted local changes before branching. If the working tree is dirty, stop and ask the user how to handle it (stash, commit on current branch, discard, or carry into the new branch). Do not destroy work.
 
@@ -102,16 +102,18 @@ Also check for uncommitted local changes before branching. If the working tree i
 | Kind | Pattern | Example |
 |------|---------|---------|
 | Version line | `version{major}.{minor}` preferred; accept existing `version-3` style while migrating | `version4.3` |
-| Feature | `version{major}.{minor}/feature-{short-name}` | `version4.3/feature-bike-search` |
-| Bugfix | `version{major}.{minor}/bugfix-{short-name}` | `version4.3/bugfix-shortcode-filter` |
+| Feature | `version{major}.{minor}-feature-{short-name}` | `version4.3-feature-bike-search` |
+| Bugfix | `version{major}.{minor}-bugfix-{short-name}` | `version4.3-bugfix-shortcode-filter` |
+
+**Git note:** Do **not** use `version4.3/feature-name` (slash). Git cannot have both a branch `version4.3` and `version4.3/feature-name`. Use a hyphen after the version number instead.
 
 Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 
 ### New major vs minor (when not joining in-progress version)
 
-- **Minor**: increment minor, reset nothing else conceptually (`4.2` → `4.3`).
+- **Minor**: increment minor (`4.2` → `4.3`).
 - **Major**: increment major, set minor to `0` (`4.2` → `5.0`).
-- Create `versionX.Y` from `main`, then create and check out `versionX.Y/feature-...` or `versionX.Y/bugfix-...` from that version branch.
+- Create `versionX.Y` from `main`, then create and check out `versionX.Y-feature-...` or `versionX.Y-bugfix-...` from that version branch.
 
 ---
 
@@ -137,11 +139,11 @@ Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 - Match existing plugin style; prefer small, teachable diffs.
 - After code is ready for review, summarize what changed and how to test locally. Remind them: no commit/push yet.
 - WordPress plugin context for this repo:
-  - Main bootstrap: `wp-steves-bike-maint-plugin.php`
-  - Activation/DB/test data: `includes/class-steves-bike-maintenance-activator.php`, `includes/test-data.php`
+  - Main bootstrap: `wp-bikepress.php`
+  - Activation/DB/test data: `includes/class-bikepress-activator.php`, `includes/test-data.php`
   - Uninstall: `uninstall.php`
   - Admin UI: `admin/`
-  - Public/shortcode: `public/`
+  - Public/shortcode: `public/` (`[bikepress-bike-list]`)
   - Do not break activation, deactivation, or uninstall behavior unless the approved plan says so.
 
 ### Version documentation
@@ -155,9 +157,8 @@ Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 ### Plugin zip for install testing
 
 - Parent project folder (one level above this git repo): `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\`
-- Preferred zip output: that parent folder (alongside existing `wp-steves-bike-maint-plugin.zip`), **or** `dist/` inside this repo if the user prefers keeping artifacts in-repo.
-- Default for this skill: write zips to the **parent** folder as `wp-steves-bike-maint-plugin-v{major}.{minor}.zip` so install testing matches the user’s existing layout.
-- Zip **contents** must unpack to a single folder named `wp-steves-bike-maint-plugin/` (WordPress expects a plugin folder).
+- Preferred zip output: that parent folder, as `wp-bikepress-v{major}.{minor}.zip`.
+- Zip **contents** must unpack to a single folder named `wp-bikepress/` (WordPress expects a plugin folder).
 - Exclude: `.git/`, `.cursor/`, `dist/`, `node_modules/`; never include secrets.
 - On Windows PowerShell, prefer Compress-Archive or a small scripted zip that preserves the plugin root folder name.
 - Tell the user the full path to the zip and remind them they can upload it via WP Admin → Plugins → Add New → Upload Plugin (into the sandbox deploy path, not this development tree).
@@ -168,7 +169,7 @@ Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 - Follow the user’s git commit rules (HEREDOC-style message, no force push, no config changes, no secrets).
 - Push the feature/bugfix branch to `origin`.
 - Open a PR with `gh pr create`:
-  - **Base**: the version branch (e.g. `version4.3` or in-progress `version-3`), not necessarily `main`, unless the user asks otherwise.
+  - **Base**: the version branch (e.g. `version4.0`), not necessarily `main`, unless the user asks otherwise.
   - **Head**: the feature/bugfix branch.
   - Summary should reference the approved requirements and test notes.
 - After creating the PR, stop. Do not merge unless asked.
@@ -179,20 +180,20 @@ Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 
 ```
 C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\     ← project folder (zips, notes, assets)
-└── wp-steves-bike-maint-plugin\                           ← THIS git repo / plugin source (workspace root)
+└── wp-bikepress\                                         ← THIS git repo / plugin source (workspace root)
 ```
 
 Do **not** edit the deployed copy under `wp-sandbox\wp-content\plugins\...` unless the user explicitly asks. Development happens here; testing uses the zip on the sandbox site.
 
 ## Git notes for this machine/repo
 
-- Workspace / git root: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-steves-bike-maint-plugin`
-- Remote: `origin` → `https://github.com/offthekitchen/wp-steves-bike-maint-plugin.git`
+- Workspace / git root: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress`
+- Remote: `origin` → `https://github.com/offthekitchen/wp-steves-bike-maint-plugin.git` (GitHub repo name unchanged for now)
 - Default integration branch: `main`
 - This environment may hit `fatal: detected dubious ownership`. Prefer one-shot overrides:
 
 ```bash
-git -c safe.directory="C:/Data/Web Sites/plugins/wp-steves-bike-maint-plugin/wp-steves-bike-maint-plugin" <command>
+git -c safe.directory="C:/Data/Web Sites/plugins/wp-steves-bike-maint-plugin/wp-bikepress" <command>
 ```
 
 - **Do not** run `git config` to fix safe.directory unless the user explicitly asks.
