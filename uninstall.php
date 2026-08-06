@@ -1,11 +1,8 @@
 <?php
-
 /**
  * Fired when the plugin is uninstalled.
  *
- *
  * @link       http://www.offthekitchen.com
- *
  * @package    BikePress
  */
 
@@ -16,26 +13,21 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$bikes_table_name = $wpdb->prefix . "bikes"; 
-$maintenance_table_name = $wpdb->prefix . "bike_maintenance"; 
-$specs_table_name = $wpdb->prefix . "bike_specs"; 
-$status_table_name = $wpdb->prefix . "bike_status"; 
+$bikes_table       = $wpdb->prefix . 'bikes';
+$maintenance_table = $wpdb->prefix . 'bike_maintenance';
+$specs_table       = $wpdb->prefix . 'bike_specs';
+$status_table      = $wpdb->prefix . 'bike_status';
 
-// UNCOMMENT AFTER TESTING COMPLETE
- 
-$sql = "DROP TABLE IF EXISTS $bikes_table_name";
+// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are prefixed identifiers.
+$wpdb->query( "DROP TABLE IF EXISTS {$bikes_table}" );
+// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query( "DROP TABLE IF EXISTS {$maintenance_table}" );
+// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query( "DROP TABLE IF EXISTS {$specs_table}" );
+// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query( "DROP TABLE IF EXISTS {$status_table}" );
 
-$wpdb->query($sql);
-
-$sql = "DROP TABLE IF EXISTS $maintenance_table_name";
-
-$wpdb->query($sql);
-
-$sql = "DROP TABLE IF EXISTS $specs_table_name";
-
-$wpdb->query($sql);
-
-$sql = "DROP TABLE IF EXISTS $status_table_name";
-
-$wpdb->query($sql);
-
+delete_option( 'bikepress_db_version' );
+delete_option( 'steves_bike_plugin_db_version' );
+delete_option( 'bike_name' );
+delete_option( 'bike_make' );

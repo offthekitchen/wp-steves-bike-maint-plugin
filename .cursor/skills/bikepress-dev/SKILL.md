@@ -160,7 +160,7 @@ Use lowercase kebab-case for `[name]`. Keep names short and meaningful.
 - Preferred zip output: that parent folder, as `wp-bikepress-v{major}.{minor}.zip`.
 - Zip **contents** must unpack to a single folder named `wp-bikepress/` (WordPress expects a plugin folder).
 - Exclude: `.git/`, `.cursor/`, `dist/`, `node_modules/`; never include secrets.
-- On Windows PowerShell, prefer Compress-Archive or a small scripted zip that preserves the plugin root folder name.
+- On Windows, **do not** use `Compress-Archive` for WordPress install zips — it adds directory-only entries (e.g. `wp-bikepress/docs/`) that cause “Could not copy file” on unpack. Build with .NET `ZipFile` / `CreateEntryFromFile` and **file entries only** (forward-slash paths, root folder `wp-bikepress/`).
 - Tell the user the full path to the zip and remind them they can upload it via WP Admin → Plugins → Add New → Upload Plugin (into the sandbox deploy path, not this development tree).
 
 ### Commit, push, PR (only after zip/docs approval)

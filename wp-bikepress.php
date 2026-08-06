@@ -10,378 +10,336 @@
  * Plugin Name:       BikePress
  * Plugin URI:        http://www.offthekitchen.com
  * Description:       Track bicycles, specifications, and maintenance records.
- * Version:           4.0.0
+ * Version:           5.0.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       bikepress
  * Domain Path:       /languages
- * 
+ *
  */
 
 // If this file is called directly, abort.
-if (!defined('WPINC')) {
+if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-/**
- * Current plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define('BIKEPRESS_VERSION', '4.0.0');
+define( 'BIKEPRESS_VERSION', '5.0.0' );
+
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-tables.php';
 
 /**
- * Database constants
+ * Legacy-style table constants for existing includes/partials.
+ * Values use the current $wpdb prefix.
  */
-define('BIKES_TABLE', "wp_bikes");
-define('MAINTENANCE_TABLE', "wp_bike_maintenance");
-define('SPECS_TABLE', "wp_bike_specs");
-define('STATUS_TABLE', "wp_bike_status");
+define( 'BIKES_TABLE', bikepress_bikes_table() );
+define( 'MAINTENANCE_TABLE', bikepress_maintenance_table() );
+define( 'SPECS_TABLE', bikepress_specs_table() );
+define( 'STATUS_TABLE', bikepress_status_table() );
 
-add_action('admin_menu', 'bike_maintenance_setup_menu');
-
-//Add Admin Styles
-wp_enqueue_style( 'bikepress', plugins_url( 'admin/css/bikepress-admin.css', __FILE__ ) );
-wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap', [], null );
-
-
-
-function bikepress_enqueue_media_uploader_scripts( $hook ) {
-    // Only enqueue the script on your specific plugin's admin page (e.g., 'toplevel_page_my-plugin-settings').
-    // You can use a conditional check here to limit where the script is loaded.
-    
-    // Ensure the media library scripts are loaded.
-    wp_enqueue_media(); 
-
-    // Enqueue your custom JavaScript file
-    wp_enqueue_script( 
-        'bikepress-admin-script', 
-        plugins_url( '/js/admin.js', __FILE__ ), // Path to your admin.js file
-        array( 'jquery' ), // Dependency on jQuery
-        '1.0', // Version number
-        true // Load in the footer
-    );
-}
-add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_media_uploader_scripts' );
-
+add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
+add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
 add_action( 'admin_post_bike_admin_form_submit', 'handle_bike_admin_form_submission' );
-/**
- * Establish the Bike Admin menu
- */
-function bike_maintenance_setup_menu()
-{
-	global $wp_version;
 
-	// CUSTOM ICON
-	$bikes_icon = plugins_url('img/bikes-admin-icon-16.png', __FILE__);
+/**
+ * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
+ *
+ * @param string $hook Current admin page hook.
+ */
+function bikepress_enqueue_admin_assets( $hook ) {
+	if ( ! bikepress_is_plugin_admin_screen( $hook ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'bikepress-admin',
+		plugins_url( 'admin/css/bikepress-admin.css', __FILE__ ),
+		array(),
+		BIKEPRESS_VERSION
+	);
+	wp_enqueue_style(
+		'bikepress-google-fonts',
+		'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap',
+		array(),
+		null
+	);
+
+	if ( 'my-bikes_page_bikes-admin' === $hook ) {
+		wp_enqueue_media();
+		wp_enqueue_script(
+			'bikepress-admin-script',
+			plugins_url( '/js/admin.js', __FILE__ ),
+			array( 'jquery' ),
+			BIKEPRESS_VERSION,
+			true
+		);
+	}
+}
+
+/**
+ * Establish the Bike Admin menu.
+ */
+function bike_maintenance_setup_menu() {
+	$bikes_icon = plugins_url( 'img/bikes-admin-icon-16.png', __FILE__ );
 
 	add_menu_page(
-		__('My Bikes', 'bikepress'),
-		__('My Bikes', 'bikepress'),
+		__( 'My Bikes', 'bikepress' ),
+		__( 'My Bikes', 'bikepress' ),
 		'manage_options',
 		'my-bikes',
 		'my_bikes',
 		$bikes_icon
 	);
 
-	// Add a submenu for Manage Bikes
-	add_submenu_page('my-bikes', __('Manage Bikes', 'bikepress'), __('Manage Bikes', 'bikepress'), 'manage_options', 'bikes-admin', 'bikes_admin');
-
-	// Add a submenu for Manage Specs
-	add_submenu_page('my-bikes', __('Manage Specs', 'bikepress'), __('Manage Specs', 'bikepress'), 'manage_options', 'specs-admin', 'specs_admin');
-
-	// Add a submenu for Manage Maintenance Records
-	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bikepress'), __('Manage Maintenance Records', 'bikepress'), 'manage_options', 'maint-admin', 'maint_admin');
-
-	// Add a submenu for Manage Bike Statues
-	add_submenu_page('my-bikes', __('Manage Data', 'bikepress'), __('Manage Data', 'bikepress'), 'manage_options', 'data-admin', 'data_admin');
-
-	// Add Debugging sybmenu
-	/* 	if (GIGPRESS_DEBUG) {
-		require( 'admin/debug.php' );
-		add_submenu_page( 'bikemaint', "BikeMaint &rsaquo; Debug", 'Debug', 'manage_options', "bikemaint-debug", "bikemaint_debug" );
-	} */
+	add_submenu_page( 'my-bikes', __( 'Manage Bikes', 'bikepress' ), __( 'Manage Bikes', 'bikepress' ), 'manage_options', 'bikes-admin', 'bikes_admin' );
+	add_submenu_page( 'my-bikes', __( 'Manage Specs', 'bikepress' ), __( 'Manage Specs', 'bikepress' ), 'manage_options', 'specs-admin', 'specs_admin' );
+	add_submenu_page( 'my-bikes', __( 'Manage Maintenance Records', 'bikepress' ), __( 'Manage Maintenance Records', 'bikepress' ), 'manage_options', 'maint-admin', 'maint_admin' );
+	add_submenu_page( 'my-bikes', __( 'Manage Data', 'bikepress' ), __( 'Manage Data', 'bikepress' ), 'manage_options', 'data-admin', 'data_admin' );
 }
 
+/**
+ * Stub form handler (admin CRUD still incomplete).
+ */
 function handle_bike_admin_form_submission() {
-    // 1. Verify nonce
-    if ( ! isset( $_POST['bike_admin_form_nonce_field'] ) || ! wp_verify_nonce( $_POST['bike_admin_form_nonce_field'], 'bike_admin_form_nonce_action' ) ) {
-        // Handle error (optional, you can redirect with an error message)
-        wp_die( 'Security check failed' );
-    }
+	if ( ! isset( $_POST['bike_admin_form_nonce_field'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bike_admin_form_nonce_field'] ) ), 'bike_admin_form_nonce_action' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
 
-    // Check user capabilities if necessary
-    if ( ! current_user_can( 'manage_options' ) ) {
-        wp_die( 'You do not have sufficient permissions to access this page.' );
-    }
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
 
-    // 2. Sanitize and validate the data
-    $bike_name = sanitize_text_field( $_POST['bike_name'] );
-    $bike_make = sanitize_text_field( $_POST['bike_make'] );
+	$bike_name = isset( $_POST['bike_name'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_name'] ) ) : '';
+	$bike_make = isset( $_POST['bike_make'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_make'] ) ) : '';
 
-    // 3. Process the data (example: save as a plugin option)
-    update_option( 'bike_name', $bike_name );
-    update_option( 'bike_make', $bike_name );
+	update_option( 'bike_name', $bike_name );
+	update_option( 'bike_make', $bike_make );
 
-    // 4. Redirect back to the form page (append a query arg for success message)
-    $redirect_url = admin_url( 'admin.php?page=bikes-admin&status=success' ); // Replace 'your_custom_plugin_page'
-    wp_redirect( esc_url_raw( $redirect_url ) );
-
-    // 5. Die after redirect
-    die();
+	$redirect_url = admin_url( 'admin.php?page=bikes-admin&status=success' );
+	wp_redirect( esc_url_raw( $redirect_url ) );
+	exit;
 }
 
 /**
- * The code that ???
+ * Admin: My Bikes hub.
  */
-function my_bikes()
-{
-	include(plugin_dir_path(__FILE__) . 'admin/partials/my-bikes-page.php');
+function my_bikes() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/my-bikes-page.php';
 }
 
 /**
- * The code that ???
+ * Admin: manage bikes (incomplete CRUD).
  */
-function bikes_admin()
-{
-	include(plugin_dir_path(__FILE__) . 'admin/partials/bikes-admin-page.php');
-}
-
-function specs_admin()
-{
-	include(plugin_dir_path(__FILE__) . 'admin/partials/specs-admin-page.php');
+function bikes_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/bikes-admin-page.php';
 }
 
 /**
- * The code that ???
+ * Admin: specs list.
  */
-function maint_admin()
-{
-	include(plugin_dir_path(__FILE__) . 'admin/partials/maint-admin-page.php');
-}
-
-
-function data_admin()
-{
-	include(plugin_dir_path(__FILE__) . 'admin/partials/data-admin-page.php');
+function specs_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/specs-admin-page.php';
 }
 
 /**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-plugin-name-activator.php
+ * Admin: maintenance list.
  */
-function activate_bikepress()
-{
-	require_once plugin_dir_path(__FILE__) . 'includes/class-bikepress-activator.php';
+function maint_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/maint-admin-page.php';
+}
+
+/**
+ * Admin: status / data list.
+ */
+function data_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/data-admin-page.php';
+}
+
+/**
+ * Activation callback.
+ */
+function activate_bikepress() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-activator.php';
 	BikePress_Activator::activate();
 }
 
 /**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-plugin-name-deactivator.php
+ * Deactivation callback.
  */
-function deactivate_bikepress()
-{
-	require_once plugin_dir_path(__FILE__) . 'includes/class-bikepress-deactivator.php';
+function deactivate_bikepress() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-deactivator.php';
 	BikePress_Deactivator::deactivate();
 }
 
-function save_output_buffer_to_file()
-{
-	file_put_contents(
-		ABSPATH . 'wp-content/plugins/activation_output_buffer.html'
-		,
-		ob_get_contents()
-	);
-}
-
 /**
- * This function creates content for the bike list shortcode
+ * Shortcode: interactive bike list.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string
  */
-function bikepress_bike_list($atts)
-{
-	require_once plugin_dir_path(__FILE__) . 'includes/class-bike.php';
-
+function bikepress_bike_list( $atts ) {
 	global $wpdb;
 
-	$bike_plugin_url = plugin_dir_url(__FILE__);
+	$bike_plugin_url = plugin_dir_url( __FILE__ );
+	$bikes_table     = BIKES_TABLE;
+	$status_table    = STATUS_TABLE;
+	$maint_table     = MAINTENANCE_TABLE;
+	$specs_table     = SPECS_TABLE;
 
-	$aBikes = $wpdb->get_results("SELECT " . BIKES_TABLE . ".*, " . STATUS_TABLE . ".bike_status FROM " . BIKES_TABLE . "  INNER JOIN " . STATUS_TABLE . " ON " . BIKES_TABLE . ".bike_status_id = " . STATUS_TABLE . ".id");
-	$aMaintenance = $wpdb->get_results("SELECT * FROM " . MAINTENANCE_TABLE);
-	$aSpecs = $wpdb->get_results("SELECT * FROM " . SPECS_TABLE);
+	// Ensure public assets load when the shortcode renders.
+	wp_enqueue_style( 'bikepress' );
+	wp_enqueue_script( 'bikepress' );
 
-	// BIKES LIST SECTION
-	$Content = '<section id="bike-list" class="bike-section fade-in">';
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are trusted prefixed identifiers.
+	$aBikes = $wpdb->get_results(
+		"SELECT {$bikes_table}.*, {$status_table}.bike_status
+		FROM {$bikes_table}
+		INNER JOIN {$status_table}
+			ON {$bikes_table}.bike_status_id = {$status_table}.id"
+	);
+
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$aMaintenance = $wpdb->get_results( "SELECT * FROM {$maint_table}" );
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$aSpecs = $wpdb->get_results( "SELECT * FROM {$specs_table}" );
+
+	$last_bike_id = 0;
+	if ( ! empty( $aBikes ) ) {
+		$last_bike    = end( $aBikes );
+		$last_bike_id = isset( $last_bike->id ) ? absint( $last_bike->id ) : 0;
+		reset( $aBikes );
+	}
+
+	$default_img = esc_url( $bike_plugin_url . 'img/default-bike.jpg' );
+	$icon_maint  = esc_url( $bike_plugin_url . 'img/icon-maint.png' );
+	$icon_specs  = esc_url( $bike_plugin_url . 'img/icon-specs.png' );
+	$icon_bikes  = esc_url( $bike_plugin_url . 'img/icon-bikes.png' );
+
+	$Content  = '<section id="bike-list" class="bike-section fade-in">';
 	$Content .= '<h1 class="bike-list-title">BIKES</h1>';
-	$Content .= '</h1>';
-	foreach ($aBikes as $oBike) {
+
+	foreach ( $aBikes as $oBike ) {
+		$bike_id   = absint( $oBike->id );
+		$bike_name = esc_html( $oBike->bike_name );
+		$bike_js   = esc_js( $oBike->bike_name );
+
 		$Content .= '<article class="bike bike-data">';
-		$image_attributes = wp_get_attachment_image_src($oBike->bike_image_id);
-		$sImageTag = '';
-		if ($image_attributes) {
-			$sImageTag = "<img src=\"{$image_attributes[0]}\" width=\"{$image_attributes[1]}\" height=\"{$image_attributes[2]}\" class=\"bike-image\" />";
+
+		$image_attributes = wp_get_attachment_image_src( absint( $oBike->bike_image_id ) );
+		if ( $image_attributes ) {
+			$Content .= sprintf(
+				'<img src="%s" width="%d" height="%d" class="bike-image" alt="%s" />',
+				esc_url( $image_attributes[0] ),
+				absint( $image_attributes[1] ),
+				absint( $image_attributes[2] ),
+				$bike_name
+			);
 		} else {
-			$sImageTag = "<img src=\"{$bike_plugin_url}img/default-bike.jpg\" class=\"bike-image\" />";
+			$Content .= '<img src="' . $default_img . '" class="bike-image" alt="' . $bike_name . '" />';
 		}
-		$Content .= $sImageTag;
+
 		$Content .= '<div class="bike-info">';
 		$Content .= '<div class="bike-header">';
-		$Content .= "<h2 class=\"bike-title\">{$oBike->bike_name}</h2>";
+		$Content .= '<h2 class="bike-title">' . $bike_name . '</h2>';
 		$Content .= '<div class="icons-wrapper">';
-		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('maintenance', {$oBike->id}, '{$oBike->bike_name}');\">";
-		$Content .= "<img src=\"{$bike_plugin_url}img/icon-maint.png\" class=\"bike-icon\" />";
-		$Content .= '<p class="icon-subtext">Matinenance</p>';
+		$Content .= '<a href="javascript:void(0);" onclick="showSection(\'maintenance\', ' . $bike_id . ', \'' . $bike_js . '\');">';
+		$Content .= '<img src="' . $icon_maint . '" class="bike-icon" alt="" />';
+		$Content .= '<p class="icon-subtext">Maintenance</p>';
 		$Content .= '</a>';
-		$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('specs', {$oBike->id}, '{$oBike->bike_name}');\">";
-		$Content .= "<img src=\"{$bike_plugin_url}img/icon-specs.png\" class=\"bike-icon\" />";
+		$Content .= '<a href="javascript:void(0);" onclick="showSection(\'specs\', ' . $bike_id . ', \'' . $bike_js . '\');">';
+		$Content .= '<img src="' . $icon_specs . '" class="bike-icon" alt="" />';
 		$Content .= '<p class="icon-subtext">Specs</p>';
 		$Content .= '</a>';
-		$Content .= '</div>';
-		$Content .= '</div>';
+		$Content .= '</div></div>';
 		$Content .= '<div class="bike-specs">';
-		$Content .= "<div class=\"bike-make bike-detail\"><b>MAKE:</b> {$oBike->bike_make}</div>";
-		$Content .= "<div class=\"bike-model bike-detail\"><b>MODEL:</b> {$oBike->bike_model} </div>";
-		$Content .= "<div class=\"bike-status bike-detail\"><b>STATUS:</b> {$oBike->bike_status} </div>";
+		$Content .= '<div class="bike-make bike-detail"><b>MAKE:</b> ' . esc_html( $oBike->bike_make ) . '</div>';
+		$Content .= '<div class="bike-model bike-detail"><b>MODEL:</b> ' . esc_html( $oBike->bike_model ) . '</div>';
+		$Content .= '<div class="bike-status bike-detail"><b>STATUS:</b> ' . esc_html( $oBike->bike_status ) . '</div>';
 		$Content .= '</div>';
-		$Content .= '<div class="bike-data">';
-		$Content .= "<div class=\"bike-desc\">{$oBike->bike_desc}</div>";
-		$Content .= '</div>';
-		$Content .= '</div>';
-		$Content .= '</article>';
+		$Content .= '<div class="bike-data"><div class="bike-desc">' . esc_html( $oBike->bike_desc ) . '</div></div>';
+		$Content .= '</div></article>';
 	}
 	$Content .= '</section>';
 
-	// MAINTENANCE SECTION
+	// Maintenance section.
 	$Content .= '<section id="maintenance-log" class="bike-section fade-in">';
 	$Content .= '<h1 class="maintenance-log-title">MAINTENANCE LOG</h1>';
 	$Content .= '<h2 id="maintenance-log-bike-name"></h2>';
-	$Content .= '<div class="maintenance-header bike-section-header">';
-	$Content .= '<div class="icons-wrapper">';
-	$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('bikes', 0, '')\">";
-	$Content .= "<img src=\"{$bike_plugin_url}img/icon-bikes.png\" class=\"bike-icon\" />";
-	$Content .= '<p class="icon-subtext">Bike List</p>';
-	$Content .= '</a>';
-	$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('specs', {$oBike->id}, bikeName)\" id=\"maint-to-specs-link\">";
-	$Content .= "<img src=\"{$bike_plugin_url}img/icon-specs.png\" class=\"bike-icon\" />";
-	$Content .= '<p class="icon-subtext">Specs</p>';
-	$Content .= '</a>';
-	$Content .= '</div>';
-	$Content .= '</div>';
+	$Content .= '<div class="maintenance-header bike-section-header"><div class="icons-wrapper">';
+	$Content .= '<a href="javascript:void(0);" onclick="showSection(\'bikes\', 0, \'\')">';
+	$Content .= '<img src="' . $icon_bikes . '" class="bike-icon" alt="" /><p class="icon-subtext">Bike List</p></a>';
+	$Content .= '<a href="javascript:void(0);" onclick="showSection(\'specs\', ' . $last_bike_id . ', bikeName)" id="maint-to-specs-link">';
+	$Content .= '<img src="' . $icon_specs . '" class="bike-icon" alt="" /><p class="icon-subtext">Specs</p></a>';
+	$Content .= '</div></div>';
 
 	$Content .= '<div class="maintenance-entries bike-entries">';
-	$Content .= '<header class="maintenance-entry-headers entry-headers">';
-	$Content .= '<div class="col">DATE</div><div class="col">MAINT</div><div class="col">MILES</div>';
-	$Content .= '</header>';
-	// Purchase Date Row
-	foreach ($aBikes as $oBike) {
-		$dateArray = date_parse($oBike->purchase_date);
-		$formattedDate = "{$dateArray['year']}-{$dateArray['month']}-{$dateArray['day']}";
-		$Content .= "<div class=\"entry-record maintenance-entry row bike-{$oBike->id}\">";
-		$Content .= "<div class=\"maint-date col\">{$formattedDate}</div>";
-		$Content .= "<div class=\"maint-desc col\">Purchased</div>";
-		$Content .= "<div class=\"bike-miles col\">0</div>";
-		$Content .= '</div>';
-	}
-	foreach ($aMaintenance as $oMaintRecord) {
-		$dateArray = date_parse($oMaintRecord->maintenance_date);
-		$formattedDate = "{$dateArray['year']}-{$dateArray['month']}-{$dateArray['day']}";
+	$Content .= '<header class="maintenance-entry-headers entry-headers"><div class="col">DATE</div><div class="col">MAINT</div><div class="col">MILES</div></header>';
 
-		$Content .= "<div class=\"entry-record maintenance-entry row bike-{$oMaintRecord->bike_id}\">";
-		$Content .= "<div class=\"maint-date col\">{$formattedDate}</div>";
-		$Content .= "<div class=\"maint-desc col\">{$oMaintRecord->maintenance_desc}</div>";
-		$Content .= "<div class=\"bike-miles col\">{$oMaintRecord->bike_miles}</div>";
-		$Content .= '</div>';
+	foreach ( $aBikes as $oBike ) {
+		$date_array     = date_parse( $oBike->purchase_date );
+		$formatted_date = esc_html( sprintf( '%d-%d-%d', $date_array['year'], $date_array['month'], $date_array['day'] ) );
+		$Content       .= '<div class="entry-record maintenance-entry row bike-' . absint( $oBike->id ) . '">';
+		$Content       .= '<div class="maint-date col">' . $formatted_date . '</div>';
+		$Content       .= '<div class="maint-desc col">Purchased</div>';
+		$Content       .= '<div class="bike-miles col">0</div></div>';
 	}
-	$Content .= '<div class="no-records">NO RECORDS FOUND</div>';
-	$Content .= '</div>';
-	$Content .= '</section>';
 
-	// SPECS SECTION
+	foreach ( $aMaintenance as $oMaintRecord ) {
+		$date_array     = date_parse( $oMaintRecord->maintenance_date );
+		$formatted_date = esc_html( sprintf( '%d-%d-%d', $date_array['year'], $date_array['month'], $date_array['day'] ) );
+		$Content       .= '<div class="entry-record maintenance-entry row bike-' . absint( $oMaintRecord->bike_id ) . '">';
+		$Content       .= '<div class="maint-date col">' . $formatted_date . '</div>';
+		$Content       .= '<div class="maint-desc col">' . esc_html( $oMaintRecord->maintenance_desc ) . '</div>';
+		$Content       .= '<div class="bike-miles col">' . esc_html( (string) $oMaintRecord->bike_miles ) . '</div></div>';
+	}
+
+	$Content .= '<div class="no-records">NO RECORDS FOUND</div></div></section>';
+
+	// Specs section.
 	$Content .= '<section id="specs-list" class="bike-section fade-in">';
 	$Content .= '<h1 class="specs-list-title">SPECIFICATIONS</h1>';
 	$Content .= '<h2 id="specs-list-bike-name"></h2>';
-	$Content .= '<div class="specs-header bike-section-header">';
-	$Content .= '<div class="icons-wrapper">';
-	$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('bikes', 0, '');\">";
-	$Content .= "<img src=\"{$bike_plugin_url}img/icon-bikes.png\" class=\"bike-icon\" />";
-	$Content .= '<p class="icon-subtext">Bike List</p>';
-	$Content .= "<a href=\"javascript:void(0);\" onclick=\"showSection('specs', {$oBike->id}, bikeName);\"  id=\"specs-to-maint-link\">";
-	$Content .= "<img src=\"{$bike_plugin_url}img/icon-maint.png\" class=\"bike-icon\" />";
-	$Content .= '<p class="icon-subtext">Matinenance</p>';
-	$Content .= '</a>';
-	$Content .= '</div>';
-	$Content .= '</div>';
+	$Content .= '<div class="specs-header bike-section-header"><div class="icons-wrapper">';
+	$Content .= '<a href="javascript:void(0);" onclick="showSection(\'bikes\', 0, \'\');">';
+	$Content .= '<img src="' . $icon_bikes . '" class="bike-icon" alt="" /><p class="icon-subtext">Bike List</p></a>';
+	$Content .= '<a href="javascript:void(0);" onclick="showSection(\'maintenance\', ' . $last_bike_id . ', bikeName);" id="specs-to-maint-link">';
+	$Content .= '<img src="' . $icon_maint . '" class="bike-icon" alt="" /><p class="icon-subtext">Maintenance</p></a>';
+	$Content .= '</div></div>';
 
 	$Content .= '<div class="spec-entries bike-entries">';
-	$Content .= '<header class="spec-entry-headers entry-headers">';
-	$Content .= '<div class="col">NAME</div><div class="col">DESC</div>';
-	$Content .= '</header>';
-	//Serial Number Row
-	foreach ($aBikes as $oBike) {
-		$Content .= "<div class=\"entry-record spec-entry row bike-{$oBike->id}\">";
-		$Content .= "<div class=\"spec-name col\">Serial Number</div>";
-		$Content .= "<div class=\"spec-desc col\">{$oBike->serial_number}</div>";
-		$Content .= '</div>';
-	}
-	foreach ($aSpecs as $oSpecRecord) {
-		$Content .= "<div class=\"entry-record spec-entry row bike-{$oSpecRecord->bike_id}\">";
-		$Content .= "<div class=\"spec-name col\">{$oSpecRecord->spec_name}</div>";
-		$Content .= "<div class=\"spec-desc col\">{$oSpecRecord->spec_desc}</div>";
-		$Content .= '</div>';
+	$Content .= '<header class="spec-entry-headers entry-headers"><div class="col">NAME</div><div class="col">DESC</div></header>';
+
+	foreach ( $aBikes as $oBike ) {
+		$Content .= '<div class="entry-record spec-entry row bike-' . absint( $oBike->id ) . '">';
+		$Content .= '<div class="spec-name col">Serial Number</div>';
+		$Content .= '<div class="spec-desc col">' . esc_html( $oBike->serial_number ) . '</div></div>';
 	}
 
-	$Content .= '</div>';
-	$Content .= '<div class="no-records">NO RECORDS FOUND</div>';
-	$Content .= '</section>';
+	foreach ( $aSpecs as $oSpecRecord ) {
+		$Content .= '<div class="entry-record spec-entry row bike-' . absint( $oSpecRecord->bike_id ) . '">';
+		$Content .= '<div class="spec-name col">' . esc_html( $oSpecRecord->spec_name ) . '</div>';
+		$Content .= '<div class="spec-desc col">' . esc_html( $oSpecRecord->spec_desc ) . '</div></div>';
+	}
 
-
-	$Content .= "<script type=\"text/javascript\" src=\"{$bike_plugin_url}public/js/bikepress-public.js\"></script>";
+	$Content .= '</div><div class="no-records">NO RECORDS FOUND</div></section>';
 
 	return $Content;
 }
 
-//Add all the shortcodes
-add_shortcode('bikepress-bike-list', 'bikepress_bike_list');
+add_shortcode( 'bikepress-bike-list', 'bikepress_bike_list' );
 
-// During activation send any output to a file
-add_action('activated_plugin', 'save_output_buffer_to_file');
+register_activation_hook( __FILE__, 'activate_bikepress' );
+register_deactivation_hook( __FILE__, 'deactivate_bikepress' );
 
-register_activation_hook(__FILE__, 'activate_bikepress');
-register_deactivation_hook(__FILE__, 'deactivate_bikepress');
+require plugin_dir_path( __FILE__ ) . 'includes/class-bikepress.php';
 
 /**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
+ * Boot the plugin.
  */
-require plugin_dir_path(__FILE__) . 'includes/class-bikepress.php';
-
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-function run_bikepress()
-{
-
+function run_bikepress() {
 	$plugin = new BikePress();
 	$plugin->run();
-
 }
-/**
- * This function adds the custom styles for the plugin to the WP styling framework
- */
-function bikepress_enqueue_styles()
-{
-	wp_enqueue_style('bikepress_style', plugin_dir_url(__FILE__) . 'public/css/bikepress-public.css');
-}
-
-// Add the custom styles
-add_action('wp_enqueue_scripts', 'bikepress_enqueue_styles');
 
 run_bikepress();

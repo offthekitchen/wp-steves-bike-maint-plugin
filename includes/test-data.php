@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Fired during plugin activation
+ * Demo / test data for BikePress activation.
  *
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
@@ -11,726 +10,174 @@
  */
 
 /**
- * This class conmtrols the injection of test data
+ * Inserts a small demo dataset when enabled.
  *
- * @since      1.0.0
- * @package    BikePress
- * @subpackage BikePress/includes
- * @author     John S Weeks <steve@offthekitchen.com>
+ * @since 1.0.0
+ * @package BikePress
  */
-class Test_Data
-{
+class Test_Data {
 
 	/**
-	 * Test Data
+	 * Insert simplified demo statuses, bikes, maintenance, and specs.
 	 *
-	 * This function establishes all the necessary setup during the activation of the plugin.
-	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
-	public static function insert_test_data()
-	{
-
+	public static function insert_test_data() {
 		global $wpdb;
 
-		$status_active = 1;
-		$status_retired = 2;
-		$status_building = 3;
+		$bikes_table        = bikepress_bikes_table();
+		$maintenance_table  = bikepress_maintenance_table();
+		$specs_table        = bikepress_specs_table();
+		$status_table       = bikepress_status_table();
+		$now                = current_time( 'mysql' );
 
-		$yot_bike1_id = 1;
-		$ih_bike_id = 2;
-		$trance_bike_id = 3;
-		$ynot_bike_id = 4;
-		$sf_bike_id = 5;
-
-		// LOCAL
-		$bike1_image_id = 97;
-		$bike2_image_id = 180;
-		$bike3_image_id = 179;
-		$bike4_image_id = 309;
-		$bike5_image_id = 309;
-
-		// PROD
-/* 		$bike1_image_id = 17200;
-		$bike2_image_id = 17224;
-		$bike3_image_id = 17221;
-		$bike4_image_id = 17332;
-		$bike5_image_id = 17223; */
-
-		$charset_collate = $wpdb->get_charset_collate();
-
-		$bike_name = 'Ye Olde Townie';
-		$bike_desc = 'My old faithful bike. This guy took me on many adventures.';
-		$bike_make = 'Specialized';
-		$bike_model = 'Rockhopper';
+		// Statuses first so bikes can reference real IDs.
+		$wpdb->insert(
+			$status_table,
+			array(
+				'last_update' => $now,
+				'bike_status' => 'Active',
+			)
+		);
+		$status_active = (int) $wpdb->insert_id;
 
 		$wpdb->insert(
-			BIKES_TABLE,
+			$status_table,
 			array(
-				'last_update' => current_time('mysql'),
-				'bike_image_id' => $bike1_image_id,
-				'bike_name' => $bike_name,
-				'bike_desc' => $bike_desc,
-				'bike_make' => $bike_make,
-				'bike_model' => $bike_model,
-				'purchase_date' => date('Y-m-d', strtotime('1995-06-14')),
-				'serial_number' => 'M5GI59652',
-				'bike_status_id' => $status_retired,
+				'last_update' => $now,
+				'bike_status' => 'Retired',
+			)
+		);
+		$status_retired = (int) $wpdb->insert_id;
+
+		$wpdb->insert(
+			$status_table,
+			array(
+				'last_update' => $now,
+				'bike_status' => 'Building',
+			)
+		);
+		$status_building = (int) $wpdb->insert_id;
+
+		// Bike 1
+		$wpdb->insert(
+			$bikes_table,
+			array(
+				'last_update'     => $now,
+				'bike_image_id'   => 0,
+				'bike_name'       => 'Trail Rider',
+				'bike_desc'       => 'A reliable trail bike for weekend rides.',
+				'bike_make'       => 'Specialized',
+				'bike_model'      => 'Rockhopper',
+				'purchase_date'   => '2018-05-12 00:00:00',
+				'serial_number'   => 'DEMO-ROCK-001',
+				'bike_status_id'  => $status_active,
+			)
+		);
+		$bike1_id = (int) $wpdb->insert_id;
+
+		// Bike 2
+		$wpdb->insert(
+			$bikes_table,
+			array(
+				'last_update'     => $now,
+				'bike_image_id'   => 0,
+				'bike_name'       => 'Commuter',
+				'bike_desc'       => 'Everyday city and path commuting bike.',
+				'bike_make'       => 'Trek',
+				'bike_model'      => 'FX 2',
+				'purchase_date'   => '2020-03-01 00:00:00',
+				'serial_number'   => 'DEMO-TREK-002',
+				'bike_status_id'  => $status_active,
+			)
+		);
+		$bike2_id = (int) $wpdb->insert_id;
+
+		// Bike 3
+		$wpdb->insert(
+			$bikes_table,
+			array(
+				'last_update'     => $now,
+				'bike_image_id'   => 0,
+				'bike_name'       => 'Project Frame',
+				'bike_desc'       => 'Build in progress — demo building status.',
+				'bike_make'       => 'Surly',
+				'bike_model'      => 'Karate Monkey',
+				'purchase_date'   => '2024-01-15 00:00:00',
+				'serial_number'   => 'DEMO-SURLY-003',
+				'bike_status_id'  => $status_building ? $status_building : $status_retired,
+			)
+		);
+		$bike3_id = (int) $wpdb->insert_id;
+
+		// Maintenance (a few rows)
+		$wpdb->insert(
+			$maintenance_table,
+			array(
+				'last_update'       => $now,
+				'maintenance_date'  => '2024-06-01 00:00:00',
+				'bike_id'           => $bike1_id,
+				'maintenance_desc'  => 'New chain and cassette',
+				'bike_miles'        => 1200,
+			)
+		);
+		$wpdb->insert(
+			$maintenance_table,
+			array(
+				'last_update'       => $now,
+				'maintenance_date'  => '2025-02-10 00:00:00',
+				'bike_id'           => $bike1_id,
+				'maintenance_desc'  => 'Brake pads replaced',
+				'bike_miles'        => 1850,
+			)
+		);
+		$wpdb->insert(
+			$maintenance_table,
+			array(
+				'last_update'       => $now,
+				'maintenance_date'  => '2024-11-20 00:00:00',
+				'bike_id'           => $bike2_id,
+				'maintenance_desc'  => 'Flat tire repair',
+				'bike_miles'        => 640,
 			)
 		);
 
-		$bike_name = 'Ironhorse';
-		$bike_desc = 'Found it on the side of the road. It\'s gonna be back on the trails someday.';
-		$bike_make = 'Ironhorse';
-		$bike_model = 'Outlaw';
-
+		// Specs (a few rows)
 		$wpdb->insert(
-			BIKES_TABLE,
+			$specs_table,
 			array(
-				'last_update' => current_time('mysql'),
-				'bike_image_id' => $bike3_image_id,
-				'bike_name' => $bike_name,
-				'bike_desc' => $bike_desc,
-				'bike_make' => $bike_make,
-				'bike_model' => $bike_model,
-				'purchase_date' => date('Y-m-d', strtotime('2025-02-14')),
-				'serial_number' => '0300270',
-				'bike_status_id' => $status_building,
+				'last_update' => $now,
+				'bike_id'     => $bike1_id,
+				'spec_name'   => 'Wheel size',
+				'spec_desc'   => '29"',
 			)
 		);
-
-		$bike_name = 'In a Trance';
-		$bike_desc = 'My new mountain bike. Bought it during COVID.  It was the only one available and took some getting used to.';
-		$bike_make = 'Giant';
-		$bike_model = 'Trance';
-
 		$wpdb->insert(
-			BIKES_TABLE,
+			$specs_table,
 			array(
-				'last_update' => current_time('mysql'),
-				'bike_image_id' => $bike2_image_id,
-				'bike_name' => $bike_name,
-				'bike_desc' => $bike_desc,
-				'bike_make' => $bike_make,
-				'bike_model' => $bike_model,
-				'purchase_date' => date('Y-m-d', strtotime('2020-10-04')),
-				'serial_number' => 'G7EF06693',
-				'bike_status_id' => $status_active,
+				'last_update' => $now,
+				'bike_id'     => $bike1_id,
+				'spec_name'   => 'Drivetrain',
+				'spec_desc'   => '1x12',
 			)
 		);
-		
-		$bike_name = 'Ye New Olde Townie';
-		$bike_desc = 'A 15-year-old Rockhopper to replace my 30-year-old Rockhopper';
-		$bike_make = 'Specialized';
-		$bike_model = 'Rockhopper';
-
 		$wpdb->insert(
-			BIKES_TABLE,
+			$specs_table,
 			array(
-				'last_update' => current_time('mysql'),
-				'bike_image_id' => $bike4_image_id,
-				'bike_name' => $bike_name,
-				'bike_desc' => $bike_desc,
-				'bike_make' => $bike_make,
-				'bike_model' => $bike_model,
-				'purchase_date' => date('Y-m-d', strtotime('2024-05-10')),
-				'serial_number' => 'P7HAS1007',
-				'bike_status_id' => $status_active,
+				'last_update' => $now,
+				'bike_id'     => $bike2_id,
+				'spec_name'   => 'Tire size',
+				'spec_desc'   => '700x35c',
 			)
 		);
-
-		$bike_name = 'Super Fly';
-		$bike_desc = 'My first full-suspension mountain bike.  I bent the frame in a crash and had to retire it.';
-		$bike_make = 'Trek';
-		$bike_model = 'Super Fly';
-
 		$wpdb->insert(
-			BIKES_TABLE,
+			$specs_table,
 			array(
-				'last_update' => current_time('mysql'),
-				//'bike_image_id' => $bike5_image_id,
-				'bike_name' => $bike_name,
-				'bike_desc' => $bike_desc,
-				'bike_make' => $bike_make,
-				'bike_model' => $bike_model,
-				'purchase_date' => date('Y-m-d', strtotime('2013-08-30')),
-				'serial_number' => 'WTU024G5132H',
-				'bike_status_id' => $status_retired,
-			)
-		);
-
-        // INSERT MAINTENANCE RECORDS - Ye Olde Townie	
-
-        $maintenance_desc = 'Completely Rebuilt Drivetrain from 3x7 to 1x10';
-		$bike_miles = 1000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2018-09-30')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced chain, brake cables and brake pads';
-		$bike_miles = 2000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-01-25')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Trued back wheel';
-		$bike_miles = 2000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-01-25')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced shifter cables and serviced bottom bracket';
-		$bike_miles = 3000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-03-17')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced bottom bracket and chain ring';
-		$bike_miles = 4000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-08-01')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced derailleur hanger and cassette';
-		$bike_miles = 4500;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-08-14')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced chain';
-		$bike_miles = 7602;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2022-10-26')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced shifter cable';
-		$bike_miles = 8011;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-12-13')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-		
-		$maintenance_desc = 'Replaced chain - SRAM 1071 10-speed';
-		$bike_miles = 8134;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-12-16')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Final ride - irrepairable crack in headset';
-		$bike_miles = 9192;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2025-02-08')),
-				'bike_id' => $yot_bike1_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		// INSERT MAINTENANCE RECORDS - Ironhorse
-		$maintenance_desc = 'Removed all old parts and cleaned frame';
-		$bike_miles = 0;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2024-04-09')),
-				'bike_id' => $ih_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		// INSERT MAINTENANCE RECORDS - In a Trance
-		$maintenance_desc = 'Replaced front wheel after being run over';
-		$bike_miles = 500;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2020-12-25')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced rear wheel';
-		$bike_miles = 700;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-04-24')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced brake pads and chain';
-		$bike_miles = 1000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2021-07-20')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced rear wheel (stripped freehub), brake pads and rotor';
-		$bike_miles = 1500;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2022-07-14')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced chain';
-		$bike_miles = 1500;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2022-12-19')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-		
-		$maintenance_desc = 'Replaced shifter cable housing';
-		$bike_miles = 3000;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-06-09')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced brake pads';
-		$bike_miles = 3992;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-10-21')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced chain - SRAM GX Eagle 12-speed';
-		$bike_miles = 5734;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2023-10-21')),
-				'bike_id' => $trance_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		// INSERT MAINTENANCE RECORDS - Ye New Olde Townie
-		$maintenance_desc = 'Replaced front and rear tires and chain';
-		$bike_miles = 1235;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2024-10-26')),
-				'bike_id' => $ynot_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		$maintenance_desc = 'Replaced broken spoke on rear wheel and trued wheel';
-		$bike_miles = 2538;
-
-		$wpdb->insert(
-			MAINTENANCE_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'maintenance_date' => date('Y-m-d', strtotime('2024-10-26')),
-				'bike_id' => $ynot_bike_id,
-				'maintenance_desc' => $maintenance_desc,
-				'bike_miles' => $bike_miles,
-			)
-		);
-
-		 // INSERT SPECS RECORDS - Ye Olde Townie
-		 $bike_id = 1;
-
-		 $specs_name = 'Wheel size';
-		 $specs_desc = '26 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Frame size';
-		 $specs_desc = '21 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Brake type';
-		 $specs_desc = 'rim brakes';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Bottom Bracket Type';
-		 $specs_desc = 'Thread Between';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Bottom Bracket Shell Width';
-		 $specs_desc = '73mm';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 // INSERT SPECS RECORDS - Ironhorse
-		 $bike_id = 2;
-		 $specs_name = 'Frame size';
-		 $specs_desc = '21.5 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Bottom Bracket Type';
-		 $specs_desc = 'Thread Between';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Bottom Bracket Shell Width';
-		 $specs_desc = '68mm';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 // INSERT SPECS RECORDS - In a Trance
-		 $bike_id = 3;
-
-		 $specs_name = 'Frame size';
-		 $specs_desc = 'Large';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Wheel size';
-		 $specs_desc = '29 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Brake type';
-		 $specs_desc = 'disc brakes';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $specs_name = 'Brake pads';
-		 $specs_desc = 'Shimano BP-M05-RX';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
- 		 // INSERT SPECS RECORDS - Ye New Olde Townie
-		 $bike_id = 4;
-
-		 $specs_name = 'Wheel size';
-		 $specs_desc = '26 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		 $bike_id = 4;
-		 $specs_name = 'Frame size';
-		 $specs_desc = '19.5 inch';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-		 $bike_id = 4;
-		 $specs_name = 'Brake type';
-		 $specs_desc = 'rim brakes';
- 
-		 $wpdb->insert(
-			 SPECS_TABLE,
-			 array(
-				 'last_update' => current_time('mysql'),
-				 'bike_id' => $bike_id,
-				 'spec_name' => $specs_name,
-				 'spec_desc' => $specs_desc,
-			 )
-		 );
-
-		// INSERT SPECS RECORDS - Superfly
-		$specs_name = 'Wheel size';
-		$specs_desc = '29 inch';
-
-		$wpdb->insert(
-			SPECS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_id' => $sf_bike_id,
-				'spec_name' => $specs_name,
-				'spec_desc' => $specs_desc,
-			)
-		);
-
-		$specs_name = 'Frame Size';
-		$specs_desc = '19 inch - XL';
-
-		$wpdb->insert(
-			SPECS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_id' => $sf_bike_id,
-				'spec_name' => $specs_name,
-				'spec_desc' => $specs_desc,
-			)
-		);
-
-		$specs_name = 'Brake Type';
-		$specs_desc = 'Shimano - Disc';
-
-		$wpdb->insert(
-			SPECS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_id' => $sf_bike_id,
-				'spec_name' => $specs_name,
-				'spec_desc' => $specs_desc,
-			)
-		);
-
-		// INSERT STATUS RECORDS
-		$wpdb->insert(
-			STATUS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_status' => 'ACTIVE',
-			)
-		);
-
-		$wpdb->insert(
-			STATUS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_status' => 'RETIRED',
-			)
-		);
-
-		
-		$wpdb->insert(
-			STATUS_TABLE,
-			array(
-				'last_update' => current_time('mysql'),
-				'bike_status' => 'BUILDING',
+				'last_update' => $now,
+				'bike_id'     => $bike3_id,
+				'spec_name'   => 'Frame material',
+				'spec_desc'   => 'Steel',
 			)
 		);
 	}
-	
-
 }
