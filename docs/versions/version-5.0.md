@@ -5,7 +5,7 @@
 
 ## Summary
 
-Major release focused on WordPress lifecycle hardening: prefixed table names, gated/simplified demo data, non-destructive deactivation, fuller uninstall, asset enqueue cleanup, and shortcode escaping—without expanding incomplete admin CRUD.
+Major release for lifecycle hardening plus the start of admin CRUD: Manage Bikes (list/add/edit/delete with cascade), while specs/maintenance/status CRUD remain phased for later.
 
 ## Changes
 
@@ -21,6 +21,15 @@ Major release focused on WordPress lifecycle hardening: prefixed table names, ga
     - Shortcode output escaped; plugin version set to 5.0.0
   - Why: Safer install/activate/deactivate/uninstall behavior and a portable demo dataset while admin CRUD is still incomplete
 
+- **bikes-crud** (`version5.0-feature-bikes-crud`): Phase 1 admin CRUD for bikes
+  - What changed:
+    - Manage Bikes list / add / edit / delete with nonce, capabilities, and sanitized fields
+    - Delete confirms first, then removes related specs and maintenance for that bike
+    - Media library image select/clear; status dropdown from statuses table
+    - Phase 2 prep links on bike edit (specs/maintenance for `bike_id`)
+    - My Bikes card hub look unchanged; manage page uses standard WP admin UI
+  - Why: Maintain the bike fleet in admin without relying only on demo seed data
+
 ### Bugfixes
 
 _(none as a separate change)_
@@ -33,3 +42,4 @@ _(none as a separate change)_
 - Prefer uninstall → install → activate for a clean schema/demo seed
 - Demo default on; disable with `define( 'BIKEPRESS_LOAD_DEMO', false );` in `wp-config.php`
 - Custom-prefix sites that still have old hardcoded `wp_*` tables should reinstall rather than expect auto-migration
+- Test bikes CRUD: My Bikes → Manage Bikes → add/edit/delete (confirm cascade)

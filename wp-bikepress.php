@@ -40,7 +40,8 @@ define( 'STATUS_TABLE', bikepress_status_table() );
 
 add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
 add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
-add_action( 'admin_post_bike_admin_form_submit', 'handle_bike_admin_form_submission' );
+add_action( 'admin_post_bikepress_save_bike', 'bikepress_handle_save_bike' );
+add_action( 'admin_post_bikepress_delete_bike', 'bikepress_handle_delete_bike' );
 
 /**
  * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
@@ -99,10 +100,26 @@ function bike_maintenance_setup_menu() {
 }
 
 /**
- * Stub form handler (admin CRUD still incomplete).
+ * Redirect helper for Manage Bikes with a notice query arg.
+ *
+ * @param string $notice Notice slug.
+ * @param array  $extra  Extra query args.
  */
-function handle_bike_admin_form_submission() {
-	if ( ! isset( $_POST['bike_admin_form_nonce_field'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bike_admin_form_nonce_field'] ) ), 'bike_admin_form_nonce_action' ) ) {
+function bikepress_redirect_bikes_admin( $notice = '', $extra = array() ) {
+	$args = array( 'page' => 'bikes-admin' );
+	if ( $notice ) {
+		$args['bikepress_notice'] = $notice;
+	}
+	$args = array_merge( $args, $extra );
+	wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+	exit;
+}
+
+/**
+ * Save (insert/update) a bike.
+ */
+function bikepress_handle_save_bike() {
+	if ( ! isset( $_POST['bikepress_bike_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_bike_nonce'] ) ), 'bikepress_save_bike' ) ) {
 		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
 	}
 
@@ -110,15 +127,94 @@ function handle_bike_admin_form_submission() {
 		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
 	}
 
-	$bike_name = isset( $_POST['bike_name'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_name'] ) ) : '';
-	$bike_make = isset( $_POST['bike_make'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_make'] ) ) : '';
+	global $wpdb;
 
-	update_option( 'bike_name', $bike_name );
-	update_option( 'bike_make', $bike_make );
+	$bike_id         = isset( $_POST['bike_id'] ) ? absint( $_POST['bike_id'] ) : 0;
+	$bike_name       = isset( $_POST['bike_name'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_name'] ) ) : '';
+	$bike_make       = isset( $_POST['bike_make'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_make'] ) ) : '';
+	$bike_model      = isset( $_POST['bike_model'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_model'] ) ) : '';
+	$serial_number   = isset( $_POST['serial_number'] ) ? sanitize_text_field( wp_unslash( $_POST['serial_number'] ) ) : '';
+	$bike_status_id  = isset( $_POST['bike_status_id'] ) ? absint( $_POST['bike_status_id'] ) : 0;
+	$bike_desc       = isset( $_POST['bike_desc'] ) ? sanitize_textarea_field( wp_unslash( $_POST['bike_desc'] ) ) : '';
+	$bike_image_id   = isset( $_POST['bike_image_id'] ) ? absint( $_POST['bike_image_id'] ) : 0;
+	$purchase_raw    = isset( $_POST['purchase_date'] ) ? sanitize_text_field( wp_unslash( $_POST['purchase_date'] ) ) : '';
 
-	$redirect_url = admin_url( 'admin.php?page=bikes-admin&status=success' );
-	wp_redirect( esc_url_raw( $redirect_url ) );
-	exit;
+	if ( '' === $bike_name ) {
+		bikepress_redirect_bikes_admin( 'bike_name_required', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+
+	if ( $bike_status_id <= 0 ) {
+		bikepress_redirect_bikes_admin( 'bike_status_required', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+
+	$purchase_date = '0000-00-00 00:00:00';
+	if ( $purchase_raw && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $purchase_raw ) ) {
+		$purchase_date = $purchase_raw . ' 00:00:00';
+	}
+
+	$row = array(
+		'last_update'    => current_time( 'mysql' ),
+		'bike_name'      => $bike_name,
+		'bike_make'      => $bike_make,
+		'bike_model'     => $bike_model,
+		'serial_number'  => $serial_number,
+		'bike_status_id' => $bike_status_id,
+		'bike_desc'      => $bike_desc,
+		'bike_image_id'  => $bike_image_id,
+		'purchase_date'  => $purchase_date,
+	);
+
+	$formats = array( '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s' );
+
+	if ( $bike_id > 0 ) {
+		$updated = $wpdb->update(
+			BIKES_TABLE,
+			$row,
+			array( 'id' => $bike_id ),
+			$formats,
+			array( '%d' )
+		);
+		if ( false === $updated ) {
+			bikepress_redirect_bikes_admin( 'bike_save_error', array( 'action' => 'edit', 'bike_id' => $bike_id ) );
+		}
+		bikepress_redirect_bikes_admin( 'bike_updated' );
+	}
+
+	$inserted = $wpdb->insert( BIKES_TABLE, $row, $formats );
+	if ( false === $inserted ) {
+		bikepress_redirect_bikes_admin( 'bike_save_error', array( 'action' => 'new' ) );
+	}
+	bikepress_redirect_bikes_admin( 'bike_created' );
+}
+
+/**
+ * Delete a bike and its related specs and maintenance rows.
+ */
+function bikepress_handle_delete_bike() {
+	if ( ! isset( $_POST['bikepress_delete_bike_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_bike_nonce'] ) ), 'bikepress_delete_bike' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$bike_id = isset( $_POST['bike_id'] ) ? absint( $_POST['bike_id'] ) : 0;
+	if ( $bike_id <= 0 ) {
+		bikepress_redirect_bikes_admin( 'bike_delete_error' );
+	}
+
+	$wpdb->delete( SPECS_TABLE, array( 'bike_id' => $bike_id ), array( '%d' ) );
+	$wpdb->delete( MAINTENANCE_TABLE, array( 'bike_id' => $bike_id ), array( '%d' ) );
+	$deleted = $wpdb->delete( BIKES_TABLE, array( 'id' => $bike_id ), array( '%d' ) );
+
+	if ( false === $deleted || 0 === $deleted ) {
+		bikepress_redirect_bikes_admin( 'bike_delete_error' );
+	}
+
+	bikepress_redirect_bikes_admin( 'bike_deleted' );
 }
 
 /**
@@ -129,7 +225,7 @@ function my_bikes() {
 }
 
 /**
- * Admin: manage bikes (incomplete CRUD).
+ * Admin: manage bikes CRUD.
  */
 function bikes_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/bikes-admin-page.php';

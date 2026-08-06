@@ -1,38 +1,37 @@
-jQuery(document).ready(function($) {
-    var frame;
+jQuery(document).ready(function ($) {
+	var frame;
+	var $imageId = $('#bike-image-id');
+	var $image = $('#bike-image');
+	var defaultSrc = $('#bikepress-default-image').data('default-src') || '';
 
-    $('#select_image_button').on('click', function(e) {
-        e.preventDefault();
+	$('#select_image_button').on('click', function (e) {
+		e.preventDefault();
 
-        // If the media frame already exists, reopen it.
-        if (frame) {
-            frame.open();
-            return;
-        }
+		if (frame) {
+			frame.open();
+			return;
+		}
 
-        // Create a new media frame
-        frame = wp.media({
-            title: 'Select or Upload Media File',
-            button: {
-                text: 'Use this media'
-            },
-            multiple: false // Set to true for multiple file selection
-        });
+		frame = wp.media({
+			title: 'Select or Upload Bike Image',
+			button: { text: 'Use this image' },
+			multiple: false
+		});
 
-        // When an image is selected, run a callback
-        frame.on('select', function() {
-            console.log('Chose Image');
-            // Get media attachment details from the selection
-            var attachment = frame.state().get('selection').first().toJSON();
-            console.log('Image ID ' +attachment.id );
+		frame.on('select', function () {
+			var attachment = frame.state().get('selection').first().toJSON();
+			$imageId.val(attachment.id);
+			$image.attr('src', attachment.url);
+		});
 
-            // Do something with the attachment data (e.g., display a preview, save the ID)
-            $('#bike-image-id').val(attachment.id);
-            console.log('Changing IMAGE URL TO ' + attachment.url);
-            $('#bike-image').attr('src', attachment.url);
-        });
+		frame.open();
+	});
 
-        // Open the media frame
-        frame.open();
-    });
+	$('#clear_image_button').on('click', function (e) {
+		e.preventDefault();
+		$imageId.val('0');
+		if (defaultSrc) {
+			$image.attr('src', defaultSrc);
+		}
+	});
 });
