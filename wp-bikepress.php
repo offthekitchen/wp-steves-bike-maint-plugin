@@ -40,12 +40,15 @@ define( 'STATUS_TABLE', bikepress_status_table() );
 
 add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
 add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
+add_action( 'admin_head', 'bikepress_hide_hub_only_submenu_items' );
 add_action( 'admin_post_bikepress_save_bike', 'bikepress_handle_save_bike' );
 add_action( 'admin_post_bikepress_delete_bike', 'bikepress_handle_delete_bike' );
 add_action( 'admin_post_bikepress_save_spec', 'bikepress_handle_save_spec' );
 add_action( 'admin_post_bikepress_delete_spec', 'bikepress_handle_delete_spec' );
 add_action( 'admin_post_bikepress_save_maintenance', 'bikepress_handle_save_maintenance' );
 add_action( 'admin_post_bikepress_delete_maintenance', 'bikepress_handle_delete_maintenance' );
+add_action( 'admin_post_bikepress_save_status', 'bikepress_handle_save_status' );
+add_action( 'admin_post_bikepress_delete_status', 'bikepress_handle_delete_status' );
 
 /**
  * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
@@ -83,6 +86,13 @@ function bikepress_enqueue_admin_assets( $hook ) {
 }
 
 /**
+ * Keep hub-only pages registered for access, but hide them from the left submenu.
+ */
+function bikepress_hide_hub_only_submenu_items() {
+	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
+}
+
+/**
  * Establish the Bike Admin menu.
  */
 function bike_maintenance_setup_menu() {
@@ -100,7 +110,13 @@ function bike_maintenance_setup_menu() {
 	add_submenu_page( 'my-bikes', __( 'Manage Bikes', 'bikepress' ), __( 'Manage Bikes', 'bikepress' ), 'manage_options', 'bikes-admin', 'bikes_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Specs', 'bikepress' ), __( 'Manage Specs', 'bikepress' ), 'manage_options', 'specs-admin', 'specs_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Maintenance Records', 'bikepress' ), __( 'Manage Maintenance Records', 'bikepress' ), 'manage_options', 'maint-admin', 'maint_admin' );
-	add_submenu_page( 'my-bikes', __( 'Manage Data', 'bikepress' ), __( 'Manage Data', 'bikepress' ), 'manage_options', 'data-admin', 'data_admin' );
+	add_submenu_page( 'my-bikes', __( 'Manage Supporting Data', 'bikepress' ), __( 'Manage Supporting Data', 'bikepress' ), 'manage_options', 'supporting-data-admin', 'supporting_data_admin' );
+
+	// Hub-only pages: keep registered under My Bikes for capability checks, hide via CSS.
+	add_submenu_page( 'my-bikes', __( 'Manage Statuses', 'bikepress' ), __( 'Manage Statuses', 'bikepress' ), 'manage_options', 'status-admin', 'status_admin' );
+
+	// Legacy slug redirect (hidden via CSS).
+	add_submenu_page( 'my-bikes', __( 'Manage Data', 'bikepress' ), __( 'Manage Data', 'bikepress' ), 'manage_options', 'data-admin', 'bikepress_legacy_data_admin_redirect' );
 }
 
 /**
@@ -428,6 +444,148 @@ function bikepress_handle_delete_maintenance() {
 }
 
 /**
+ * Get the Unknown status ID, creating the row if it does not exist.
+ *
+ * @return int Status ID, or 0 on failure.
+ */
+function bikepress_get_or_create_unknown_status_id() {
+	global $wpdb;
+
+	$existing = $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT id FROM ' . STATUS_TABLE . ' WHERE bike_status = %s LIMIT 1',
+			'Unknown'
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	if ( $existing ) {
+		return absint( $existing );
+	}
+
+	$inserted = $wpdb->insert(
+		STATUS_TABLE,
+		array(
+			'last_update' => current_time( 'mysql' ),
+			'bike_status' => 'Unknown',
+		),
+		array( '%s', '%s' )
+	);
+
+	if ( false === $inserted ) {
+		return 0;
+	}
+
+	return absint( $wpdb->insert_id );
+}
+
+/**
+ * Whether a status row is the Unknown status.
+ *
+ * @param int $status_id Status ID.
+ * @return bool
+ */
+function bikepress_is_unknown_status( $status_id ) {
+	global $wpdb;
+
+	$status_id = absint( $status_id );
+	if ( $status_id <= 0 ) {
+		return false;
+	}
+
+	$name = $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT bike_status FROM ' . STATUS_TABLE . ' WHERE id = %d',
+			$status_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	return 'Unknown' === $name;
+}
+
+/**
+ * Save (insert/update) a status.
+ */
+function bikepress_handle_save_status() {
+	if ( ! isset( $_POST['bikepress_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_status_nonce'] ) ), 'bikepress_save_status' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$status_id   = isset( $_POST['status_id'] ) ? absint( $_POST['status_id'] ) : 0;
+	$bike_status = isset( $_POST['bike_status'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_status'] ) ) : '';
+
+	if ( '' === $bike_status ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_name_required', array( 'action' => $status_id ? 'edit' : 'new', 'status_id' => $status_id ) );
+	}
+
+	$row = array(
+		'last_update' => current_time( 'mysql' ),
+		'bike_status' => $bike_status,
+	);
+	$formats = array( '%s', '%s' );
+
+	if ( $status_id > 0 ) {
+		$updated = $wpdb->update( STATUS_TABLE, $row, array( 'id' => $status_id ), $formats, array( '%d' ) );
+		if ( false === $updated ) {
+			bikepress_redirect_admin_page( 'status-admin', 'status_save_error', array( 'action' => 'edit', 'status_id' => $status_id ) );
+		}
+		bikepress_redirect_admin_page( 'status-admin', 'status_updated' );
+	}
+
+	$inserted = $wpdb->insert( STATUS_TABLE, $row, $formats );
+	if ( false === $inserted ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_save_error', array( 'action' => 'new' ) );
+	}
+	bikepress_redirect_admin_page( 'status-admin', 'status_created' );
+}
+
+/**
+ * Delete a status, reassigning bikes to Unknown.
+ */
+function bikepress_handle_delete_status() {
+	if ( ! isset( $_POST['bikepress_delete_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_status_nonce'] ) ), 'bikepress_delete_status' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$status_id = isset( $_POST['status_id'] ) ? absint( $_POST['status_id'] ) : 0;
+	if ( $status_id <= 0 ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
+	}
+
+	if ( bikepress_is_unknown_status( $status_id ) ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_unknown_protected' );
+	}
+
+	$unknown_id = bikepress_get_or_create_unknown_status_id();
+	if ( $unknown_id <= 0 ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
+	}
+
+	$wpdb->update(
+		BIKES_TABLE,
+		array( 'bike_status_id' => $unknown_id ),
+		array( 'bike_status_id' => $status_id ),
+		array( '%d' ),
+		array( '%d' )
+	);
+
+	$deleted = $wpdb->delete( STATUS_TABLE, array( 'id' => $status_id ), array( '%d' ) );
+	if ( false === $deleted || 0 === $deleted ) {
+		bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
+	}
+	bikepress_redirect_admin_page( 'status-admin', 'status_deleted' );
+}
+
+/**
  * Admin: My Bikes hub.
  */
 function my_bikes() {
@@ -442,24 +600,39 @@ function bikes_admin() {
 }
 
 /**
- * Admin: specs list.
+ * Admin: specs CRUD.
  */
 function specs_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/specs-admin-page.php';
 }
 
 /**
- * Admin: maintenance list.
+ * Admin: maintenance CRUD.
  */
 function maint_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/maint-admin-page.php';
 }
 
 /**
- * Admin: status / data list.
+ * Admin: Supporting Data hub.
  */
-function data_admin() {
-	include plugin_dir_path( __FILE__ ) . 'admin/partials/data-admin-page.php';
+function supporting_data_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/supporting-data-admin-page.php';
+}
+
+/**
+ * Admin: statuses CRUD (hub-only; not shown in left submenu).
+ */
+function status_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/status-admin-page.php';
+}
+
+/**
+ * Redirect legacy Manage Data slug to Supporting Data hub.
+ */
+function bikepress_legacy_data_admin_redirect() {
+	wp_safe_redirect( admin_url( 'admin.php?page=supporting-data-admin' ) );
+	exit;
 }
 
 /**

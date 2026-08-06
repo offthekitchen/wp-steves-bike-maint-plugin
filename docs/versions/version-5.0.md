@@ -5,7 +5,7 @@
 
 ## Summary
 
-Major release for lifecycle hardening plus admin CRUD Phases 1–2: Manage Bikes, Manage Specs, and Manage Maintenance. Status CRUD remains Phase 3.
+Major release for lifecycle hardening plus admin CRUD Phases 1–3: Manage Bikes, Manage Specs, Manage Maintenance, and Supporting Data (statuses).
 
 ## Changes
 
@@ -40,6 +40,14 @@ Major release for lifecycle hardening plus admin CRUD Phases 1–2: Manage Bikes
     - My Bikes card hub look unchanged
   - Why: Maintain specs and service history in admin alongside bikes
 
+- **supporting-data-statuses** (`version5.0-feature-supporting-data-statuses`): Phase 3 Supporting Data hub + statuses CRUD
+  - What changed:
+    - Renamed Manage Data → Manage Supporting Data (`supporting-data-admin`); legacy `data-admin` redirects
+    - Supporting Data hub matches My Bikes card style/layout; Statuses card uses copied `admin-icon-status.png`
+    - Manage Statuses CRUD (list/add/edit/delete) reachable from the hub only (hidden from left submenu)
+    - Delete status confirms, reassigns bikes to Unknown (creates Unknown if missing); Unknown cannot be deleted
+  - Why: Maintain status labels safely without cluttering the WP submenu, with a hub ready for future supporting data
+
 ### Bugfixes
 
 _(none as a separate change)_
@@ -54,3 +62,4 @@ _(none as a separate change)_
 - Custom-prefix sites that still have old hardcoded `wp_*` tables should reinstall rather than expect auto-migration
 - Test bikes CRUD: My Bikes → Manage Bikes → add/edit/delete (confirm cascade)
 - Test specs/maint CRUD: filter by bike, add/edit/delete; use bike-edit prep links; click bike name → bike edit
+- Test supporting data: My Bikes → Supporting Data hub → Statuses; delete reassigns to Unknown; no Statuses item in left menu
