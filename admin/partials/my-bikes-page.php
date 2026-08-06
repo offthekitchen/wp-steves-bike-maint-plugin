@@ -71,7 +71,7 @@
                 class="admin-icon">
             </div>
             <div class="card__img"></div>
-            <a href="admin.php?page=data-admin" class="card_link">
+            <a href="admin.php?page=supporting-data-admin" class="card_link">
               <div class="card__img--hover"></div>
             </a>
             <div class="card__info">
