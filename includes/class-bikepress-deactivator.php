@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Fired during plugin deactivation
+ * Fired during plugin deactivation.
  *
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
@@ -11,9 +10,7 @@
  */
 
 /**
- * Fired during plugin deactivation.
- *
- * This class defines all code necessary to run during the plugin's deactivation.
+ * Deactivation is non-destructive: tables, demo data, and DB version remain.
  *
  * @since      1.0.0
  * @package    BikePress
@@ -23,20 +20,12 @@
 class BikePress_Deactivator {
 
 	/**
-	 * Short Description. (use period)
+	 * Run on plugin deactivation.
 	 *
-	 * Long Description.
-	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public static function deactivate() {
-
-		delete_option( 'bikepress_db_version' );
-		delete_option( 'steves_bike_plugin_db_version' );
-
-		//Remove shortcodes
-		remove_shortcode( 'bikepress-bike-list' );
-
+		// Intentionally empty: deactivation must not delete data or options.
+		// Schema version and tables are removed only on uninstall.
 	}
-
 }
