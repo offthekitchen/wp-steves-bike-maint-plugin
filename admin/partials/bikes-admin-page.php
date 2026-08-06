@@ -127,7 +127,7 @@ if ( $form_image_id > 0 ) {
 
 		<?php if ( empty( $statuses ) ) : ?>
 			<div class="notice notice-error">
-				<p><?php esc_html_e( 'No statuses found. Activate the plugin with demo data enabled, or add statuses before creating bikes.', 'bikepress' ); ?></p>
+				<p><?php esc_html_e( 'No statuses found. Add statuses under Manage Supporting Data, or activate with demo data enabled.', 'bikepress' ); ?></p>
 			</div>
 		<?php endif; ?>
 

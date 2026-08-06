@@ -1,0 +1,42 @@
+<?php
+/**
+ * Supporting Data hub — card entry points for statuses (and future entities).
+ *
+ * @package BikePress
+ */
+
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+if ( ! current_user_can( 'manage_options' ) ) {
+	wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+}
+?>
+<div class="main-container">
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-header.php'; ?>
+	<h1><?php esc_html_e( 'MANAGE SUPPORTING DATA', 'bikepress' ); ?></h1>
+	<main class="main-content">
+		<section id="supporting-data-tools" class="bike-admin-tools">
+			<div class="cards bike-admin-cards">
+
+				<article class="card manage-status-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'img/admin-icon-status.png' ); ?>" alt="<?php esc_attr_e( 'status icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=status-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'Statuses', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Statuses', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Add and maintain bike status labels', 'bikepress' ); ?></span>
+					</div>
+				</article>
+
+			</div>
+		</section>
+	</main>
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
+</div>
