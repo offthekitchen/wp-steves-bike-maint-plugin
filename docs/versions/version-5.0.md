@@ -1,11 +1,13 @@
 # Version 5.0
 
-**Status:** In progress  
+**Status:** Superseded by 1.0.0 (historical)  
 **Base:** main (after BikePress 4.0 rename)
 
 ## Summary
 
 Major release for lifecycle hardening plus admin CRUD Phases 1–3: Manage Bikes, Manage Specs, Manage Maintenance, and Supporting Data (statuses).
+
+After this line was merged to `main`, the product was **renumbered to 1.0.0** as the first fully functional iteration. Keep this file for history; current packaging and plugin version use `docs/versions/version-1.0.md`.
 
 ## Changes
 
@@ -54,7 +56,7 @@ _(none as a separate change)_
 
 ## Install / test notes
 
-- Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v5.0.zip`
+- Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v5.0.zip` (historical; current zip is `wp-bikepress-v1.0.zip`)
 - Unpacks to folder: `wp-bikepress/`
 - Zip is built with file entries only (no directory-only entries) so WordPress unpack on Windows succeeds
 - Prefer uninstall → install → activate for a clean schema/demo seed

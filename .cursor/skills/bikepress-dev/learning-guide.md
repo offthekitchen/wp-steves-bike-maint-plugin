@@ -21,7 +21,7 @@ WordPress plugins touch a live site: database tables, admin screens, and front-e
 1. **What** you want (Analysis)
 2. **How** you’ll build it (Design/Plan)
 3. **Where** the work lives in git (Create Branch)
-4. **Doing** the work and proving it (Implement → zip → commit/PR)
+4. **Doing** the work and proving it (Implement → review zip → docs → zip rebuild → commit/PR)
 
 Hard stops keep Cursor from racing ahead so you can learn each decision.
 
@@ -80,12 +80,12 @@ Branch idea:
 
 ```
 main
- └── version4.3                              ← version line for a release
-      ├── version4.3-feature-bike-search     ← one change
-      └── version4.3-bugfix-status-filter   ← another change
+ └── version1.0                              ← version line for a release
+      ├── version1.0-feature-bike-search     ← one change
+      └── version1.0-bugfix-status-filter   ← another change
 ```
 
-**Git limitation:** You cannot name a feature branch `version4.3/feature-…` while `version4.3` also exists as a branch. Use a hyphen: `version4.3-feature-…`.
+**Git limitation:** You cannot name a feature branch `version1.0/feature-…` while `version1.0` also exists as a branch. Use a hyphen: `version1.0-feature-…`.
 
 **In progress version:** If a version branch still has unmerged work, new work either joins that version or waits for a new major/minor line. That choice is yours; the agent must ask.
 
@@ -98,16 +98,18 @@ Exact semver purity matters less right now than **you choosing intentionally**.
 
 ### Implement
 
-**Goal:** Change only what the plan approved, then prove it with a zip install.
+**Goal:** Change only what the plan approved, then prove it with a zip install **before** you approve the code.
 
 Flow of control stays with you:
 
 1. Approve starting work on the branch
-2. Review/test code (no commit yet)
-3. Approve docs + zip
+2. Review/test code using the **review zip** from Implement (no commit yet)
+3. Approve docs + **rebuilt** zip (includes latest version docs)
 4. Approve commit, push, and PR
 
-**Why zip before commit?** You install the same artifact you would put on a site. Finding “works in the editor folder but not as an uploaded plugin” issues early saves pain.
+**Why zip during Implement?** You can install and click through on the sandbox before approving the code, instead of waiting for the docs step.
+
+**Why rebuild the zip after docs?** The final artifact should match what you document for that version line.
 
 **Why PR even if you merge outside GitHub?** The PR records intent, diff, and test notes. Later you can merge in GitHub or Cursor with the same history.
 
@@ -115,7 +117,7 @@ Flow of control stays with you:
 
 Each version line gets a markdown file under `docs/versions/`, for example:
 
-`docs/versions/version-4.3.md`
+`docs/versions/version-1.0.md`
 
 That file is the human changelog for the release line: features and bugfixes in plain language. Update it when code is approved, before the final commit.
 

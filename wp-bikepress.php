@@ -10,7 +10,7 @@
  * Plugin Name:       BikePress
  * Plugin URI:        http://www.offthekitchen.com
  * Description:       Track bicycles, specifications, and maintenance records.
- * Version:           5.0.0
+ * Version:           1.0.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'BIKEPRESS_VERSION', '5.0.0' );
+define( 'BIKEPRESS_VERSION', '1.0.0' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-tables.php';
 
