@@ -1,11 +1,11 @@
 # Version 1.1
 
-**Status:** In progress  
+**Status:** Current  
 **Base:** main (BikePress 1.0.0)
 
 ## Summary
 
-Minor release adding JSON import/export of all BikePress data from the Supporting Data hub, so data can be backed up and restored across reinstalls. Plugin display version remains **1.0.0** until this line is cut as a release.
+Minor release **1.1.0** adding JSON import/export of all BikePress data from the Supporting Data hub, so data can be backed up and restored across reinstalls.
 
 ## Changes
 
@@ -19,6 +19,10 @@ Minor release adding JSON import/export of all BikePress data from the Supportin
     - Import blocked when file `db_version` does not match the site
   - Why: Preserve fleet data across uninstall/reinstall and provide a portable backup format for future schema-aware tooling
 
+- **release-1.1.0** (`version1.1-feature-release-1.1.0`): Cut plugin version 1.1.0
+  - What changed: Plugin header and `BIKEPRESS_VERSION` set to `1.1.0`
+  - Why: Ship the 1.1 line as a named WordPress plugin release
+
 ### Bugfixes
 
 _(none as a separate change)_
@@ -27,6 +31,6 @@ _(none as a separate change)_
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.1.zip`
 - Unpacks to folder: `wp-bikepress/`
-- Plugins screen still shows **1.0.0** until the 1.1 release is cut
+- Plugins screen should show **Version 1.1.0**
 - Test: Supporting Data → Import/Export → export, re-import, mismatch db_version blocked
 - Hub-only: Import/Export not listed in the left submenu

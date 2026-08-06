@@ -70,7 +70,7 @@ class BikePress {
 		if ( defined( 'BIKEPRESS_VERSION' ) ) {
 			$this->version = BIKEPRESS_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->version = '1.1.0';
 		}
 		$this->plugin_name = 'bikepress';
 
