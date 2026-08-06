@@ -1,11 +1,11 @@
 # Version 1.0
 
-**Status:** Current  
+**Status:** Superseded by 1.1.0  
 **Base:** main (after merging the former version 5.0 line)
 
 ## Summary
 
-First fully functional BikePress product release, labeled **1.0.0** for WordPress and packaging. Functionally this is the completed 5.0 line (lifecycle hardening + admin CRUD Phases 1–3), renumbered so the Plugins screen and zip reflect a clean v1 starting point.
+First fully functional BikePress product release, labeled **1.0.0** for WordPress and packaging. Functionally this is the completed 5.0 line (lifecycle hardening + admin CRUD Phases 1–3), renumbered so the Plugins screen and zip reflect a clean v1 starting point. Succeeded by **1.1.0** (import/export).
 
 ## Changes
 
