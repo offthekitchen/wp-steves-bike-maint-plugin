@@ -5,7 +5,7 @@
 
 ## Summary
 
-Major release for lifecycle hardening plus the start of admin CRUD: Manage Bikes (list/add/edit/delete with cascade), while specs/maintenance/status CRUD remain phased for later.
+Major release for lifecycle hardening plus admin CRUD Phases 1–2: Manage Bikes, Manage Specs, and Manage Maintenance. Status CRUD remains Phase 3.
 
 ## Changes
 
@@ -30,6 +30,16 @@ Major release for lifecycle hardening plus the start of admin CRUD: Manage Bikes
     - My Bikes card hub look unchanged; manage page uses standard WP admin UI
   - Why: Maintain the bike fleet in admin without relying only on demo seed data
 
+- **specs-maint-crud** (`version5.0-feature-specs-maint-crud`): Phase 2 admin CRUD for specs and maintenance
+  - What changed:
+    - Manage Specs and Manage Maintenance: list / add / edit / delete with nonces and capability checks
+    - List all rows with bike name column; bike dropdown filter; honor `?bike_id=` from bike edit links
+    - Spec fields: bike, name, description; maintenance fields: bike, date, description, miles
+    - Delete confirms a single row only
+    - Bike name in each list links to Manage Bikes edit for that bike
+    - My Bikes card hub look unchanged
+  - Why: Maintain specs and service history in admin alongside bikes
+
 ### Bugfixes
 
 _(none as a separate change)_
@@ -43,3 +53,4 @@ _(none as a separate change)_
 - Demo default on; disable with `define( 'BIKEPRESS_LOAD_DEMO', false );` in `wp-config.php`
 - Custom-prefix sites that still have old hardcoded `wp_*` tables should reinstall rather than expect auto-migration
 - Test bikes CRUD: My Bikes → Manage Bikes → add/edit/delete (confirm cascade)
+- Test specs/maint CRUD: filter by bike, add/edit/delete; use bike-edit prep links; click bike name → bike edit

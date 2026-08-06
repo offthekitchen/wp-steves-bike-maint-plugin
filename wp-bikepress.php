@@ -42,6 +42,10 @@ add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
 add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
 add_action( 'admin_post_bikepress_save_bike', 'bikepress_handle_save_bike' );
 add_action( 'admin_post_bikepress_delete_bike', 'bikepress_handle_delete_bike' );
+add_action( 'admin_post_bikepress_save_spec', 'bikepress_handle_save_spec' );
+add_action( 'admin_post_bikepress_delete_spec', 'bikepress_handle_delete_spec' );
+add_action( 'admin_post_bikepress_save_maintenance', 'bikepress_handle_save_maintenance' );
+add_action( 'admin_post_bikepress_delete_maintenance', 'bikepress_handle_delete_maintenance' );
 
 /**
  * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
@@ -215,6 +219,212 @@ function bikepress_handle_delete_bike() {
 	}
 
 	bikepress_redirect_bikes_admin( 'bike_deleted' );
+}
+
+/**
+ * Redirect helper for a BikePress admin page.
+ *
+ * @param string $page   Admin page slug.
+ * @param string $notice Notice slug.
+ * @param array  $extra  Extra query args.
+ */
+function bikepress_redirect_admin_page( $page, $notice = '', $extra = array() ) {
+	$args = array( 'page' => $page );
+	if ( $notice ) {
+		$args['bikepress_notice'] = $notice;
+	}
+	$args = array_merge( $args, $extra );
+	wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+	exit;
+}
+
+/**
+ * Whether a bike ID exists.
+ *
+ * @param int $bike_id Bike ID.
+ * @return bool
+ */
+function bikepress_bike_exists( $bike_id ) {
+	global $wpdb;
+	$bike_id = absint( $bike_id );
+	if ( $bike_id <= 0 ) {
+		return false;
+	}
+	$found = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM ' . BIKES_TABLE . ' WHERE id = %d', $bike_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	return ! empty( $found );
+}
+
+/**
+ * Save (insert/update) a spec.
+ */
+function bikepress_handle_save_spec() {
+	if ( ! isset( $_POST['bikepress_spec_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_spec_nonce'] ) ), 'bikepress_save_spec' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$spec_id   = isset( $_POST['spec_id'] ) ? absint( $_POST['spec_id'] ) : 0;
+	$bike_id   = isset( $_POST['bike_id'] ) ? absint( $_POST['bike_id'] ) : 0;
+	$spec_name = isset( $_POST['spec_name'] ) ? sanitize_text_field( wp_unslash( $_POST['spec_name'] ) ) : '';
+	$spec_desc = isset( $_POST['spec_desc'] ) ? sanitize_text_field( wp_unslash( $_POST['spec_desc'] ) ) : '';
+	$filter_id = isset( $_POST['filter_bike_id'] ) ? absint( $_POST['filter_bike_id'] ) : 0;
+
+	$extra = array();
+	if ( $filter_id > 0 ) {
+		$extra['bike_id'] = $filter_id;
+	}
+
+	if ( ! bikepress_bike_exists( $bike_id ) ) {
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_bike_required', array_merge( $extra, array( 'action' => $spec_id ? 'edit' : 'new', 'spec_id' => $spec_id ) ) );
+	}
+	if ( '' === $spec_name ) {
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_name_required', array_merge( $extra, array( 'action' => $spec_id ? 'edit' : 'new', 'spec_id' => $spec_id, 'bike_id' => $bike_id ) ) );
+	}
+
+	$row = array(
+		'last_update' => current_time( 'mysql' ),
+		'bike_id'     => $bike_id,
+		'spec_name'   => $spec_name,
+		'spec_desc'   => $spec_desc,
+	);
+	$formats = array( '%s', '%d', '%s', '%s' );
+
+	if ( $spec_id > 0 ) {
+		$updated = $wpdb->update( SPECS_TABLE, $row, array( 'id' => $spec_id ), $formats, array( '%d' ) );
+		if ( false === $updated ) {
+			bikepress_redirect_admin_page( 'specs-admin', 'spec_save_error', array_merge( $extra, array( 'action' => 'edit', 'spec_id' => $spec_id ) ) );
+		}
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_updated', $extra );
+	}
+
+	$inserted = $wpdb->insert( SPECS_TABLE, $row, $formats );
+	if ( false === $inserted ) {
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_save_error', array_merge( $extra, array( 'action' => 'new' ) ) );
+	}
+	bikepress_redirect_admin_page( 'specs-admin', 'spec_created', $extra );
+}
+
+/**
+ * Delete a single spec row.
+ */
+function bikepress_handle_delete_spec() {
+	if ( ! isset( $_POST['bikepress_delete_spec_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_spec_nonce'] ) ), 'bikepress_delete_spec' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$spec_id   = isset( $_POST['spec_id'] ) ? absint( $_POST['spec_id'] ) : 0;
+	$filter_id = isset( $_POST['filter_bike_id'] ) ? absint( $_POST['filter_bike_id'] ) : 0;
+	$extra     = $filter_id > 0 ? array( 'bike_id' => $filter_id ) : array();
+
+	if ( $spec_id <= 0 ) {
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_delete_error', $extra );
+	}
+
+	$deleted = $wpdb->delete( SPECS_TABLE, array( 'id' => $spec_id ), array( '%d' ) );
+	if ( false === $deleted || 0 === $deleted ) {
+		bikepress_redirect_admin_page( 'specs-admin', 'spec_delete_error', $extra );
+	}
+	bikepress_redirect_admin_page( 'specs-admin', 'spec_deleted', $extra );
+}
+
+/**
+ * Save (insert/update) a maintenance record.
+ */
+function bikepress_handle_save_maintenance() {
+	if ( ! isset( $_POST['bikepress_maint_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_maint_nonce'] ) ), 'bikepress_save_maintenance' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$maint_id  = isset( $_POST['maint_id'] ) ? absint( $_POST['maint_id'] ) : 0;
+	$bike_id   = isset( $_POST['bike_id'] ) ? absint( $_POST['bike_id'] ) : 0;
+	$desc      = isset( $_POST['maintenance_desc'] ) ? sanitize_text_field( wp_unslash( $_POST['maintenance_desc'] ) ) : '';
+	$miles     = isset( $_POST['bike_miles'] ) ? absint( $_POST['bike_miles'] ) : 0;
+	$date_raw  = isset( $_POST['maintenance_date'] ) ? sanitize_text_field( wp_unslash( $_POST['maintenance_date'] ) ) : '';
+	$filter_id = isset( $_POST['filter_bike_id'] ) ? absint( $_POST['filter_bike_id'] ) : 0;
+
+	$extra = array();
+	if ( $filter_id > 0 ) {
+		$extra['bike_id'] = $filter_id;
+	}
+
+	if ( ! bikepress_bike_exists( $bike_id ) ) {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_bike_required', array_merge( $extra, array( 'action' => $maint_id ? 'edit' : 'new', 'maint_id' => $maint_id ) ) );
+	}
+	if ( '' === $desc ) {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_desc_required', array_merge( $extra, array( 'action' => $maint_id ? 'edit' : 'new', 'maint_id' => $maint_id, 'bike_id' => $bike_id ) ) );
+	}
+
+	$maintenance_date = '0000-00-00 00:00:00';
+	if ( $date_raw && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date_raw ) ) {
+		$maintenance_date = $date_raw . ' 00:00:00';
+	} else {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_date_required', array_merge( $extra, array( 'action' => $maint_id ? 'edit' : 'new', 'maint_id' => $maint_id, 'bike_id' => $bike_id ) ) );
+	}
+
+	$row = array(
+		'last_update'       => current_time( 'mysql' ),
+		'bike_id'           => $bike_id,
+		'maintenance_date'  => $maintenance_date,
+		'maintenance_desc'  => $desc,
+		'bike_miles'        => $miles,
+	);
+	$formats = array( '%s', '%d', '%s', '%s', '%d' );
+
+	if ( $maint_id > 0 ) {
+		$updated = $wpdb->update( MAINTENANCE_TABLE, $row, array( 'id' => $maint_id ), $formats, array( '%d' ) );
+		if ( false === $updated ) {
+			bikepress_redirect_admin_page( 'maint-admin', 'maint_save_error', array_merge( $extra, array( 'action' => 'edit', 'maint_id' => $maint_id ) ) );
+		}
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_updated', $extra );
+	}
+
+	$inserted = $wpdb->insert( MAINTENANCE_TABLE, $row, $formats );
+	if ( false === $inserted ) {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_save_error', array_merge( $extra, array( 'action' => 'new' ) ) );
+	}
+	bikepress_redirect_admin_page( 'maint-admin', 'maint_created', $extra );
+}
+
+/**
+ * Delete a single maintenance row.
+ */
+function bikepress_handle_delete_maintenance() {
+	if ( ! isset( $_POST['bikepress_delete_maint_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_maint_nonce'] ) ), 'bikepress_delete_maintenance' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$maint_id  = isset( $_POST['maint_id'] ) ? absint( $_POST['maint_id'] ) : 0;
+	$filter_id = isset( $_POST['filter_bike_id'] ) ? absint( $_POST['filter_bike_id'] ) : 0;
+	$extra     = $filter_id > 0 ? array( 'bike_id' => $filter_id ) : array();
+
+	if ( $maint_id <= 0 ) {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_delete_error', $extra );
+	}
+
+	$deleted = $wpdb->delete( MAINTENANCE_TABLE, array( 'id' => $maint_id ), array( '%d' ) );
+	if ( false === $deleted || 0 === $deleted ) {
+		bikepress_redirect_admin_page( 'maint-admin', 'maint_delete_error', $extra );
+	}
+	bikepress_redirect_admin_page( 'maint-admin', 'maint_deleted', $extra );
 }
 
 /**
