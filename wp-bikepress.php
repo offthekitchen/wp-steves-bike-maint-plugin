@@ -10,7 +10,7 @@
  * Plugin Name:       BikePress
  * Plugin URI:        http://www.offthekitchen.com
  * Description:       Track bicycles, specifications, and maintenance records.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
@@ -25,9 +25,10 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'BIKEPRESS_VERSION', '1.0.0' );
+define( 'BIKEPRESS_VERSION', '1.1.0' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-tables.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-import-export.php';
 
 /**
  * Legacy-style table constants for existing includes/partials.
@@ -49,6 +50,8 @@ add_action( 'admin_post_bikepress_save_maintenance', 'bikepress_handle_save_main
 add_action( 'admin_post_bikepress_delete_maintenance', 'bikepress_handle_delete_maintenance' );
 add_action( 'admin_post_bikepress_save_status', 'bikepress_handle_save_status' );
 add_action( 'admin_post_bikepress_delete_status', 'bikepress_handle_delete_status' );
+add_action( 'admin_post_bikepress_export_data', 'bikepress_handle_export_data' );
+add_action( 'admin_post_bikepress_import_data', 'bikepress_handle_import_data' );
 
 /**
  * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
@@ -89,7 +92,7 @@ function bikepress_enqueue_admin_assets( $hook ) {
  * Keep hub-only pages registered for access, but hide them from the left submenu.
  */
 function bikepress_hide_hub_only_submenu_items() {
-	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
+	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=import-export-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
 }
 
 /**
@@ -114,6 +117,7 @@ function bike_maintenance_setup_menu() {
 
 	// Hub-only pages: keep registered under My Bikes for capability checks, hide via CSS.
 	add_submenu_page( 'my-bikes', __( 'Manage Statuses', 'bikepress' ), __( 'Manage Statuses', 'bikepress' ), 'manage_options', 'status-admin', 'status_admin' );
+	add_submenu_page( 'my-bikes', __( 'Import / Export Data', 'bikepress' ), __( 'Import / Export Data', 'bikepress' ), 'manage_options', 'import-export-admin', 'import_export_admin' );
 
 	// Legacy slug redirect (hidden via CSS).
 	add_submenu_page( 'my-bikes', __( 'Manage Data', 'bikepress' ), __( 'Manage Data', 'bikepress' ), 'manage_options', 'data-admin', 'bikepress_legacy_data_admin_redirect' );
@@ -586,6 +590,91 @@ function bikepress_handle_delete_status() {
 }
 
 /**
+ * Download a JSON export of all BikePress data.
+ */
+function bikepress_handle_export_data() {
+	if ( ! isset( $_POST['bikepress_export_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_export_nonce'] ) ), 'bikepress_export_data' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	$doc  = BikePress_Import_Export::build_export_document();
+	$json = wp_json_encode( $doc, JSON_PRETTY_PRINT );
+	if ( false === $json ) {
+		wp_die( esc_html__( 'Could not build export file.', 'bikepress' ) );
+	}
+
+	$filename = 'bikepress-export-' . gmdate( 'Y-m-d-His' ) . '.json';
+
+	nocache_headers();
+	header( 'Content-Type: application/json; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+	header( 'Content-Length: ' . strlen( $json ) );
+	echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw JSON download.
+	exit;
+}
+
+/**
+ * Import a BikePress JSON export (id-based upsert).
+ */
+function bikepress_handle_import_data() {
+	if ( ! isset( $_POST['bikepress_import_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_import_nonce'] ) ), 'bikepress_import_data' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	if ( empty( $_FILES['bikepress_import_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['bikepress_import_file']['tmp_name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		bikepress_redirect_admin_page( 'import-export-admin', 'import_upload_error' );
+	}
+
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$raw = file_get_contents( $_FILES['bikepress_import_file']['tmp_name'] );
+	if ( false === $raw || '' === $raw ) {
+		bikepress_redirect_admin_page( 'import-export-admin', 'import_upload_error' );
+	}
+
+	$doc = json_decode( $raw, true );
+	if ( null === $doc && JSON_ERROR_NONE !== json_last_error() ) {
+		bikepress_redirect_admin_page( 'import-export-admin', 'import_invalid_json' );
+	}
+
+	$result = BikePress_Import_Export::import_document( $doc );
+	if ( is_wp_error( $result ) ) {
+		$code = $result->get_error_code();
+		$map  = array(
+			'invalid_json'       => 'import_invalid_json',
+			'invalid_format'     => 'import_invalid_format',
+			'db_version_mismatch' => 'import_db_mismatch',
+			'missing_data'       => 'import_missing_data',
+		);
+		$notice = isset( $map[ $code ] ) ? $map[ $code ] : 'import_error';
+		set_transient(
+			'bikepress_import_flash_' . get_current_user_id(),
+			array(
+				'notice'  => $notice,
+				'message' => $result->get_error_message(),
+			),
+			60
+		);
+		bikepress_redirect_admin_page( 'import-export-admin', $notice );
+	}
+
+	set_transient(
+		'bikepress_import_flash_' . get_current_user_id(),
+		array(
+			'notice' => 'import_ok',
+			'stats'  => $result,
+		),
+		60
+	);
+	bikepress_redirect_admin_page( 'import-export-admin', 'import_ok' );
+}
+
+/**
  * Admin: My Bikes hub.
  */
 function my_bikes() {
@@ -625,6 +714,13 @@ function supporting_data_admin() {
  */
 function status_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/status-admin-page.php';
+}
+
+/**
+ * Admin: import / export (hub-only).
+ */
+function import_export_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/import-export-admin-page.php';
 }
 
 /**

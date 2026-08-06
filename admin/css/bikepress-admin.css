@@ -184,7 +184,8 @@ ul.footer-list a:hover, ul.footer-list a:visited, ul.footer-list a:active  {
    }
 
    .manage-data-card .card__img, .manage-data-card .card__img--hover,
-   .manage-status-card .card__img, .manage-status-card .card__img--hover {
+   .manage-status-card .card__img, .manage-status-card .card__img--hover,
+   .manage-import-export-card .card__img, .manage-import-export-card .card__img--hover {
       background-image: url('../img/manage-data-thumbnail.jpg');
    }
 
