@@ -1,6 +1,6 @@
 <?php
 
-function steves_bike_maintenance_debug() {
+function bikepress_debug() {
 
 	global $gpo;
 	

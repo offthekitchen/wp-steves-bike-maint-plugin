@@ -1,14 +1,14 @@
-# Learning Guide — Bike Plugin Development Workflow
+# Learning Guide — BikePress Development Workflow
 
 This guide explains **why** the workflow exists and what each phase teaches you. The agent follows [SKILL.md](SKILL.md); this file is for you.
 
 ## Development vs deployed copies
 
-You keep two related locations:
+You keep related locations:
 
 | Role | Path |
 |------|------|
-| **Development (this repo)** | `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-steves-bike-maint-plugin` |
+| **Development (this repo)** | `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress` |
 | **Project folder** (zips, notes, design assets) | `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin` |
 | **Deployed sandbox plugin** | under `wp-sandbox\wp-content\plugins\...` |
 
@@ -30,11 +30,11 @@ Hard stops keep Cursor from racing ahead so you can learn each decision.
 Rough layout:
 
 ```
-wp-steves-bike-maint-plugin.php   → plugin header, version, hooks bootstrap
-includes/                         → core logic, activation, models
-admin/                            → WP Admin menus and pages
-public/                           → front-end / shortcode UI
-uninstall.php                     → cleanup when the plugin is deleted
+wp-bikepress.php   → plugin header, version, hooks bootstrap
+includes/          → core logic, activation, models
+admin/             → WP Admin menus and pages
+public/            → front-end / shortcode UI ([bikepress-bike-list])
+uninstall.php      → cleanup when the plugin is deleted
 ```
 
 Typical change categories:
@@ -80,12 +80,14 @@ Branch idea:
 
 ```
 main
- └── version4.3                 ← version line for a release
-      ├── feature-bike-search   ← one change
-      └── bugfix-status-filter ← another change
+ └── version4.3                              ← version line for a release
+      ├── version4.3-feature-bike-search     ← one change
+      └── version4.3-bugfix-status-filter   ← another change
 ```
 
-**In progress version:** If `version-3` (or similar) still has unmerged work, new work either joins that version or waits for a new major/minor line. That choice is yours; the agent must ask.
+**Git limitation:** You cannot name a feature branch `version4.3/feature-…` while `version4.3` also exists as a branch. Use a hyphen: `version4.3-feature-…`.
+
+**In progress version:** If a version branch still has unmerged work, new work either joins that version or waits for a new major/minor line. That choice is yours; the agent must ask.
 
 **Major vs minor (simple rule of thumb):**
 

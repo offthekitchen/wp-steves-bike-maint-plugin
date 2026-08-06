@@ -5,7 +5,7 @@
 
 global $wpdb;
 
-$bike_plugin_url = WP_PLUGIN_DIR . '/wp-steves-bike-maint-plugin';
+$bike_plugin_url = WP_PLUGIN_DIR . '/wp-bikepress';
 
 // Data
 $mode = 'new';
@@ -110,7 +110,7 @@ if ($bikeId && $bikeId > 0) {
     <?php include(plugin_dir_path(__FILE__) . 'bike-admin-header.php'); ?>
     <h1>MANAGE BIKES</h1>
     <main class="main-content">
-        <form id="bike-maint-form" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" method="post">
+        <form id="bikepress-bike-form" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" method="post">
             <!-- Hidden field required to process post-->
             <input type="hidden" name="action" value="bike_admin_form_submit">
             <?php wp_nonce_field( 'bike_admin_form_nonce_action', 'bike_admin_form_nonce_field' ); ?>
@@ -274,7 +274,7 @@ if ($bikeId && $bikeId > 0) {
         // Replace Bike Image with default-bike
         const bikeImage = document.getElementById('bike-image');
         // TODO Better path to image
-        bikeImage.src = '../wp-content/plugins/wp-steves-bike-maint-plugin/img/default-bike.jpg';
+        bikeImage.src = '../wp-content/plugins/wp-bikepress/img/default-bike.jpg';
         return true;
     }
 
@@ -306,7 +306,7 @@ if ($bikeId && $bikeId > 0) {
     function submitForm() {
         console.log('Validating form!')
 
-        const form = document.getElementById('bike-maint-form');
+        const form = document.getElementById('bikepress-bike-form');
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             if (!validateForm(form)) {

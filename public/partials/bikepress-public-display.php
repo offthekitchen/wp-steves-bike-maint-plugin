@@ -8,8 +8,8 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/public/partials
+ * @package    BikePress
+ * @subpackage BikePress/public/partials
  */
 ?>
 

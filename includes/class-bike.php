@@ -6,8 +6,8 @@
  * This class defines a bike object.
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
 class Bike

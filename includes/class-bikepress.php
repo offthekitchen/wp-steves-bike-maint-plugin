@@ -9,8 +9,8 @@
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
  *
- * @package    STEVES_BIKE_MAINTENANCE
- * @subpackage STEVES_BIKE_MAINTENANCE/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  */
 
 /**
@@ -23,11 +23,11 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Steves_Bike_Maintenance
- * @subpackage Steves_Bike_Maintenance/includes
+ * @package    BikePress
+ * @subpackage BikePress/includes
  * @author     John S Weeks <steve@offthekitchen.com>
  */
-class Steves_Bike_Maintenance {
+class BikePress {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -35,18 +35,9 @@ class Steves_Bike_Maintenance {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Steves_Bike_Maintenance_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      BikePress_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
-
-	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $steves_bike_maintenance   The string used to uniquely identify this plugin.
-	 */
-	protected $steves_bike_maintenance;
 
 	/**
 	 * The current version of the plugin.
@@ -76,12 +67,12 @@ class Steves_Bike_Maintenance {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'STEVES_BIKE_MAINTENANCE_VERSION' ) ) {
-			$this->version = STEVES_BIKE_MAINTENANCE_VERSION;
+		if ( defined( 'BIKEPRESS_VERSION' ) ) {
+			$this->version = BIKEPRESS_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->version = '4.0.0';
 		}
-		$this->plugin_name = 'steves-bike-maintenance';
+		$this->plugin_name = 'bikepress';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -95,10 +86,10 @@ class Steves_Bike_Maintenance {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Steves_Bike_Maintenance_Loader. Orchestrates the hooks of the plugin.
-	 * - Steves_Bike_Maintenance_i18n. Defines internationalization functionality.
-	 * - Steves_Bike_Maintenance_Admin. Defines all hooks for the admin area.
-	 * - Steves_Bike_Maintenance_Public. Defines all hooks for the public side of the site.
+	 * - BikePress_Loader. Orchestrates the hooks of the plugin.
+	 * - BikePress_i18n. Defines internationalization functionality.
+	 * - BikePress_Admin. Defines all hooks for the admin area.
+	 * - BikePress_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -112,33 +103,33 @@ class Steves_Bike_Maintenance {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-steves-bike-maintenance-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-bikepress-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-steves-bike-maintenance-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-bikepress-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-steves-bike-maintenance-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-bikepress-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-steves-bike-maintenance-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-bikepress-public.php';
 
-		$this->loader = new Steves_Bike_Maintenance_Loader();
+		$this->loader = new BikePress_Loader();
 
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Steves_Bike_Maintenance_i18n class in order to set the domain and to register the hook
+	 * Uses the BikePress_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -146,7 +137,7 @@ class Steves_Bike_Maintenance {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Steves_Bike_Maintenance_i18n();
+		$plugin_i18n = new BikePress_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -161,7 +152,7 @@ class Steves_Bike_Maintenance {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Steves_Bike_Maintenance_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new BikePress_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -177,7 +168,7 @@ class Steves_Bike_Maintenance {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Steves_Bike_Maintenance_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new BikePress_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -208,7 +199,7 @@ class Steves_Bike_Maintenance {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Steves_Bike_Maintenance_Loader    Orchestrates the hooks of the plugin.
+	 * @return    BikePress_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

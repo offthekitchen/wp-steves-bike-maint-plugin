@@ -4,18 +4,18 @@
  *
  * @link              http://www.offthekitchen.com
  * @since             1.0.0
- * @package           Steves_Bike_Maintenance_Plugin
+ * @package           BikePress
  *
  * @wordpress-plugin
- * Plugin Name:       Steve's Bike Maintenance
+ * Plugin Name:       BikePress
  * Plugin URI:        http://www.offthekitchen.com
- * Description:       A simple plugin to track my bikes and maintenace 
- * Version:           1.0.0
+ * Description:       Track bicycles, specifications, and maintenance records.
+ * Version:           4.0.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       steves-bike-maintenance
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       bikepress
  * Domain Path:       /languages
  * 
  */
@@ -30,7 +30,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('STEVES_BIKE_MAINTENANCE_VERSION', '1.0.0');
+define('BIKEPRESS_VERSION', '4.0.0');
 
 /**
  * Database constants
@@ -43,12 +43,12 @@ define('STATUS_TABLE', "wp_bike_status");
 add_action('admin_menu', 'bike_maintenance_setup_menu');
 
 //Add Admin Styles
-wp_enqueue_style( 'steves-bike-maintenance', plugins_url( 'admin/css/steves-bike-maintenance-admin.css', __FILE__ ) );
+wp_enqueue_style( 'bikepress', plugins_url( 'admin/css/bikepress-admin.css', __FILE__ ) );
 wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap', [], null );
 
 
 
-function steves_bike_maintenance_plugin_enqueue_media_uploader_scripts( $hook ) {
+function bikepress_enqueue_media_uploader_scripts( $hook ) {
     // Only enqueue the script on your specific plugin's admin page (e.g., 'toplevel_page_my-plugin-settings').
     // You can use a conditional check here to limit where the script is loaded.
     
@@ -57,14 +57,14 @@ function steves_bike_maintenance_plugin_enqueue_media_uploader_scripts( $hook ) 
 
     // Enqueue your custom JavaScript file
     wp_enqueue_script( 
-        'steves-bike-maintenance-plugin-admin-script', 
+        'bikepress-admin-script', 
         plugins_url( '/js/admin.js', __FILE__ ), // Path to your admin.js file
         array( 'jquery' ), // Dependency on jQuery
         '1.0', // Version number
         true // Load in the footer
     );
 }
-add_action( 'admin_enqueue_scripts', 'steves_bike_maintenance_plugin_enqueue_media_uploader_scripts' );
+add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_media_uploader_scripts' );
 
 add_action( 'admin_post_bike_admin_form_submit', 'handle_bike_admin_form_submission' );
 /**
@@ -78,8 +78,8 @@ function bike_maintenance_setup_menu()
 	$bikes_icon = plugins_url('img/bikes-admin-icon-16.png', __FILE__);
 
 	add_menu_page(
-		__('My Bikes', 'bike-maint-menu'),
-		__('My Bikes', 'bike-maint-menu'),
+		__('My Bikes', 'bikepress'),
+		__('My Bikes', 'bikepress'),
 		'manage_options',
 		'my-bikes',
 		'my_bikes',
@@ -87,16 +87,16 @@ function bike_maintenance_setup_menu()
 	);
 
 	// Add a submenu for Manage Bikes
-	add_submenu_page('my-bikes', __('Manage Bikes', 'bike-maint-menu'), __('Manage Bikes', 'bike-maint-menu'), 'manage_options', 'bikes-admin', 'bikes_admin');
+	add_submenu_page('my-bikes', __('Manage Bikes', 'bikepress'), __('Manage Bikes', 'bikepress'), 'manage_options', 'bikes-admin', 'bikes_admin');
 
 	// Add a submenu for Manage Specs
-	add_submenu_page('my-bikes', __('Manage Specs', 'bike-maint-menu'), __('Manage Specs', 'bike-maint-menu'), 'manage_options', 'specs-admin', 'specs_admin');
+	add_submenu_page('my-bikes', __('Manage Specs', 'bikepress'), __('Manage Specs', 'bikepress'), 'manage_options', 'specs-admin', 'specs_admin');
 
 	// Add a submenu for Manage Maintenance Records
-	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bike-maint-menu'), __('Manage Maintenance Records', 'bike-maint-menu'), 'manage_options', 'maint-admin', 'maint_admin');
+	add_submenu_page('my-bikes', __('Manage Maintenance Records', 'bikepress'), __('Manage Maintenance Records', 'bikepress'), 'manage_options', 'maint-admin', 'maint_admin');
 
 	// Add a submenu for Manage Bike Statues
-	add_submenu_page('my-bikes', __('Manage Data', 'bike-maint-menu'), __('Manage Data', 'bike-maint-menu'), 'manage_options', 'data-admin', 'data_admin');
+	add_submenu_page('my-bikes', __('Manage Data', 'bikepress'), __('Manage Data', 'bikepress'), 'manage_options', 'data-admin', 'data_admin');
 
 	// Add Debugging sybmenu
 	/* 	if (GIGPRESS_DEBUG) {
@@ -172,20 +172,20 @@ function data_admin()
  * The code that runs during plugin activation.
  * This action is documented in includes/class-plugin-name-activator.php
  */
-function activate_steves_bike_maintenance()
+function activate_bikepress()
 {
-	require_once plugin_dir_path(__FILE__) . 'includes/class-steves-bike-maintenance-activator.php';
-	Steves_Bike_Maintenance_Activator::activate();
+	require_once plugin_dir_path(__FILE__) . 'includes/class-bikepress-activator.php';
+	BikePress_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-plugin-name-deactivator.php
  */
-function deactivate_steves_bike_maintenance()
+function deactivate_bikepress()
 {
-	require_once plugin_dir_path(__FILE__) . 'includes/class-steves-bike-maintenance-deactivator.php';
-	Steves_Bike_Maintenance_Deactivator::deactivate();
+	require_once plugin_dir_path(__FILE__) . 'includes/class-bikepress-deactivator.php';
+	BikePress_Deactivator::deactivate();
 }
 
 function save_output_buffer_to_file()
@@ -200,7 +200,7 @@ function save_output_buffer_to_file()
 /**
  * This function creates content for the bike list shortcode
  */
-function sbm_bike_list($atts)
+function bikepress_bike_list($atts)
 {
 	require_once plugin_dir_path(__FILE__) . 'includes/class-bike.php';
 
@@ -337,25 +337,25 @@ function sbm_bike_list($atts)
 	$Content .= '</section>';
 
 
-	$Content .= "<script type=\"text/javascript\" src=\"{$bike_plugin_url}public/js/steves-bike-maintenance-public.js\"></script>";
+	$Content .= "<script type=\"text/javascript\" src=\"{$bike_plugin_url}public/js/bikepress-public.js\"></script>";
 
 	return $Content;
 }
 
 //Add all the shortcodes
-add_shortcode('sbm-bike-list', 'sbm_bike_list');
+add_shortcode('bikepress-bike-list', 'bikepress_bike_list');
 
 // During activation send any output to a file
 add_action('activated_plugin', 'save_output_buffer_to_file');
 
-register_activation_hook(__FILE__, 'activate_steves_bike_maintenance');
-register_deactivation_hook(__FILE__, 'deactivate_steves_bike_maintenance');
+register_activation_hook(__FILE__, 'activate_bikepress');
+register_deactivation_hook(__FILE__, 'deactivate_bikepress');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path(__FILE__) . 'includes/class-steves-bike-maintenance.php';
+require plugin_dir_path(__FILE__) . 'includes/class-bikepress.php';
 
 /**
  * Begins execution of the plugin.
@@ -366,22 +366,22 @@ require plugin_dir_path(__FILE__) . 'includes/class-steves-bike-maintenance.php'
  *
  * @since    1.0.0
  */
-function run_steves_bike_maintenance()
+function run_bikepress()
 {
 
-	$plugin = new Steves_Bike_Maintenance();
+	$plugin = new BikePress();
 	$plugin->run();
 
 }
 /**
  * This function adds the custom styles for the plugin to the WP styling framework
  */
-function steves_bike_maintenance_enqueue_styles()
+function bikepress_enqueue_styles()
 {
-	wp_enqueue_style('steves_bike_maintenance_style', plugin_dir_url(__FILE__) . 'public/css/steves-bike-maintenance-public.css');
+	wp_enqueue_style('bikepress_style', plugin_dir_url(__FILE__) . 'public/css/bikepress-public.css');
 }
 
 // Add the custom styles
-add_action('wp_enqueue_scripts', 'steves_bike_maintenance_enqueue_styles');
+add_action('wp_enqueue_scripts', 'bikepress_enqueue_styles');
 
-run_steves_bike_maintenance();
+run_bikepress();

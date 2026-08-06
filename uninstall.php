@@ -6,7 +6,7 @@
  *
  * @link       http://www.offthekitchen.com
  *
- * @package    STEVES_BIKE_MAINTENANCE
+ * @package    BikePress
  */
 
 // If uninstall not called from WordPress, then exit.

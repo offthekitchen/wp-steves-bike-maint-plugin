@@ -104,7 +104,7 @@ Short description of this release line.
   - What fixed it:
 
 ## Install / test notes
-- Zip: parent folder `wp-steves-bike-maint-plugin-v{major}.{minor}.zip`
+- Zip: parent folder `wp-bikepress-v{major}.{minor}.zip`
 - Special setup steps (if any):
 ```
 
@@ -122,7 +122,7 @@ When appending to an existing file, add under the correct Features or Bugfixes h
 
 ## Test plan
 - [ ] …
-- [ ] Installed and smoked-tested via `wp-steves-bike-maint-plugin-vX.Y.zip`
+- [ ] Installed and smoked-tested via `wp-bikepress-vX.Y.zip`
 
 ## Notes
 - Merging will be handled outside GitHub for now unless requested otherwise.
