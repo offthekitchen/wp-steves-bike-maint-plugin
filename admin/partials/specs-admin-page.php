@@ -233,4 +233,5 @@ if ( $spec ) {
 			</tbody>
 		</table>
 	<?php endif; ?>
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
 </div>

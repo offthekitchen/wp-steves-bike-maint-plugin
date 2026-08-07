@@ -104,4 +104,6 @@ $db_version = BikePress_Import_Export::current_db_version();
 		</p>
 		<?php submit_button( __( 'Import file', 'bikepress' ), 'secondary', 'submit', false ); ?>
 	</form>
+
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
 </div>
