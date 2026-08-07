@@ -10,7 +10,7 @@
  * Plugin Name:       BikePress
  * Plugin URI:        http://www.offthekitchen.com
  * Description:       Track bicycles, specifications, and maintenance records.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'BIKEPRESS_VERSION', '1.1.0' );
+define( 'BIKEPRESS_VERSION', '1.2.0' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-tables.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-import-export.php';
@@ -92,7 +92,7 @@ function bikepress_enqueue_admin_assets( $hook ) {
  * Keep hub-only pages registered for access, but hide them from the left submenu.
  */
 function bikepress_hide_hub_only_submenu_items() {
-	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=import-export-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
+	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=import-export-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-privacy"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-terms"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-about"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
 }
 
 /**
@@ -118,6 +118,9 @@ function bike_maintenance_setup_menu() {
 	// Hub-only pages: keep registered under My Bikes for capability checks, hide via CSS.
 	add_submenu_page( 'my-bikes', __( 'Manage Statuses', 'bikepress' ), __( 'Manage Statuses', 'bikepress' ), 'manage_options', 'status-admin', 'status_admin' );
 	add_submenu_page( 'my-bikes', __( 'Import / Export Data', 'bikepress' ), __( 'Import / Export Data', 'bikepress' ), 'manage_options', 'import-export-admin', 'import_export_admin' );
+	add_submenu_page( 'my-bikes', __( 'Data & Privacy', 'bikepress' ), __( 'Data & Privacy', 'bikepress' ), 'manage_options', 'bikepress-privacy', 'bikepress_privacy_admin' );
+	add_submenu_page( 'my-bikes', __( 'Terms & Conditions', 'bikepress' ), __( 'Terms & Conditions', 'bikepress' ), 'manage_options', 'bikepress-terms', 'bikepress_terms_admin' );
+	add_submenu_page( 'my-bikes', __( 'About Me', 'bikepress' ), __( 'About Me', 'bikepress' ), 'manage_options', 'bikepress-about', 'bikepress_about_admin' );
 
 	// Legacy slug redirect (hidden via CSS).
 	add_submenu_page( 'my-bikes', __( 'Manage Data', 'bikepress' ), __( 'Manage Data', 'bikepress' ), 'manage_options', 'data-admin', 'bikepress_legacy_data_admin_redirect' );
@@ -721,6 +724,27 @@ function status_admin() {
  */
 function import_export_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/import-export-admin-page.php';
+}
+
+/**
+ * Admin: Data & Privacy (footer content; hub-only).
+ */
+function bikepress_privacy_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/footer-privacy-page.php';
+}
+
+/**
+ * Admin: Terms & Conditions (footer content; hub-only).
+ */
+function bikepress_terms_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/footer-terms-page.php';
+}
+
+/**
+ * Admin: About Me (footer content; hub-only).
+ */
+function bikepress_about_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/footer-about-page.php';
 }
 
 /**

@@ -259,4 +259,5 @@ if ( $form_image_id > 0 ) {
 			</tbody>
 		</table>
 	<?php endif; ?>
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
 </div>

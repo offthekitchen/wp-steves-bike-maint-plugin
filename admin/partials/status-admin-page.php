@@ -171,4 +171,5 @@ $is_unknown = $status ? ( 'Unknown' === $status->bike_status ) : false;
 			</tbody>
 		</table>
 	<?php endif; ?>
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
 </div>
