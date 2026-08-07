@@ -69,6 +69,9 @@ function bikepress_is_plugin_admin_screen( $hook ) {
 		'my-bikes_page_supporting-data-admin',
 		'my-bikes_page_status-admin',
 		'my-bikes_page_import-export-admin',
+		'my-bikes_page_bikepress-privacy',
+		'my-bikes_page_bikepress-terms',
+		'my-bikes_page_bikepress-about',
 		'my-bikes_page_data-admin',
 	);
 	return in_array( $hook, $screens, true );

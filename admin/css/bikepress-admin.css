@@ -102,22 +102,26 @@ h1 {
 
 /****** Footer ***********/
 .admin-footer {
-   height: 163px;
+   min-height: 163px;
+   height: auto;
    background-color: var(--main-bg-color);
    width: 100%;
    max-width: 1440px;
    margin: 35px auto 0 auto;
    display: flex;
    flex-direction: row;
+   flex-wrap: wrap;
    font-family: Raleway, sans-serif;
+   box-sizing: border-box;
 }
 
 .footer-section {
    display: flex;
    flex-direction: column;
-   flex-basis: 33%;
+   flex-basis: 50%;
    padding: 20px;
    gap: 15px;
+   box-sizing: border-box;
 }
 
 .footer-header {
@@ -132,7 +136,7 @@ ul.footer-list {
 }
 
 .footer-item {
-   margin-bottom: 15px;;
+   margin-bottom: 15px;
 }
 
 .footer-item a {
@@ -143,6 +147,32 @@ ul.footer-list {
 
 ul.footer-list a:hover, ul.footer-list a:visited, ul.footer-list a:active  {
    color: black;
+}
+
+.bikepress-prose {
+   max-width: 720px;
+   margin: 1em 0 2em;
+   line-height: 1.6;
+}
+
+.bikepress-prose ul {
+   margin: 0.5em 0 1em 1.5em;
+   list-style: disc;
+}
+
+.bikepress-about-image img {
+   max-width: 280px;
+   width: 100%;
+   height: auto;
+   display: block;
+   margin: 0 0 1.25em;
+   border-radius: 8px;
+}
+
+@media screen and (max-width: 768px) {
+   .footer-section {
+      flex-basis: 100%;
+   }
 }
 
   /* CSS FOR ANIMATION */
