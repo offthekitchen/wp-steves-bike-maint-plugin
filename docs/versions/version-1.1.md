@@ -1,11 +1,11 @@
 # Version 1.1
 
-**Status:** Current  
+**Status:** Superseded by 1.2.0  
 **Base:** main (BikePress 1.0.0)
 
 ## Summary
 
-Minor release **1.1.0** adding JSON import/export of all BikePress data from the Supporting Data hub, so data can be backed up and restored across reinstalls.
+Minor release **1.1.0** adding JSON import/export of all BikePress data from the Supporting Data hub, so data can be backed up and restored across reinstalls. Succeeded by **1.2.0** (admin footer).
 
 ## Changes
 
