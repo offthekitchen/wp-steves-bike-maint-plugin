@@ -1,11 +1,11 @@
 # Version 1.2
 
-**Status:** In progress  
+**Status:** Current  
 **Base:** main (BikePress 1.1.0)
 
 ## Summary
 
-Minor release updating the BikePress admin footer to two columns with real About/Contact links, plus in-plugin Data & Privacy, Terms & Conditions, and About Me pages. Plugin display version remains **1.1.0** until this line is cut as a release.
+Minor release **1.2.0** updating the BikePress admin footer to two columns with real About/Contact links, plus in-plugin Data & Privacy, Terms & Conditions, and About Me pages.
 
 ## Changes
 
@@ -16,8 +16,12 @@ Minor release updating the BikePress admin footer to two columns with real About
     - Footer reduced to two columns: About BikePress and Contact
     - Links: Documentation and Buy Me a Coffee (new tab); Website (new tab); Email (`mailto:`); Data & Privacy, Terms & Conditions, About Me (in-plugin pages)
     - Footer shown on all BikePress admin screens
-    - About Me page includes compressed about image; hub card thumbnails recompressed for smaller install zip
+    - About Me page includes compressed about image and Buy Me a Coffee CTA; hub card thumbnails recompressed for smaller install zip
   - Why: Replace placeholder footer links with usable support/legal/contact content on every admin screen
+
+- **release-1.2.0** (`version1.2-feature-release-1.2.0`): Cut plugin version 1.2.0
+  - What changed: Plugin header and `BIKEPRESS_VERSION` set to `1.2.0`
+  - Why: Ship the 1.2 line as a named WordPress plugin release
 
 ### Bugfixes
 
@@ -27,5 +31,5 @@ _(none as a separate change)_
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.2.zip`
 - Unpacks to folder: `wp-bikepress/`
-- Plugins screen still shows **1.1.0** until the 1.2 release is cut
+- Plugins screen should show **Version 1.2.0**
 - Test footer on hubs and CRUD pages; open Privacy / Terms / About Me; confirm external links open in a new tab where specified
