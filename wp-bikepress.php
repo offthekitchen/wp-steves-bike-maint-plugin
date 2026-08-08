@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       BikePress
- * Plugin URI:        http://www.offthekitchen.com
+ * Plugin URI:        https://www.offthekitchen.com/wordpress-development/
  * Description:       Track bicycles, specifications, and maintenance records.
  * Version:           1.2.0
  * Author:            Off the Kitchen
@@ -42,6 +42,7 @@ define( 'STATUS_TABLE', bikepress_status_table() );
 add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
 add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
 add_action( 'admin_head', 'bikepress_hide_hub_only_submenu_items' );
+add_filter( 'plugin_row_meta', 'bikepress_plugin_row_meta', 10, 2 );
 add_action( 'admin_post_bikepress_save_bike', 'bikepress_handle_save_bike' );
 add_action( 'admin_post_bikepress_delete_bike', 'bikepress_handle_delete_bike' );
 add_action( 'admin_post_bikepress_save_spec', 'bikepress_handle_save_spec' );
@@ -54,6 +55,27 @@ add_action( 'admin_post_bikepress_export_data', 'bikepress_handle_export_data' )
 add_action( 'admin_post_bikepress_import_data', 'bikepress_handle_import_data' );
 
 /**
+ * Open "Visit plugin site" in a new tab on the Plugins screen.
+ *
+ * @param string[] $plugin_meta Row meta links.
+ * @param string   $plugin_file Plugin basename.
+ * @return string[]
+ */
+function bikepress_plugin_row_meta( $plugin_meta, $plugin_file ) {
+	if ( plugin_basename( __FILE__ ) !== $plugin_file ) {
+		return $plugin_meta;
+	}
+
+	foreach ( $plugin_meta as $index => $meta ) {
+		if ( false !== strpos( $meta, 'wordpress-development' ) ) {
+			$plugin_meta[ $index ] = preg_replace( '/<a\s/', '<a target="_blank" rel="noopener noreferrer" ', $meta, 1 );
+		}
+	}
+
+	return $plugin_meta;
+}
+
+/**
  * Enqueue BikePress admin CSS/fonts on plugin screens; media JS on bikes-admin only.
  *
  * @param string $hook Current admin page hook.
@@ -63,15 +85,16 @@ function bikepress_enqueue_admin_assets( $hook ) {
 		return;
 	}
 
+	$admin_css = plugin_dir_path( __FILE__ ) . 'admin/css/bikepress-admin.css';
 	wp_enqueue_style(
 		'bikepress-admin',
 		plugins_url( 'admin/css/bikepress-admin.css', __FILE__ ),
 		array(),
-		BIKEPRESS_VERSION
+		file_exists( $admin_css ) ? (string) filemtime( $admin_css ) : BIKEPRESS_VERSION
 	);
 	wp_enqueue_style(
 		'bikepress-google-fonts',
-		'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap',
+		'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&family=Roboto+Slab:wght@400;700&display=swap',
 		array(),
 		null
 	);
@@ -103,13 +126,15 @@ function bike_maintenance_setup_menu() {
 
 	add_menu_page(
 		__( 'My Bikes', 'bikepress' ),
-		__( 'My Bikes', 'bikepress' ),
+		__( 'BikePress', 'bikepress' ),
 		'manage_options',
 		'my-bikes',
 		'my_bikes',
 		$bikes_icon
 	);
 
+	// Rename the auto-created first submenu so it stays "My Bikes" under a BikePress parent.
+	add_submenu_page( 'my-bikes', __( 'My Bikes', 'bikepress' ), __( 'My Bikes', 'bikepress' ), 'manage_options', 'my-bikes', 'my_bikes' );
 	add_submenu_page( 'my-bikes', __( 'Manage Bikes', 'bikepress' ), __( 'Manage Bikes', 'bikepress' ), 'manage_options', 'bikes-admin', 'bikes_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Specs', 'bikepress' ), __( 'Manage Specs', 'bikepress' ), 'manage_options', 'specs-admin', 'specs_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Maintenance Records', 'bikepress' ), __( 'Manage Maintenance Records', 'bikepress' ), 'manage_options', 'maint-admin', 'maint_admin' );

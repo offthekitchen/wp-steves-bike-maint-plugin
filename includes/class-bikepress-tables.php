@@ -74,5 +74,24 @@ function bikepress_is_plugin_admin_screen( $hook ) {
 		'my-bikes_page_bikepress-about',
 		'my-bikes_page_data-admin',
 	);
-	return in_array( $hook, $screens, true );
+	if ( in_array( $hook, $screens, true ) ) {
+		return true;
+	}
+
+	// Fallback: some hosts/contexts pass an unexpected $hook; match on page slug.
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$pages = array(
+		'my-bikes',
+		'bikes-admin',
+		'specs-admin',
+		'maint-admin',
+		'supporting-data-admin',
+		'status-admin',
+		'import-export-admin',
+		'bikepress-privacy',
+		'bikepress-terms',
+		'bikepress-about',
+		'data-admin',
+	);
+	return in_array( $page, $pages, true );
 }
