@@ -1,88 +1,85 @@
 <?php
 /**
- * Bike Admin Page
+ * My Bikes hub.
+ *
+ * @package BikePress
  */
+
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+$img_base = plugin_dir_url( __DIR__ ) . 'img/';
 ?>
-<!-- Can links be embedded a better way -->
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap" rel="stylesheet" />
+<div class="bikepress-hub main-container">
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-header.php'; ?>
+	<h1><?php esc_html_e( 'MY BIKES', 'bikepress' ); ?></h1>
+	<main class="main-content">
+		<section id="bike-admin-tools" class="bike-admin-tools">
+			<div class="bikepress-hub-cards bike-admin-cards">
 
-<body>
-  <div class="main-container">
-    
-    <?php 
-    include(plugin_dir_path(__FILE__) . 'bike-admin-header.php') 
-    ?>
-    <h1>MY BIKES</h1>
-    <main class="main-content">
-      <section id="bike-admin-tools" class="bike-admin-tools">
-        <div class="cards bike-admin-cards">
+				<article class="bikepress-hub-card manage-bikes-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-bikes.png' ); ?>" alt="<?php esc_attr_e( 'bike icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-bikes-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-bikes-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( '5 bikes', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Bikes', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Add new bikes and maintain existing ones', 'bikepress' ); ?></span>
+					</div>
+				</article>
 
-          <article class="card manage-bikes-card">
-            <div class="card__info-hover">
-              <img src="<?php echo plugin_dir_url(__DIR__) . 'img/admin-icon-bikes.png'; ?>" alt="bike icon"
-                class="admin-icon">
-            </div>
-            <div class="card__img"></div>
-            <a href="admin.php?page=bikes-admin" class="card_link">
-              <div class="card__img--hover"></div>
-            </a>
-            <div class="card__info">
-              <span class="card__subcategory">5 bikes</span>
-              <h3 class="card__title">Manage Bikes</h3>
-              <span class="card__desc">Add new bikes and maintain existing ones</span>
-            </div>
-          </article>
+				<article class="bikepress-hub-card manage-specs-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-specs.png' ); ?>" alt="<?php esc_attr_e( 'specs icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-specs-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=specs-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-specs-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'Subtitle', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Specs', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Maintain bike specifications', 'bikepress' ); ?></span>
+					</div>
+				</article>
 
-          <article class="card manage-specs-card">
-            <div class="card__info-hover">
-              <img src="<?php echo plugin_dir_url(__DIR__) . 'img/admin-icon-specs.png'; ?>" alt="specs icon"
-                class="admin-icon">
-            </div>
-            <div class="card__img"></div>
-            <a href="admin.php?page=specs-admin" class="card_link">
-              <div class="card__img--hover"></div>
-            </a>
-            <div class="card__info">
-              <span class="card__subcategory">Subtitle</span>
-              <h3 class="card__title">Manage Specs</h3>
-              <span class="card__desc">Maintain bike specifications</span>
-            </div>
-          </article>
+				<article class="bikepress-hub-card manage-maint-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-maint.png' ); ?>" alt="<?php esc_attr_e( 'maint icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=maint-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'Last Maintenance: March 1, 2025', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Maintenance Records', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Maintain bike maintenance records', 'bikepress' ); ?></span>
+					</div>
+				</article>
 
-          <article class="card manage-maint-card">
-            <div class="card__info-hover">
-              <img src="<?php echo plugin_dir_url(__DIR__) . 'img/admin-icon-maint.png'; ?>" alt="maint icon"
-                class="admin-icon">
-            </div>
-            <div class="card__img"></div>
-            <a href="admin.php?page=maint-admin" class="card_link">
-              <div class="card__img--hover"></div>
-            </a>
-            <div class="card__info">
-              <span class="card__subcategory">Last Maintenance: March 1, 2025</span>
-              <h3 class="card__title">Manage Maintenance Records</h3>
-              <span class="card__desc">Maintain bike maintenance records</span>
-            </div>
-          </article>
+				<article class="bikepress-hub-card manage-data-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-data.png' ); ?>" alt="<?php esc_attr_e( 'data icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=supporting-data-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'Subtitle', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Supporting Data', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Maintain supporting bike data (e.g. statuses)', 'bikepress' ); ?></span>
+					</div>
+				</article>
 
-          <article class="card manage-data-card">
-            <div class="card__info-hover">
-              <img src="<?php echo plugin_dir_url(__DIR__) . 'img/admin-icon-data.png'; ?>" alt="data icon"
-                class="admin-icon">
-            </div>
-            <div class="card__img"></div>
-            <a href="admin.php?page=supporting-data-admin" class="card_link">
-              <div class="card__img--hover"></div>
-            </a>
-            <div class="card__info">
-              <span class="card__subcategory">Subtitle</span>
-              <h3 class="card__title">Manage Supporting Data</h3>
-              <span class="card__desc">Maintain supporting bike data (e.g. statuses)</span>
-            </div>
-          </article>
-
-      </section>
-    </main>
-    <?php include(plugin_dir_path(__FILE__) . 'bike-admin-footer.php'); ?>
-  </div>
-</body>
+			</div>
+		</section>
+	</main>
+	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-footer.php'; ?>
+</div>

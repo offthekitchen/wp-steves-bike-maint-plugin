@@ -1,9 +1,5 @@
 <?php
 /**
- * Bike Admin Header
+ * Bike Admin Header (shared include; intentionally empty after removing return link).
  */
 ?>
-<!-- Can links be embedded a better way -->
-  <header class="admin-header">
-    <a href="admin.php?page=my-bikes">RETURN TO MY BIKES</a>
-  </header>
