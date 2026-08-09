@@ -99,16 +99,31 @@ function bikepress_enqueue_admin_assets( $hook ) {
 		null
 	);
 
-	if ( 'my-bikes_page_bikes-admin' === $hook ) {
+	if ( bikepress_is_bikes_admin_screen( $hook ) ) {
 		wp_enqueue_media();
+		$admin_js = plugin_dir_path( __FILE__ ) . 'js/admin.js';
 		wp_enqueue_script(
 			'bikepress-admin-script',
-			plugins_url( '/js/admin.js', __FILE__ ),
-			array( 'jquery' ),
-			BIKEPRESS_VERSION,
+			plugins_url( 'js/admin.js', __FILE__ ),
+			array( 'jquery', 'media-editor', 'media-views' ),
+			file_exists( $admin_js ) ? (string) filemtime( $admin_js ) : BIKEPRESS_VERSION,
 			true
 		);
 	}
+}
+
+/**
+ * Whether the current admin request is the Manage Bikes screen.
+ *
+ * @param string $hook Current admin hook suffix.
+ * @return bool
+ */
+function bikepress_is_bikes_admin_screen( $hook ) {
+	if ( 'my-bikes_page_bikes-admin' === $hook ) {
+		return true;
+	}
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	return 'bikes-admin' === $page;
 }
 
 /**
