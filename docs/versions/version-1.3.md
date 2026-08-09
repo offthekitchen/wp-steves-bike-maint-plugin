@@ -1,17 +1,19 @@
 # Version 1.3
 
-**Status:** In progress  
+**Status:** Current  
 **Base:** main (BikePress 1.2.0)
 
 ## Summary
 
-Minor release line for admin UI formatting polish: BikePress menu branding, hub card layout and thumbnails, plugin site link behavior, and related copy fixes.
+Minor release **1.3.0** for admin UI formatting polish: BikePress menu branding, hub card layout and thumbnails, plugin site link behavior, and related copy fixes.
 
 ## Changes
 
 ### Features
 
-_(none)_
+- **release-1.3.0** (`version1.3-feature-release-1.3.0`): Cut plugin version 1.3.0
+  - What changed: Plugin header and `BIKEPRESS_VERSION` set to `1.3.0`
+  - Why: Ship the 1.3 line as a named WordPress plugin release
 
 ### Bugfixes
 
@@ -42,5 +44,6 @@ _(none)_
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.3.zip`
 - Unpacks to folder: `wp-bikepress/`
+- Plugins screen should show **Version 1.3.0**
 - Test: left menu BikePress; My Bikes 4 cards; Supporting Data cards with images/hover; no return header; Plugins Visit plugin site opens new tab
 - Also test: My Bikes maint/data thumbs swapped; Supporting Data Statuses + Import/Export use new photos
