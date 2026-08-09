@@ -200,7 +200,7 @@ Do **not** edit the deployed copy under `wp-sandbox\wp-content\plugins\...` unle
 - Workspace / git root: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress`
 - Remote: `origin` → `https://github.com/offthekitchen/wp-steves-bike-maint-plugin.git` (GitHub repo name unchanged for now)
 - Default integration branch: `main`
-- Current product version line: **1.2.0** on the `version1.2` / `main` integration path after release; create the next `versionX.Y` from `main` when starting a new line.
+- Current product version line: **1.3.0** on the `version1.3` / `main` integration path after release; create the next `versionX.Y` from `main` when starting a new line.
 - This environment may hit `fatal: detected dubious ownership`. Prefer one-shot overrides:
 
 ```bash

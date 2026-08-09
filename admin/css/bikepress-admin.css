@@ -1,365 +1,246 @@
-/****** General ***********/
-* {
-   font-family: 'Raleway', sans-serif;
-}
-
+/****** BikePress admin hubs (do not use WP's .card class) ***********/
 :root {
-   --main-bg-color: #F2F2F2;
+	--main-bg-color: #F2F2F2;
+	--bikepress-hub-gap: 24px;
 }
 
-body {
-   display: flex;
-   justify-content: center;
+.bikepress-hub {
+	width: 100%;
+	max-width: 1440px;
+	padding: 32px 16px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	font-family: 'Raleway', sans-serif;
 }
 
+/* Non-hub admin pages still use .main-container */
 .main-container {
-   width: 100%;
-   padding: 32px 0;
-   max-width: 1440px;
-   margin: 0 auto;
-   box-sizing: border-box;
+	width: 100%;
+	max-width: 1440px;
+	padding: 32px 16px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	font-family: 'Raleway', sans-serif;
 }
 
-.main-content {
-   display: flex;
-   flex-direction: column;
-   gap: 40px;
+.bikepress-hub .main-content {
+	display: block;
+	width: 100%;
 }
 
-
-/** CARDS */
-.bike-admin-cards {
-   display: flex;
-   flex-direction: row;
-   justify-content: space-between;
-   align-items: center;
-   flex-wrap: wrap;
+.bikepress-hub h1 {
+	margin: 0 0 16px 0;
 }
 
-.card-container {
-   flex-basis: 23%;
+/** Card row — 4 across on desktop */
+.bikepress-hub-cards {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: stretch;
+	gap: var(--bikepress-hub-gap);
+	width: 100%;
+	box-sizing: border-box;
 }
 
-.bike-admin-cards .card {
-   background-color: white;
-   border-radius: 20px;
-   padding: 0;
-   filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.1));
-   display: flex;
-   flex-direction: column;
-   margin-top: 33px;
-   gap: 4px;
+.bikepress-hub-card {
+	position: relative;
+	box-sizing: border-box;
+	flex: 0 0 calc((100% - (3 * var(--bikepress-hub-gap))) / 4);
+	width: calc((100% - (3 * var(--bikepress-hub-gap))) / 4);
+	max-width: calc((100% - (3 * var(--bikepress-hub-gap))) / 4);
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 12px;
+	overflow: hidden;
+	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.1));
+	box-shadow: 0px 13px 10px -7px rgba(0, 0, 0, 0.1);
+	transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
 }
 
-.card img {
-   object-fit: cover;
+.bikepress-hub-card:hover {
+	box-shadow: 0px 30px 18px -8px rgba(0, 0, 0, 0.1);
+	transform: scale(1.05, 1.05);
 }
 
-/* IN case I put these back */
-.card-title {
-   position:absolute;
-   top: 24px;
-   left: 16px;
-   font-size: 32px;
-   font-weight: 700;
-   color: #FFF;
-   line-height: 1.2em;
-   margin: 0 0 8px 0;
-   text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px #00008b;
-   max-width: 290px;
+.bikepress-hub .admin-icon {
+	width: 40px;
+	height: 40px;
+	margin: 8px 16px;
 }
 
-.card-subtitle {
-   position:absolute;
-   bottom: 80px;
-   right: 25px;
-   font-size: 14px;
-   font-weight: 400;
-   margin: 0;
-   background-color:aliceblue;
-   padding: 4px 8px;
-   border-radius: 16px;
-
+.bikepress-hub-card .card__img {
+	visibility: hidden;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 100%;
+	height: 235px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
 }
 
-.admin-icon {
-   width: 40px;
-   height: 40px;
-   margin: 8px 16px;
+.bikepress-hub-card .card__info-hover {
+	position: absolute;
+	padding: 16px;
+	width: 100%;
+	opacity: 0;
+	top: 0;
+	z-index: 3;
+	box-sizing: border-box;
 }
 
-/****** Header ***********/
-header {
-   max-width: 1040px;
-   padding: 0 50px;
-   margin-bottom: 35px;
-
+.bikepress-hub-card .card__img--hover {
+	transition: 0.2s all ease-out;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 100%;
+	position: absolute;
+	height: 235px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	top: 0;
 }
 
-h1 {
-   margin: 0 0 8px 0;
+.bikepress-hub-card .card__info {
+	z-index: 2;
+	background-color: #fff;
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	padding: 16px 24px 24px 24px;
+}
+
+.bikepress-hub-card .card__subcategory {
+	font-family: 'Raleway', sans-serif;
+	text-transform: uppercase;
+	font-size: 13px;
+	letter-spacing: 2px;
+	font-weight: 500;
+	color: #868686;
+}
+
+.bikepress-hub-card .card__title {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	font-family: 'Roboto Slab', serif;
+}
+
+.bikepress-hub-card .card__desc {
+	font-size: 12px;
+	font-family: 'Raleway', sans-serif;
+	font-weight: 500;
+}
+
+.bikepress-hub-card:hover .card__img--hover {
+	height: 100%;
+	opacity: 0.3;
+}
+
+.bikepress-hub-card:hover .card__info {
+	background-color: transparent;
+	position: relative;
+}
+
+.bikepress-hub-card:hover .card__info-hover {
+	opacity: 1;
 }
 
 /****** Footer ***********/
 .admin-footer {
-   min-height: 163px;
-   height: auto;
-   background-color: var(--main-bg-color);
-   width: 100%;
-   max-width: 1440px;
-   margin: 35px auto 0 auto;
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   font-family: Raleway, sans-serif;
-   box-sizing: border-box;
+	min-height: 163px;
+	height: auto;
+	background-color: var(--main-bg-color);
+	width: 100%;
+	max-width: 1440px;
+	margin: 35px auto 0 auto;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	font-family: Raleway, sans-serif;
+	box-sizing: border-box;
 }
 
 .footer-section {
-   display: flex;
-   flex-direction: column;
-   flex-basis: 50%;
-   padding: 20px;
-   gap: 15px;
-   box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	flex-basis: 50%;
+	padding: 20px;
+	gap: 15px;
+	box-sizing: border-box;
 }
 
 .footer-header {
-   margin: 0;
+	margin: 0;
 }
 
 ul.footer-list {
-
-   list-style-type: none; 
-   padding: 0; 
-   margin: 0; 
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
 }
 
 .footer-item {
-   margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
 .footer-item a {
-
-   text-decoration: none;
-   color: black;
+	text-decoration: none;
+	color: black;
 }
 
-ul.footer-list a:hover, ul.footer-list a:visited, ul.footer-list a:active  {
-   color: black;
+ul.footer-list a:hover,
+ul.footer-list a:visited,
+ul.footer-list a:active {
+	color: black;
 }
 
 .bikepress-prose {
-   max-width: 720px;
-   margin: 1em 0 2em;
-   line-height: 1.6;
+	max-width: 720px;
+	margin: 1em 0 2em;
+	line-height: 1.6;
 }
 
 .bikepress-prose ul {
-   margin: 0.5em 0 1em 1.5em;
-   list-style: disc;
+	margin: 0.5em 0 1em 1.5em;
+	list-style: disc;
 }
 
 .bikepress-about-image img {
-   max-width: 280px;
-   width: 100%;
-   height: auto;
-   display: block;
-   margin: 0 0 1.25em;
-   border-radius: 8px;
+	max-width: 280px;
+	width: 100%;
+	height: auto;
+	display: block;
+	margin: 0 0 1.25em;
+	border-radius: 8px;
+}
+
+@media screen and (max-width: 1024px) {
+	.bikepress-hub-card {
+		flex: 0 0 calc((100% - var(--bikepress-hub-gap)) / 2);
+		width: calc((100% - var(--bikepress-hub-gap)) / 2);
+		max-width: calc((100% - var(--bikepress-hub-gap)) / 2);
+	}
 }
 
 @media screen and (max-width: 768px) {
-   .footer-section {
-      flex-basis: 100%;
-   }
-}
+	.bikepress-hub-cards {
+		flex-direction: column !important;
+	}
 
-  /* CSS FOR ANIMATION */
-  @import url('https://fonts.googleapis.com/css?family=Roboto+Slab:100,300,400,700');
-  @import url('https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
+	.bikepress-hub-card {
+		flex: 1 1 100%;
+		width: 100%;
+		max-width: 100%;
+	}
 
-/*   *{
-  box-sizing: border-box;
-  }
-
-  body, html {
-   font-family: 'Roboto Slab', serif;
-   margin: 0;
-   width: 100%;
-   height: 100%;
-   padding: 0;
-  }
-
-  body {
-   background-color: #D2DBDD;
-   display: flex;
-   display: -webkit-flex;
-   -webkit-justify-content: center;
-   -webkit-align-items: center;
-   justify-content: center;
-   align-items: center;
-  } */
-
-  .manage-bikes-card .card__img, .manage-bikes-card .card__img--hover {
-     background-image: url('../img/manage-bikes-thumbnail.jpg');
-  }
-
-  .manage-specs-card .card__img, .manage-specs-card .card__img--hover {
-   background-image: url('../img/manage-specs-thumbnail.jpg');
-   }
-
-   .manage-maint-card .card__img, .manage-maint-card .card__img--hover {
-      background-image: url('../img/manage-maint-thumbnail.jpg');
-   }
-
-   .manage-data-card .card__img, .manage-data-card .card__img--hover,
-   .manage-status-card .card__img, .manage-status-card .card__img--hover,
-   .manage-import-export-card .card__img, .manage-import-export-card .card__img--hover {
-      background-image: url('../img/manage-data-thumbnail.jpg');
-   }
-
-  .card__like {
-     width: 18px;
-  }
-
-  .card__clock {
-     width: 15px;
-  vertical-align: middle;
-     fill: #AD7D52;
-  }
-  .card__time {
-     font-size: 12px;
-     color: #AD7D52;
-     vertical-align: middle;
-     margin-left: 5px;
-  }
-
-  .card__clock-info {
-     float: right;
-  }
-
-  .card__img {
-   visibility: hidden;
-   background-size: cover;
-   background-position: center;
-   background-repeat: no-repeat;
-   width: 100%;
-   height: 235px;
-   border-top-left-radius: 12px;
-   border-top-right-radius: 12px;
-  }
-
-  .card__info-hover {
-   position: absolute;
-   padding: 16px;
-   width: 100%;
-   opacity: 0;
-   top: 0;
-  }
-
-  .card__img--hover {
-   transition: 0.2s all ease-out;
-   background-size: cover;
-   background-position: center;
-   background-repeat: no-repeat;
-   width: 100%;
-   position: absolute;
-   height: 235px;
-   border-top-left-radius: 12px;
-   border-top-right-radius: 12px;
-   top: 0;
-  }
-  .card {
-   margin-right: 25px;
-   transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
-   background-color: #fff;
-   width: 33.3%;
-   position: relative;
-   border-radius: 12px;
-   overflow: hidden;
-   box-shadow: 0px 13px 10px -7px rgba(0, 0, 0,0.1);
-   flex-basis: 23%;
-  }
-  .card:hover {
-      box-shadow: 0px 30px 18px -8px rgba(0, 0, 0,0.1);
-      transform: scale(1.10, 1.10);
-  }
-
-  .card__info {
-   z-index: 2;
-   background-color: #fff;
-   border-bottom-left-radius: 12px;
-   border-bottom-right-radius: 12px;
-   padding: 16px 24px 24px 24px;
-  }
-
-  .card__subtitle {
-   font-family: 'Raleway', sans-serif;
-   text-transform: uppercase;
-   font-size: 13px;
-   letter-spacing: 2px;
-   font-weight: 500;
-   color: #868686;
-  }
-
-  .card__title {
-     margin-top: 5px;
-     margin-bottom: 10px;
-     font-family: 'Roboto Slab', serif;
-  }
-
-  .card__desc {
-     font-size: 12px;
-     font-family: 'Raleway', sans-serif;
-     font-weight: 500;
-  }
-
-  .card__author {
-     font-weight: 600;
-     text-decoration: none;
-     color: #AD7D52;
-  }
-
-  .card:hover .card__img--hover {
-     height: 100%;
-     opacity: 0.3;
-  }
-
-  .card:hover .card__info {
-     background-color: transparent;
-     position: relative;
-  }
-
-  .card:hover .card__info-hover {
-     opacity: 1;
-  }
-
-/* TABLET STYLES */
-@media screen and (max-width: 1024px)  {
-   .main-content {
-       max-width: 1024px;
-   }
-
-   .card-container {
-      flex-basis: 50%;
-   }
-
-}
-
-/* MOBILE STYLES */
-@media screen and (max-width: 768px)  {
-   .main-container {
-       min-width: auto;
-   }
-
-   .cards {
-       flex-direction: column;
-       gap: 15px;
-   }
-
-   .card-container {
-       margin: 8px;
-   }
-   
+	.footer-section {
+		flex-basis: 100%;
+	}
 }
