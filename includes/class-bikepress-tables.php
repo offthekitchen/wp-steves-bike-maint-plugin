@@ -46,12 +46,31 @@ function bikepress_status_table() {
 
 /**
  * Whether demo/test data should be loaded on activation.
- * Default ON when the constant is not defined (pre-CRUD learning default).
+ * Default OFF; set BIKEPRESS_LOAD_DEMO to true in wp-config to seed on activate.
  *
  * @return bool
  */
 function bikepress_should_load_demo() {
-	return ! defined( 'BIKEPRESS_LOAD_DEMO' ) || BIKEPRESS_LOAD_DEMO;
+	return defined( 'BIKEPRESS_LOAD_DEMO' ) && BIKEPRESS_LOAD_DEMO;
+}
+
+/**
+ * Whether bikes or statuses already exist (blocks demo re-import).
+ *
+ * @return bool
+ */
+function bikepress_has_existing_data() {
+	global $wpdb;
+
+	$bikes_table  = bikepress_bikes_table();
+	$status_table = bikepress_status_table();
+
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are prefixed identifiers.
+	$bike_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$bikes_table}" );
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$status_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$status_table}" );
+
+	return ( $bike_count > 0 || $status_count > 0 );
 }
 
 /**

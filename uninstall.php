@@ -29,5 +29,6 @@ $wpdb->query( "DROP TABLE IF EXISTS {$status_table}" );
 
 delete_option( 'bikepress_db_version' );
 delete_option( 'steves_bike_plugin_db_version' );
+delete_option( 'bikepress_show_demo_notice' );
 delete_option( 'bike_name' );
 delete_option( 'bike_make' );
