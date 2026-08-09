@@ -127,7 +127,7 @@ That file is the human changelog for the release line: features and bugfixes in 
 2. Upload/install on the sandbox WP site (or replace the deployed plugin folder carefully)
 3. Exercise activation only when the change needs fresh tables/data
 4. Test the shortcode page and any admin screens touched
-5. If you uninstall to reset DB, remember activation will reload test data (current plugin behavior)
+5. If you uninstall to reset DB, remember activation creates empty tables by default; use the first-run notice or Supporting Data → Import Demo Data for sample content (or `BIKEPRESS_LOAD_DEMO` for activate-time seeding)
 
 ## What “approval” means
 

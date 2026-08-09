@@ -5,13 +5,19 @@
 
 ## Summary
 
-Minor release line for admin bugfixes after 1.3.0, starting with restoring the Manage Bikes media library image picker.
+Minor release line after 1.3.0: Manage Bikes media picker fix, plus optional demo data (off by default) with Supporting Data card, first-run notice, and shortcode empty state.
 
 ## Changes
 
 ### Features
 
-_(none)_
+- **optional-demo-data** (`version1.4-feature-optional-demo-data`): Optional demo data import
+  - What changed:
+    - Activation no longer loads demo data by default (`BIKEPRESS_LOAD_DEMO` must be true to seed on activate)
+    - First-run admin notice on BikePress screens: Import demo data / No thanks
+    - Supporting Data hub card **Import Demo Data** (shared import action; blocked if bikes/statuses already exist)
+    - `[bikepress-bike-list]` empty state encourages adding bikes or importing demo data
+  - Why: Let real installs start clean while still offering sample data on demand
 
 ### Bugfixes
 
@@ -23,4 +29,5 @@ _(none)_
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.4.zip`
 - Unpacks to folder: `wp-bikepress/`
-- Test: Manage Bikes → Select image opens media library; choose image updates preview; Clear image resets to default
+- Prefer uninstall → install → activate to verify empty start + first-run notice
+- Test: Select image media picker; demo notice/card; shortcode empty message; import blocked when data exists

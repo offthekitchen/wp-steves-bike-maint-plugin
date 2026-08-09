@@ -10,10 +10,23 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 $img_base = plugin_dir_url( __DIR__ ) . 'img/';
+$notice   = isset( $_GET['bikepress_notice'] ) ? sanitize_key( wp_unslash( $_GET['bikepress_notice'] ) ) : '';
+
+$notice_messages = array(
+	'demo_ok'     => array( 'success', __( 'Demo data imported.', 'bikepress' ) ),
+	'demo_exists' => array( 'warning', __( 'Demo data was not imported because bikes or statuses already exist.', 'bikepress' ) ),
+);
 ?>
 <div class="bikepress-hub main-container">
 	<?php include plugin_dir_path( __FILE__ ) . 'bike-admin-header.php'; ?>
 	<h1><?php esc_html_e( 'MY BIKES', 'bikepress' ); ?></h1>
+
+	<?php if ( $notice && isset( $notice_messages[ $notice ] ) ) : ?>
+		<div class="notice notice-<?php echo esc_attr( $notice_messages[ $notice ][0] ); ?> is-dismissible" style="margin: 12px 0;">
+			<p><?php echo esc_html( $notice_messages[ $notice ][1] ); ?></p>
+		</div>
+	<?php endif; ?>
+
 	<main class="main-content">
 		<section id="bike-admin-tools" class="bike-admin-tools">
 			<div class="bikepress-hub-cards bike-admin-cards">

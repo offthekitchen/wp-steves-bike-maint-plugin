@@ -85,6 +85,9 @@ class BikePress_Activator {
 		if ( bikepress_should_load_demo() ) {
 			require_once plugin_dir_path( __FILE__ ) . 'test-data.php';
 			Test_Data::insert_test_data();
+			delete_option( 'bikepress_show_demo_notice' );
+		} else {
+			update_option( 'bikepress_show_demo_notice', '1' );
 		}
 
 		delete_option( 'steves_bike_plugin_db_version' );

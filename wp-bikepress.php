@@ -53,6 +53,9 @@ add_action( 'admin_post_bikepress_save_status', 'bikepress_handle_save_status' )
 add_action( 'admin_post_bikepress_delete_status', 'bikepress_handle_delete_status' );
 add_action( 'admin_post_bikepress_export_data', 'bikepress_handle_export_data' );
 add_action( 'admin_post_bikepress_import_data', 'bikepress_handle_import_data' );
+add_action( 'admin_post_bikepress_import_demo_data', 'bikepress_handle_import_demo_data' );
+add_action( 'admin_post_bikepress_dismiss_demo_notice', 'bikepress_handle_dismiss_demo_notice' );
+add_action( 'admin_notices', 'bikepress_render_demo_data_notice' );
 
 /**
  * Open "Visit plugin site" in a new tab on the Plugins screen.
@@ -299,6 +302,107 @@ function bikepress_redirect_admin_page( $page, $notice = '', $extra = array() ) 
 	$args = array_merge( $args, $extra );
 	wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
 	exit;
+}
+
+/**
+ * Import built-in demo dataset (Supporting Data card / first-run notice).
+ */
+function bikepress_handle_import_demo_data() {
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bikepress_import_demo_data' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	$redirect_page = isset( $_REQUEST['redirect_to'] ) ? sanitize_key( wp_unslash( $_REQUEST['redirect_to'] ) ) : 'supporting-data-admin';
+	$allowed       = array( 'my-bikes', 'supporting-data-admin' );
+	if ( ! in_array( $redirect_page, $allowed, true ) ) {
+		$redirect_page = 'supporting-data-admin';
+	}
+
+	if ( bikepress_has_existing_data() ) {
+		delete_option( 'bikepress_show_demo_notice' );
+		bikepress_redirect_admin_page( $redirect_page, 'demo_exists' );
+	}
+
+	require_once plugin_dir_path( __FILE__ ) . 'includes/test-data.php';
+	Test_Data::insert_test_data();
+	delete_option( 'bikepress_show_demo_notice' );
+	bikepress_redirect_admin_page( $redirect_page, 'demo_ok' );
+}
+
+/**
+ * Dismiss the first-run demo data admin notice.
+ */
+function bikepress_handle_dismiss_demo_notice() {
+	if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bikepress_dismiss_demo_notice' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	delete_option( 'bikepress_show_demo_notice' );
+
+	$redirect = wp_get_referer();
+	if ( ! $redirect ) {
+		$redirect = admin_url( 'admin.php?page=my-bikes' );
+	}
+	wp_safe_redirect( $redirect );
+	exit;
+}
+
+/**
+ * First-run notice offering optional demo data import.
+ */
+function bikepress_render_demo_data_notice() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$hook = isset( $GLOBALS['hook_suffix'] ) ? (string) $GLOBALS['hook_suffix'] : '';
+	if ( ! bikepress_is_plugin_admin_screen( $hook ) ) {
+		return;
+	}
+
+	if ( '1' !== (string) get_option( 'bikepress_show_demo_notice', '' ) ) {
+		return;
+	}
+
+	if ( bikepress_has_existing_data() ) {
+		delete_option( 'bikepress_show_demo_notice' );
+		return;
+	}
+
+	$import_url = wp_nonce_url(
+		add_query_arg(
+			array(
+				'action'      => 'bikepress_import_demo_data',
+				'redirect_to' => 'my-bikes',
+			),
+			admin_url( 'admin-post.php' )
+		),
+		'bikepress_import_demo_data'
+	);
+	$dismiss_url = wp_nonce_url(
+		admin_url( 'admin-post.php?action=bikepress_dismiss_demo_notice' ),
+		'bikepress_dismiss_demo_notice'
+	);
+	?>
+	<div class="notice notice-info">
+		<p>
+			<strong><?php esc_html_e( 'BikePress', 'bikepress' ); ?></strong>
+			<?php esc_html_e( 'Would you like to load sample bikes, statuses, specs, and maintenance records to explore the plugin?', 'bikepress' ); ?>
+		</p>
+		<p>
+			<a class="button button-primary" href="<?php echo esc_url( $import_url ); ?>"><?php esc_html_e( 'Import demo data', 'bikepress' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'No thanks', 'bikepress' ); ?></a>
+		</p>
+	</div>
+	<?php
 }
 
 /**
@@ -857,6 +961,15 @@ function bikepress_bike_list( $atts ) {
 
 	$Content  = '<section id="bike-list" class="bike-section fade-in">';
 	$Content .= '<h1 class="bike-list-title">BIKES</h1>';
+
+	if ( empty( $aBikes ) ) {
+		$Content .= '<div class="bikepress-no-bikes">';
+		$Content .= '<p>' . esc_html__( 'No bike data found.', 'bikepress' ) . '</p>';
+		$Content .= '<p>' . esc_html__( 'Add bikes manually in the BikePress admin (Manage Bikes), or import demo data from Manage Supporting Data.', 'bikepress' ) . '</p>';
+		$Content .= '</div>';
+		$Content .= '</section>';
+		return $Content;
+	}
 
 	foreach ( $aBikes as $oBike ) {
 		$bike_id   = absint( $oBike->id );

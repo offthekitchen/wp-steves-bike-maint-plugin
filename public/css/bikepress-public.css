@@ -34,6 +34,15 @@
     min-width: 708px;
 }
 
+.bikepress-no-bikes {
+    margin-top: 24px;
+    line-height: 1.5;
+}
+
+.bikepress-no-bikes p {
+    margin: 0 0 12px;
+}
+
 .bike {
     display: flex;
     margin-top: 33px;
