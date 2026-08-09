@@ -26,9 +26,9 @@ $img_base = plugin_dir_url( __DIR__ ) . 'img/';
 					<div class="card__info-hover">
 						<img src="<?php echo esc_url( $img_base . 'admin-icon-status.png' ); ?>" alt="<?php esc_attr_e( 'status icon', 'bikepress' ); ?>" class="admin-icon">
 					</div>
-					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-statuses-thumbnail.jpg' ); ?>');"></div>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=status-admin' ) ); ?>" class="card_link">
-						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-statuses-thumbnail.jpg' ); ?>');"></div>
 					</a>
 					<div class="card__info">
 						<span class="card__subcategory"><?php esc_html_e( 'Statuses', 'bikepress' ); ?></span>
@@ -41,9 +41,9 @@ $img_base = plugin_dir_url( __DIR__ ) . 'img/';
 					<div class="card__info-hover">
 						<img src="<?php echo esc_url( $img_base . 'admin-icon-import-export.png' ); ?>" alt="<?php esc_attr_e( 'import export icon', 'bikepress' ); ?>" class="admin-icon">
 					</div>
-					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-import-export-thumbnail.jpg' ); ?>');"></div>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=import-export-admin' ) ); ?>" class="card_link">
-						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-import-export-thumbnail.jpg' ); ?>');"></div>
 					</a>
 					<div class="card__info">
 						<span class="card__subcategory"><?php esc_html_e( 'Backup', 'bikepress' ); ?></span>

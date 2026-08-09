@@ -52,9 +52,9 @@ $img_base = plugin_dir_url( __DIR__ ) . 'img/';
 					<div class="card__info-hover">
 						<img src="<?php echo esc_url( $img_base . 'admin-icon-maint.png' ); ?>" alt="<?php esc_attr_e( 'maint icon', 'bikepress' ); ?>" class="admin-icon">
 					</div>
-					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=maint-admin' ) ); ?>" class="card_link">
-						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
 					</a>
 					<div class="card__info">
 						<span class="card__subcategory"><?php esc_html_e( 'Last Maintenance: March 1, 2025', 'bikepress' ); ?></span>
@@ -67,9 +67,9 @@ $img_base = plugin_dir_url( __DIR__ ) . 'img/';
 					<div class="card__info-hover">
 						<img src="<?php echo esc_url( $img_base . 'admin-icon-data.png' ); ?>" alt="<?php esc_attr_e( 'data icon', 'bikepress' ); ?>" class="admin-icon">
 					</div>
-					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=supporting-data-admin' ) ); ?>" class="card_link">
-						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-data-thumbnail.jpg' ); ?>');"></div>
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-maint-thumbnail.jpg' ); ?>');"></div>
 					</a>
 					<div class="card__info">
 						<span class="card__subcategory"><?php esc_html_e( 'Subtitle', 'bikepress' ); ?></span>
