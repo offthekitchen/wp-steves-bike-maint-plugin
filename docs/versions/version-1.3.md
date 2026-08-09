@@ -5,7 +5,7 @@
 
 ## Summary
 
-Minor release line for admin UI formatting polish: BikePress menu branding, hub card layout, plugin site link behavior, and related copy fixes.
+Minor release line for admin UI formatting polish: BikePress menu branding, hub card layout and thumbnails, plugin site link behavior, and related copy fixes.
 
 ## Changes
 
@@ -30,8 +30,17 @@ _(none)_
     - Statuses description: **Add and Maintain Bike Statuses**
     - `Plugin URI` → `https://www.offthekitchen.com/wordpress-development/` with `target="_blank"`
 
+- **hub-card-images** (`version1.3-bugfix-hub-card-images`): Hub card thumbnail updates
+  - What was wrong:
+    - My Bikes Maintenance and Supporting Data cards used each other’s better-matched photos
+    - Supporting Data Statuses and Import/Export cards reused the generic data thumbnail
+  - What fixed it:
+    - Swapped Maintenance ↔ Supporting Data thumbnails on My Bikes
+    - Added compressed `manage-statuses-thumbnail.jpg` and `manage-import-export-thumbnail.jpg` for Supporting Data cards
+
 ## Install / test notes
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.3.zip`
 - Unpacks to folder: `wp-bikepress/`
 - Test: left menu BikePress; My Bikes 4 cards; Supporting Data cards with images/hover; no return header; Plugins Visit plugin site opens new tab
+- Also test: My Bikes maint/data thumbs swapped; Supporting Data Statuses + Import/Export use new photos
