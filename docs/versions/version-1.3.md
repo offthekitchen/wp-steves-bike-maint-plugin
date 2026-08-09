@@ -1,6 +1,6 @@
 # Version 1.3
 
-**Status:** Current  
+**Status:** Superseded by 1.4 (in progress)  
 **Base:** main (BikePress 1.2.0)
 
 ## Summary
