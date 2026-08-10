@@ -7,6 +7,10 @@ jQuery(document).ready(function ($) {
 	$('#select_image_button').on('click', function (e) {
 		e.preventDefault();
 
+		if ( typeof wp === 'undefined' || ! wp.media ) {
+			return;
+		}
+
 		if (frame) {
 			frame.open();
 			return;
