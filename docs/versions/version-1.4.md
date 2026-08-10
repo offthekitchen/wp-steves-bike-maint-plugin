@@ -1,11 +1,11 @@
 # Version 1.4
 
-**Status:** In progress  
+**Status:** Current  
 **Base:** main (BikePress 1.3.0)
 
 ## Summary
 
-Minor release line after 1.3.0: Manage Bikes media picker fix; optional demo data (bikes/specs/maint); core statuses seeded as plugin data on activate.
+Minor release **1.4.0**: Manage Bikes media picker fix; optional demo data (bikes/specs/maint); core statuses seeded as plugin data on activate.
 
 ## Changes
 
@@ -18,6 +18,10 @@ Minor release line after 1.3.0: Manage Bikes media picker fix; optional demo dat
     - Supporting Data hub card **Import Demo Data** (shared import action; blocked if bikes already exist)
     - `[bikepress-bike-list]` empty state encourages adding bikes or importing demo data
   - Why: Let real installs start clean while still offering sample data on demand
+
+- **release-1.4.0** (`version1.4-feature-release-1.4.0`): Cut plugin version 1.4.0
+  - What changed: Plugin header and `BIKEPRESS_VERSION` set to `1.4.0`
+  - Why: Ship the 1.4 line as a named WordPress plugin release
 
 ### Bugfixes
 
@@ -36,5 +40,6 @@ Minor release line after 1.3.0: Manage Bikes media picker fix; optional demo dat
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.4.zip`
 - Unpacks to folder: `wp-bikepress/`
+- Plugins screen should show **Version 1.4.0**
 - Prefer uninstall → install → activate: 3 core statuses, no bikes; first-run notice
 - Test: delete unused status (no Unknown); demo import with deleted Active → bikes get Unknown; Select image; shortcode empty message
