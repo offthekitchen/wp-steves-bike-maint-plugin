@@ -45,6 +45,14 @@ function bikepress_status_table() {
 }
 
 /**
+ * @return string
+ */
+function bikepress_type_table() {
+	global $wpdb;
+	return $wpdb->prefix . 'bike_type';
+}
+
+/**
  * Whether demo/test data should be loaded on activation.
  * Default OFF; set BIKEPRESS_LOAD_DEMO to true in wp-config to seed on activate.
  *
@@ -85,6 +93,7 @@ function bikepress_is_plugin_admin_screen( $hook ) {
 		'my-bikes_page_maint-admin',
 		'my-bikes_page_supporting-data-admin',
 		'my-bikes_page_status-admin',
+		'my-bikes_page_type-admin',
 		'my-bikes_page_import-export-admin',
 		'my-bikes_page_bikepress-privacy',
 		'my-bikes_page_bikepress-terms',
@@ -104,6 +113,7 @@ function bikepress_is_plugin_admin_screen( $hook ) {
 		'maint-admin',
 		'supporting-data-admin',
 		'status-admin',
+		'type-admin',
 		'import-export-admin',
 		'bikepress-privacy',
 		'bikepress-terms',

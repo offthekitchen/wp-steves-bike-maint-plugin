@@ -10,7 +10,7 @@
  * Plugin Name:       BikePress
  * Plugin URI:        https://www.offthekitchen.com/wordpress-development/
  * Description:       Track bicycles, specifications, and maintenance records.
- * Version:           1.4.0
+ * Version:           1.5.0
  * Author:            Off the Kitchen
  * Author URI:        http://www.offthekitchen.com
  * License:           GPL-2.0+
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'BIKEPRESS_VERSION', '1.4.0' );
+define( 'BIKEPRESS_VERSION', '1.5.0' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-tables.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-import-export.php';
@@ -38,6 +38,7 @@ define( 'BIKES_TABLE', bikepress_bikes_table() );
 define( 'MAINTENANCE_TABLE', bikepress_maintenance_table() );
 define( 'SPECS_TABLE', bikepress_specs_table() );
 define( 'STATUS_TABLE', bikepress_status_table() );
+define( 'TYPE_TABLE', bikepress_type_table() );
 
 add_action( 'admin_menu', 'bike_maintenance_setup_menu' );
 add_action( 'admin_enqueue_scripts', 'bikepress_enqueue_admin_assets' );
@@ -51,6 +52,8 @@ add_action( 'admin_post_bikepress_save_maintenance', 'bikepress_handle_save_main
 add_action( 'admin_post_bikepress_delete_maintenance', 'bikepress_handle_delete_maintenance' );
 add_action( 'admin_post_bikepress_save_status', 'bikepress_handle_save_status' );
 add_action( 'admin_post_bikepress_delete_status', 'bikepress_handle_delete_status' );
+add_action( 'admin_post_bikepress_save_type', 'bikepress_handle_save_type' );
+add_action( 'admin_post_bikepress_delete_type', 'bikepress_handle_delete_type' );
 add_action( 'admin_post_bikepress_export_data', 'bikepress_handle_export_data' );
 add_action( 'admin_post_bikepress_import_data', 'bikepress_handle_import_data' );
 add_action( 'admin_post_bikepress_import_demo_data', 'bikepress_handle_import_demo_data' );
@@ -133,7 +136,7 @@ function bikepress_is_bikes_admin_screen( $hook ) {
  * Keep hub-only pages registered for access, but hide them from the left submenu.
  */
 function bikepress_hide_hub_only_submenu_items() {
-	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=import-export-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-privacy"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-terms"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-about"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
+	echo '<style id="bikepress-hide-hub-menus">#toplevel_page_my-bikes .wp-submenu a[href*="page=status-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=type-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=import-export-admin"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-privacy"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-terms"],#toplevel_page_my-bikes .wp-submenu a[href*="page=bikepress-about"],#toplevel_page_my-bikes .wp-submenu a[href*="page=data-admin"]{display:none!important;}</style>';
 }
 
 /**
@@ -160,6 +163,7 @@ function bike_maintenance_setup_menu() {
 
 	// Hub-only pages: keep registered under My Bikes for capability checks, hide via CSS.
 	add_submenu_page( 'my-bikes', __( 'Manage Statuses', 'bikepress' ), __( 'Manage Statuses', 'bikepress' ), 'manage_options', 'status-admin', 'status_admin' );
+	add_submenu_page( 'my-bikes', __( 'Manage Types', 'bikepress' ), __( 'Manage Types', 'bikepress' ), 'manage_options', 'type-admin', 'type_admin' );
 	add_submenu_page( 'my-bikes', __( 'Import / Export Data', 'bikepress' ), __( 'Import / Export Data', 'bikepress' ), 'manage_options', 'import-export-admin', 'import_export_admin' );
 	add_submenu_page( 'my-bikes', __( 'Data & Privacy', 'bikepress' ), __( 'Data & Privacy', 'bikepress' ), 'manage_options', 'bikepress-privacy', 'bikepress_privacy_admin' );
 	add_submenu_page( 'my-bikes', __( 'Terms & Conditions', 'bikepress' ), __( 'Terms & Conditions', 'bikepress' ), 'manage_options', 'bikepress-terms', 'bikepress_terms_admin' );
@@ -205,6 +209,7 @@ function bikepress_handle_save_bike() {
 	$bike_model      = isset( $_POST['bike_model'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_model'] ) ) : '';
 	$serial_number   = isset( $_POST['serial_number'] ) ? sanitize_text_field( wp_unslash( $_POST['serial_number'] ) ) : '';
 	$bike_status_id  = isset( $_POST['bike_status_id'] ) ? absint( $_POST['bike_status_id'] ) : 0;
+	$bike_type_id    = isset( $_POST['bike_type_id'] ) ? absint( $_POST['bike_type_id'] ) : 0;
 	$bike_desc       = isset( $_POST['bike_desc'] ) ? sanitize_textarea_field( wp_unslash( $_POST['bike_desc'] ) ) : '';
 	$bike_image_id   = isset( $_POST['bike_image_id'] ) ? absint( $_POST['bike_image_id'] ) : 0;
 	$purchase_raw    = isset( $_POST['purchase_date'] ) ? sanitize_text_field( wp_unslash( $_POST['purchase_date'] ) ) : '';
@@ -215,6 +220,10 @@ function bikepress_handle_save_bike() {
 
 	if ( $bike_status_id <= 0 ) {
 		bikepress_redirect_bikes_admin( 'bike_status_required', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+
+	if ( $bike_type_id <= 0 ) {
+		bikepress_redirect_bikes_admin( 'bike_type_required', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
 	}
 
 	$purchase_date = '0000-00-00 00:00:00';
@@ -229,12 +238,13 @@ function bikepress_handle_save_bike() {
 		'bike_model'     => $bike_model,
 		'serial_number'  => $serial_number,
 		'bike_status_id' => $bike_status_id,
+		'bike_type_id'   => $bike_type_id,
 		'bike_desc'      => $bike_desc,
 		'bike_image_id'  => $bike_image_id,
 		'purchase_date'  => $purchase_date,
 	);
 
-	$formats = array( '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s' );
+	$formats = array( '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%d', '%s' );
 
 	if ( $bike_id > 0 ) {
 		$updated = $wpdb->update(
@@ -751,6 +761,162 @@ function bikepress_handle_delete_status() {
 }
 
 /**
+ * Get the Unknown type ID, creating the row if it does not exist.
+ *
+ * @return int Type ID, or 0 on failure.
+ */
+function bikepress_get_or_create_unknown_type_id() {
+	global $wpdb;
+
+	$existing = $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT id FROM ' . TYPE_TABLE . ' WHERE bike_type = %s LIMIT 1',
+			'Unknown'
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	if ( $existing ) {
+		return absint( $existing );
+	}
+
+	$inserted = $wpdb->insert(
+		TYPE_TABLE,
+		array(
+			'last_update' => current_time( 'mysql' ),
+			'bike_type'   => 'Unknown',
+		),
+		array( '%s', '%s' )
+	);
+
+	if ( false === $inserted ) {
+		return 0;
+	}
+
+	return absint( $wpdb->insert_id );
+}
+
+/**
+ * Whether a type row is the Unknown type.
+ *
+ * @param int $type_id Type ID.
+ * @return bool
+ */
+function bikepress_is_unknown_type( $type_id ) {
+	global $wpdb;
+
+	$type_id = absint( $type_id );
+	if ( $type_id <= 0 ) {
+		return false;
+	}
+
+	$name = $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT bike_type FROM ' . TYPE_TABLE . ' WHERE id = %d',
+			$type_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	return 'Unknown' === $name;
+}
+
+/**
+ * Save (insert/update) a type.
+ */
+function bikepress_handle_save_type() {
+	if ( ! isset( $_POST['bikepress_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_type_nonce'] ) ), 'bikepress_save_type' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$type_id   = isset( $_POST['type_id'] ) ? absint( $_POST['type_id'] ) : 0;
+	$bike_type = isset( $_POST['bike_type'] ) ? sanitize_text_field( wp_unslash( $_POST['bike_type'] ) ) : '';
+
+	if ( '' === $bike_type ) {
+		bikepress_redirect_admin_page( 'type-admin', 'type_name_required', array( 'action' => $type_id ? 'edit' : 'new', 'type_id' => $type_id ) );
+	}
+
+	$row = array(
+		'last_update' => current_time( 'mysql' ),
+		'bike_type'   => $bike_type,
+	);
+	$formats = array( '%s', '%s' );
+
+	if ( $type_id > 0 ) {
+		$updated = $wpdb->update( TYPE_TABLE, $row, array( 'id' => $type_id ), $formats, array( '%d' ) );
+		if ( false === $updated ) {
+			bikepress_redirect_admin_page( 'type-admin', 'type_save_error', array( 'action' => 'edit', 'type_id' => $type_id ) );
+		}
+		bikepress_redirect_admin_page( 'type-admin', 'type_updated' );
+	}
+
+	$inserted = $wpdb->insert( TYPE_TABLE, $row, $formats );
+	if ( false === $inserted ) {
+		bikepress_redirect_admin_page( 'type-admin', 'type_save_error', array( 'action' => 'new' ) );
+	}
+	bikepress_redirect_admin_page( 'type-admin', 'type_created' );
+}
+
+/**
+ * Delete a type, reassigning bikes to Unknown only when needed.
+ */
+function bikepress_handle_delete_type() {
+	if ( ! isset( $_POST['bikepress_delete_type_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_type_nonce'] ) ), 'bikepress_delete_type' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$type_id = isset( $_POST['type_id'] ) ? absint( $_POST['type_id'] ) : 0;
+	if ( $type_id <= 0 ) {
+		bikepress_redirect_admin_page( 'type-admin', 'type_delete_error' );
+	}
+
+	if ( bikepress_is_unknown_type( $type_id ) ) {
+		bikepress_redirect_admin_page( 'type-admin', 'type_unknown_protected' );
+	}
+
+	$bike_count = (int) $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT COUNT(*) FROM ' . BIKES_TABLE . ' WHERE bike_type_id = %d',
+			$type_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	if ( $bike_count > 0 ) {
+		$unknown_id = bikepress_get_or_create_unknown_type_id();
+		if ( $unknown_id <= 0 ) {
+			bikepress_redirect_admin_page( 'type-admin', 'type_delete_error' );
+		}
+
+		$wpdb->update(
+			BIKES_TABLE,
+			array( 'bike_type_id' => $unknown_id ),
+			array( 'bike_type_id' => $type_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+		$deleted = $wpdb->delete( TYPE_TABLE, array( 'id' => $type_id ), array( '%d' ) );
+		if ( false === $deleted || 0 === $deleted ) {
+			bikepress_redirect_admin_page( 'type-admin', 'type_delete_error' );
+		}
+		bikepress_redirect_admin_page( 'type-admin', 'type_deleted_reassigned' );
+	}
+
+	$deleted = $wpdb->delete( TYPE_TABLE, array( 'id' => $type_id ), array( '%d' ) );
+	if ( false === $deleted || 0 === $deleted ) {
+		bikepress_redirect_admin_page( 'type-admin', 'type_delete_error' );
+	}
+	bikepress_redirect_admin_page( 'type-admin', 'type_deleted' );
+}
+
+/**
  * Download a JSON export of all BikePress data.
  */
 function bikepress_handle_export_data() {
@@ -878,6 +1044,13 @@ function status_admin() {
 }
 
 /**
+ * Admin: types CRUD (hub-only; not shown in left submenu).
+ */
+function type_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/type-admin-page.php';
+}
+
+/**
  * Admin: import / export (hub-only).
  */
 function import_export_admin() {
@@ -941,6 +1114,7 @@ function bikepress_bike_list( $atts ) {
 	$bike_plugin_url = plugin_dir_url( __FILE__ );
 	$bikes_table     = BIKES_TABLE;
 	$status_table    = STATUS_TABLE;
+	$type_table      = TYPE_TABLE;
 	$maint_table     = MAINTENANCE_TABLE;
 	$specs_table     = SPECS_TABLE;
 
@@ -950,10 +1124,12 @@ function bikepress_bike_list( $atts ) {
 
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are trusted prefixed identifiers.
 	$aBikes = $wpdb->get_results(
-		"SELECT {$bikes_table}.*, {$status_table}.bike_status
+		"SELECT {$bikes_table}.*, {$status_table}.bike_status, {$type_table}.bike_type
 		FROM {$bikes_table}
 		INNER JOIN {$status_table}
-			ON {$bikes_table}.bike_status_id = {$status_table}.id"
+			ON {$bikes_table}.bike_status_id = {$status_table}.id
+		LEFT JOIN {$type_table}
+			ON {$bikes_table}.bike_type_id = {$type_table}.id"
 	);
 
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -1021,6 +1197,8 @@ function bikepress_bike_list( $atts ) {
 		$Content .= '<div class="bike-specs">';
 		$Content .= '<div class="bike-make bike-detail"><b>MAKE:</b> ' . esc_html( $oBike->bike_make ) . '</div>';
 		$Content .= '<div class="bike-model bike-detail"><b>MODEL:</b> ' . esc_html( $oBike->bike_model ) . '</div>';
+		$bike_type_label = ! empty( $oBike->bike_type ) ? $oBike->bike_type : 'Unknown';
+		$Content .= '<div class="bike-type bike-detail"><b>TYPE:</b> ' . esc_html( $bike_type_label ) . '</div>';
 		$Content .= '<div class="bike-status bike-detail"><b>STATUS:</b> ' . esc_html( $oBike->bike_status ) . '</div>';
 		$Content .= '</div>';
 		$Content .= '<div class="bike-data"><div class="bike-desc">' . esc_html( $oBike->bike_desc ) . '</div></div>';
@@ -1099,6 +1277,9 @@ register_activation_hook( __FILE__, 'activate_bikepress' );
 register_deactivation_hook( __FILE__, 'deactivate_bikepress' );
 
 require plugin_dir_path( __FILE__ ) . 'includes/class-bikepress.php';
+
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-activator.php';
+BikePress_Activator::maybe_upgrade();
 
 /**
  * Boot the plugin.
