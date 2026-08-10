@@ -18,7 +18,7 @@ $notice   = isset( $_GET['bikepress_notice'] ) ? sanitize_key( wp_unslash( $_GET
 
 $notice_messages = array(
 	'demo_ok'     => array( 'success', __( 'Demo data imported.', 'bikepress' ) ),
-	'demo_exists' => array( 'warning', __( 'Demo data was not imported because bikes or statuses already exist.', 'bikepress' ) ),
+	'demo_exists' => array( 'warning', __( 'Demo data was not imported because bikes already exist.', 'bikepress' ) ),
 );
 
 $demo_import_url = wp_nonce_url(
@@ -87,7 +87,7 @@ $demo_import_url = wp_nonce_url(
 					<div class="card__info">
 						<span class="card__subcategory"><?php esc_html_e( 'Sample', 'bikepress' ); ?></span>
 						<h3 class="card__title"><?php esc_html_e( 'Import Demo Data', 'bikepress' ); ?></h3>
-						<span class="card__desc"><?php esc_html_e( 'Load sample bikes, statuses, specs, and maintenance records', 'bikepress' ); ?></span>
+						<span class="card__desc"><?php esc_html_e( 'Load sample bikes, specs, and maintenance records', 'bikepress' ); ?></span>
 					</div>
 				</article>
 

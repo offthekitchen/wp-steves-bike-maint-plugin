@@ -1,6 +1,6 @@
 <?php
 /**
- * Demo / test data for BikePress activation.
+ * Demo / test data for BikePress (optional sample bikes, specs, maintenance).
  *
  * @link       http://www.offthekitchen.com
  * @since      1.0.0
@@ -12,66 +12,46 @@
 /**
  * Inserts a small demo dataset when enabled.
  *
+ * Core statuses come from BikePress_Plugin_Data, not demo data.
+ *
  * @since 1.0.0
  * @package BikePress
  */
 class Test_Data {
 
 	/**
-	 * Insert simplified demo statuses, bikes, maintenance, and specs.
+	 * Insert simplified demo bikes, maintenance, and specs.
 	 *
 	 * @since 1.0.0
 	 */
 	public static function insert_test_data() {
 		global $wpdb;
 
-		$bikes_table        = bikepress_bikes_table();
-		$maintenance_table  = bikepress_maintenance_table();
-		$specs_table        = bikepress_specs_table();
-		$status_table       = bikepress_status_table();
-		$now                = current_time( 'mysql' );
+		$bikes_table       = bikepress_bikes_table();
+		$maintenance_table = bikepress_maintenance_table();
+		$specs_table       = bikepress_specs_table();
+		$now               = current_time( 'mysql' );
 
-		// Statuses first so bikes can reference real IDs.
-		$wpdb->insert(
-			$status_table,
-			array(
-				'last_update' => $now,
-				'bike_status' => 'Active',
-			)
-		);
-		$status_active = (int) $wpdb->insert_id;
+		require_once plugin_dir_path( __FILE__ ) . 'class-bikepress-plugin-data.php';
 
-		$wpdb->insert(
-			$status_table,
-			array(
-				'last_update' => $now,
-				'bike_status' => 'Retired',
-			)
-		);
-		$status_retired = (int) $wpdb->insert_id;
-
-		$wpdb->insert(
-			$status_table,
-			array(
-				'last_update' => $now,
-				'bike_status' => 'Building',
-			)
-		);
-		$status_building = (int) $wpdb->insert_id;
+		// Use existing statuses only; missing names fall back to Unknown (do not re-seed core statuses).
+		$status_active   = BikePress_Plugin_Data::resolve_status_id_or_unknown( 'Active' );
+		$status_retired  = BikePress_Plugin_Data::resolve_status_id_or_unknown( 'Retired' );
+		$status_building = BikePress_Plugin_Data::resolve_status_id_or_unknown( 'Building' );
 
 		// Bike 1
 		$wpdb->insert(
 			$bikes_table,
 			array(
-				'last_update'     => $now,
-				'bike_image_id'   => 0,
-				'bike_name'       => 'Trail Rider',
-				'bike_desc'       => 'A reliable trail bike for weekend rides.',
-				'bike_make'       => 'Specialized',
-				'bike_model'      => 'Rockhopper',
-				'purchase_date'   => '2018-05-12 00:00:00',
-				'serial_number'   => 'DEMO-ROCK-001',
-				'bike_status_id'  => $status_active,
+				'last_update'    => $now,
+				'bike_image_id'  => 0,
+				'bike_name'      => 'Trail Rider',
+				'bike_desc'      => 'A reliable trail bike for weekend rides.',
+				'bike_make'      => 'Specialized',
+				'bike_model'     => 'Rockhopper',
+				'purchase_date'  => '2018-05-12 00:00:00',
+				'serial_number'  => 'DEMO-ROCK-001',
+				'bike_status_id' => $status_active,
 			)
 		);
 		$bike1_id = (int) $wpdb->insert_id;
@@ -80,15 +60,15 @@ class Test_Data {
 		$wpdb->insert(
 			$bikes_table,
 			array(
-				'last_update'     => $now,
-				'bike_image_id'   => 0,
-				'bike_name'       => 'Commuter',
-				'bike_desc'       => 'Everyday city and path commuting bike.',
-				'bike_make'       => 'Trek',
-				'bike_model'      => 'FX 2',
-				'purchase_date'   => '2020-03-01 00:00:00',
-				'serial_number'   => 'DEMO-TREK-002',
-				'bike_status_id'  => $status_active,
+				'last_update'    => $now,
+				'bike_image_id'  => 0,
+				'bike_name'      => 'Commuter',
+				'bike_desc'      => 'Everyday city and path commuting bike.',
+				'bike_make'      => 'Trek',
+				'bike_model'     => 'FX 2',
+				'purchase_date'  => '2020-03-01 00:00:00',
+				'serial_number'  => 'DEMO-TREK-002',
+				'bike_status_id' => $status_active,
 			)
 		);
 		$bike2_id = (int) $wpdb->insert_id;
@@ -97,15 +77,15 @@ class Test_Data {
 		$wpdb->insert(
 			$bikes_table,
 			array(
-				'last_update'     => $now,
-				'bike_image_id'   => 0,
-				'bike_name'       => 'Project Frame',
-				'bike_desc'       => 'Build in progress — demo building status.',
-				'bike_make'       => 'Surly',
-				'bike_model'      => 'Karate Monkey',
-				'purchase_date'   => '2024-01-15 00:00:00',
-				'serial_number'   => 'DEMO-SURLY-003',
-				'bike_status_id'  => $status_building ? $status_building : $status_retired,
+				'last_update'    => $now,
+				'bike_image_id'  => 0,
+				'bike_name'      => 'Project Frame',
+				'bike_desc'      => 'Build in progress — demo building status.',
+				'bike_make'      => 'Surly',
+				'bike_model'     => 'Karate Monkey',
+				'purchase_date'  => '2024-01-15 00:00:00',
+				'serial_number'  => 'DEMO-SURLY-003',
+				'bike_status_id' => $status_building ? $status_building : $status_retired,
 			)
 		);
 		$bike3_id = (int) $wpdb->insert_id;
@@ -114,31 +94,31 @@ class Test_Data {
 		$wpdb->insert(
 			$maintenance_table,
 			array(
-				'last_update'       => $now,
-				'maintenance_date'  => '2024-06-01 00:00:00',
-				'bike_id'           => $bike1_id,
-				'maintenance_desc'  => 'New chain and cassette',
-				'bike_miles'        => 1200,
+				'last_update'      => $now,
+				'maintenance_date' => '2024-06-01 00:00:00',
+				'bike_id'          => $bike1_id,
+				'maintenance_desc' => 'New chain and cassette',
+				'bike_miles'       => 1200,
 			)
 		);
 		$wpdb->insert(
 			$maintenance_table,
 			array(
-				'last_update'       => $now,
-				'maintenance_date'  => '2025-02-10 00:00:00',
-				'bike_id'           => $bike1_id,
-				'maintenance_desc'  => 'Brake pads replaced',
-				'bike_miles'        => 1850,
+				'last_update'      => $now,
+				'maintenance_date' => '2025-02-10 00:00:00',
+				'bike_id'          => $bike1_id,
+				'maintenance_desc' => 'Brake pads replaced',
+				'bike_miles'       => 1850,
 			)
 		);
 		$wpdb->insert(
 			$maintenance_table,
 			array(
-				'last_update'       => $now,
-				'maintenance_date'  => '2024-11-20 00:00:00',
-				'bike_id'           => $bike2_id,
-				'maintenance_desc'  => 'Flat tire repair',
-				'bike_miles'        => 640,
+				'last_update'      => $now,
+				'maintenance_date' => '2024-11-20 00:00:00',
+				'bike_id'          => $bike2_id,
+				'maintenance_desc' => 'Flat tire repair',
+				'bike_miles'       => 640,
 			)
 		);
 

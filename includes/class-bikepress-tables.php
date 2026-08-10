@@ -55,22 +55,20 @@ function bikepress_should_load_demo() {
 }
 
 /**
- * Whether bikes or statuses already exist (blocks demo re-import).
+ * Whether demo bikes already exist (blocks demo re-import).
+ * Core plugin statuses do not count as demo data.
  *
  * @return bool
  */
 function bikepress_has_existing_data() {
 	global $wpdb;
 
-	$bikes_table  = bikepress_bikes_table();
-	$status_table = bikepress_status_table();
+	$bikes_table = bikepress_bikes_table();
 
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are prefixed identifiers.
 	$bike_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$bikes_table}" );
-	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$status_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$status_table}" );
 
-	return ( $bike_count > 0 || $status_count > 0 );
+	return $bike_count > 0;
 }
 
 /**

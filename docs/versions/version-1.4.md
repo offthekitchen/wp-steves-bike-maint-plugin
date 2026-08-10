@@ -5,7 +5,7 @@
 
 ## Summary
 
-Minor release line after 1.3.0: Manage Bikes media picker fix, plus optional demo data (off by default) with Supporting Data card, first-run notice, and shortcode empty state.
+Minor release line after 1.3.0: Manage Bikes media picker fix; optional demo data (bikes/specs/maint); core statuses seeded as plugin data on activate.
 
 ## Changes
 
@@ -15,7 +15,7 @@ Minor release line after 1.3.0: Manage Bikes media picker fix, plus optional dem
   - What changed:
     - Activation no longer loads demo data by default (`BIKEPRESS_LOAD_DEMO` must be true to seed on activate)
     - First-run admin notice on BikePress screens: Import demo data / No thanks
-    - Supporting Data hub card **Import Demo Data** (shared import action; blocked if bikes/statuses already exist)
+    - Supporting Data hub card **Import Demo Data** (shared import action; blocked if bikes already exist)
     - `[bikepress-bike-list]` empty state encourages adding bikes or importing demo data
   - Why: Let real installs start clean while still offering sample data on demand
 
@@ -25,9 +25,16 @@ Minor release line after 1.3.0: Manage Bikes media picker fix, plus optional dem
   - What was wrong: Select image no longer opened the WordPress media library
   - What fixed it: Enqueue `wp_enqueue_media()` and `js/admin.js` on Manage Bikes via hook or `page=bikes-admin`, with `media-editor` / `media-views` script dependencies
 
+- **plugin-data-statuses** (`version1.4-bugfix-plugin-data-statuses`): Core statuses as plugin data
+  - What was wrong: Statuses were tied to demo seed; delete always created Unknown; demo import recreated core statuses
+  - What fixed it:
+    - `BikePress_Plugin_Data::ensure_core_statuses()` seeds Active / Retired / Building on activate (insert-if-missing)
+    - Demo data is bikes/specs/maintenance only; missing status names resolve to Unknown
+    - Status delete creates Unknown only when bikes use that status
+
 ## Install / test notes
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.4.zip`
 - Unpacks to folder: `wp-bikepress/`
-- Prefer uninstall → install → activate to verify empty start + first-run notice
-- Test: Select image media picker; demo notice/card; shortcode empty message; import blocked when data exists
+- Prefer uninstall → install → activate: 3 core statuses, no bikes; first-run notice
+- Test: delete unused status (no Unknown); demo import with deleted Active → bikes get Unknown; Select image; shortcode empty message
