@@ -43,11 +43,12 @@ $notice = isset( $_GET['bikepress_notice'] ) ? sanitize_key( wp_unslash( $_GET['
 $notice_messages = array(
 	'status_created'           => array( 'success', __( 'Status created.', 'bikepress' ) ),
 	'status_updated'           => array( 'success', __( 'Status updated.', 'bikepress' ) ),
-	'status_deleted'           => array( 'success', __( 'Status deleted. Bikes using it were reassigned to Unknown.', 'bikepress' ) ),
-	'status_save_error'        => array( 'error', __( 'Could not save the status.', 'bikepress' ) ),
-	'status_delete_error'      => array( 'error', __( 'Could not delete the status.', 'bikepress' ) ),
-	'status_name_required'     => array( 'error', __( 'Status name is required.', 'bikepress' ) ),
-	'status_unknown_protected' => array( 'error', __( 'The Unknown status cannot be deleted.', 'bikepress' ) ),
+	'status_deleted'             => array( 'success', __( 'Status deleted.', 'bikepress' ) ),
+	'status_deleted_reassigned'  => array( 'success', __( 'Status deleted. Bikes using it were reassigned to Unknown.', 'bikepress' ) ),
+	'status_save_error'          => array( 'error', __( 'Could not save the status.', 'bikepress' ) ),
+	'status_delete_error'        => array( 'error', __( 'Could not delete the status.', 'bikepress' ) ),
+	'status_name_required'       => array( 'error', __( 'Status name is required.', 'bikepress' ) ),
+	'status_unknown_protected'   => array( 'error', __( 'The Unknown status cannot be deleted.', 'bikepress' ) ),
 );
 
 $form_status_id = 0;
@@ -83,16 +84,40 @@ $is_unknown = $status ? ( 'Unknown' === $status->bike_status ) : false;
 				<a class="button" href="<?php echo esc_url( $list_url ); ?>"><?php esc_html_e( 'Back to list', 'bikepress' ); ?></a>
 			</div>
 		<?php else : ?>
+			<?php
+			$bike_count_for_status = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT COUNT(*) FROM ' . BIKES_TABLE . ' WHERE bike_status_id = %d',
+					absint( $status->id )
+				)
+			); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			?>
 			<div class="notice notice-warning">
 				<p>
 					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %s: status name */
-							__( 'Delete status “%s”? Bikes using this status will be reassigned to Unknown.', 'bikepress' ),
-							$status->bike_status
-						)
-					);
+					if ( $bike_count_for_status > 0 ) {
+						echo esc_html(
+							sprintf(
+								/* translators: 1: status name, 2: bike count */
+								_n(
+									'Delete status “%1$s”? %2$d bike using this status will be reassigned to Unknown.',
+									'Delete status “%1$s”? %2$d bikes using this status will be reassigned to Unknown.',
+									$bike_count_for_status,
+									'bikepress'
+								),
+								$status->bike_status,
+								$bike_count_for_status
+							)
+						);
+					} else {
+						echo esc_html(
+							sprintf(
+								/* translators: %s: status name */
+								__( 'Delete status “%s”? No bikes currently use this status.', 'bikepress' ),
+								$status->bike_status
+							)
+						);
+					}
 					?>
 				</p>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

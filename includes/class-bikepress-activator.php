@@ -10,7 +10,7 @@
  */
 
 /**
- * Defines activation behavior: schema create/upgrade and optional demo data.
+ * Defines activation behavior: schema create/upgrade, plugin data, and optional demo data.
  *
  * @since      1.0.0
  * @package    BikePress
@@ -20,7 +20,7 @@
 class BikePress_Activator {
 
 	/**
-	 * Create or upgrade tables; optionally load demo data.
+	 * Create or upgrade tables; seed plugin data; optionally load demo data.
 	 *
 	 * @since 1.0.0
 	 */
@@ -81,6 +81,9 @@ class BikePress_Activator {
 			PRIMARY KEY  (id)
 		) $charset_collate;";
 		dbDelta( $sql );
+
+		require_once plugin_dir_path( __FILE__ ) . 'class-bikepress-plugin-data.php';
+		BikePress_Plugin_Data::ensure_core_statuses();
 
 		if ( bikepress_should_load_demo() ) {
 			require_once plugin_dir_path( __FILE__ ) . 'test-data.php';

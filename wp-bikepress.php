@@ -395,7 +395,7 @@ function bikepress_render_demo_data_notice() {
 	<div class="notice notice-info">
 		<p>
 			<strong><?php esc_html_e( 'BikePress', 'bikepress' ); ?></strong>
-			<?php esc_html_e( 'Would you like to load sample bikes, statuses, specs, and maintenance records to explore the plugin?', 'bikepress' ); ?>
+			<?php esc_html_e( 'Would you like to load sample bikes, specs, and maintenance records to explore the plugin?', 'bikepress' ); ?>
 		</p>
 		<p>
 			<a class="button button-primary" href="<?php echo esc_url( $import_url ); ?>"><?php esc_html_e( 'Import demo data', 'bikepress' ); ?></a>
@@ -695,7 +695,7 @@ function bikepress_handle_save_status() {
 }
 
 /**
- * Delete a status, reassigning bikes to Unknown.
+ * Delete a status, reassigning bikes to Unknown only when needed.
  */
 function bikepress_handle_delete_status() {
 	if ( ! isset( $_POST['bikepress_delete_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_delete_status_nonce'] ) ), 'bikepress_delete_status' ) ) {
@@ -716,18 +716,32 @@ function bikepress_handle_delete_status() {
 		bikepress_redirect_admin_page( 'status-admin', 'status_unknown_protected' );
 	}
 
-	$unknown_id = bikepress_get_or_create_unknown_status_id();
-	if ( $unknown_id <= 0 ) {
-		bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
-	}
+	$bike_count = (int) $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT COUNT(*) FROM ' . BIKES_TABLE . ' WHERE bike_status_id = %d',
+			$status_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-	$wpdb->update(
-		BIKES_TABLE,
-		array( 'bike_status_id' => $unknown_id ),
-		array( 'bike_status_id' => $status_id ),
-		array( '%d' ),
-		array( '%d' )
-	);
+	if ( $bike_count > 0 ) {
+		$unknown_id = bikepress_get_or_create_unknown_status_id();
+		if ( $unknown_id <= 0 ) {
+			bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
+		}
+
+		$wpdb->update(
+			BIKES_TABLE,
+			array( 'bike_status_id' => $unknown_id ),
+			array( 'bike_status_id' => $status_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+		$deleted = $wpdb->delete( STATUS_TABLE, array( 'id' => $status_id ), array( '%d' ) );
+		if ( false === $deleted || 0 === $deleted ) {
+			bikepress_redirect_admin_page( 'status-admin', 'status_delete_error' );
+		}
+		bikepress_redirect_admin_page( 'status-admin', 'status_deleted_reassigned' );
+	}
 
 	$deleted = $wpdb->delete( STATUS_TABLE, array( 'id' => $status_id ), array( '%d' ) );
 	if ( false === $deleted || 0 === $deleted ) {

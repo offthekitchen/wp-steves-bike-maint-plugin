@@ -14,7 +14,7 @@ $notice   = isset( $_GET['bikepress_notice'] ) ? sanitize_key( wp_unslash( $_GET
 
 $notice_messages = array(
 	'demo_ok'     => array( 'success', __( 'Demo data imported.', 'bikepress' ) ),
-	'demo_exists' => array( 'warning', __( 'Demo data was not imported because bikes or statuses already exist.', 'bikepress' ) ),
+	'demo_exists' => array( 'warning', __( 'Demo data was not imported because bikes already exist.', 'bikepress' ) ),
 );
 ?>
 <div class="bikepress-hub main-container">
