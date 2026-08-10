@@ -61,6 +61,21 @@ $demo_import_url = wp_nonce_url(
 					</div>
 				</article>
 
+				<article class="bikepress-hub-card manage-type-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-data.png' ); ?>" alt="<?php esc_attr_e( 'type icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-types-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=type-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-types-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'Types', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Manage Types', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Add and Maintain Bike Types', 'bikepress' ); ?></span>
+					</div>
+				</article>
+
 				<article class="bikepress-hub-card manage-import-export-card">
 					<div class="card__info-hover">
 						<img src="<?php echo esc_url( $img_base . 'admin-icon-import-export.png' ); ?>" alt="<?php esc_attr_e( 'import export icon', 'bikepress' ); ?>" class="admin-icon">

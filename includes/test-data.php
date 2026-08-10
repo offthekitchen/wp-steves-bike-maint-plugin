@@ -39,6 +39,11 @@ class Test_Data {
 		$status_retired  = BikePress_Plugin_Data::resolve_status_id_or_unknown( 'Retired' );
 		$status_building = BikePress_Plugin_Data::resolve_status_id_or_unknown( 'Building' );
 
+		// Use existing types only; missing names fall back to Unknown (do not re-seed core types).
+		$type_mountain = BikePress_Plugin_Data::resolve_type_id_or_unknown( 'Mountain' );
+		$type_commuter = BikePress_Plugin_Data::resolve_type_id_or_unknown( 'Commuter' );
+		$type_gravel   = BikePress_Plugin_Data::resolve_type_id_or_unknown( 'Gravel' );
+
 		// Bike 1
 		$wpdb->insert(
 			$bikes_table,
@@ -52,6 +57,7 @@ class Test_Data {
 				'purchase_date'  => '2018-05-12 00:00:00',
 				'serial_number'  => 'DEMO-ROCK-001',
 				'bike_status_id' => $status_active,
+				'bike_type_id'   => $type_mountain,
 			)
 		);
 		$bike1_id = (int) $wpdb->insert_id;
@@ -69,6 +75,7 @@ class Test_Data {
 				'purchase_date'  => '2020-03-01 00:00:00',
 				'serial_number'  => 'DEMO-TREK-002',
 				'bike_status_id' => $status_active,
+				'bike_type_id'   => $type_commuter,
 			)
 		);
 		$bike2_id = (int) $wpdb->insert_id;
@@ -86,6 +93,7 @@ class Test_Data {
 				'purchase_date'  => '2024-01-15 00:00:00',
 				'serial_number'  => 'DEMO-SURLY-003',
 				'bike_status_id' => $status_building ? $status_building : $status_retired,
+				'bike_type_id'   => $type_gravel,
 			)
 		);
 		$bike3_id = (int) $wpdb->insert_id;

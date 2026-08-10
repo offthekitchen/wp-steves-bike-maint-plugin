@@ -77,7 +77,7 @@ $db_version = BikePress_Import_Export::current_db_version();
 		<?php
 		printf(
 			/* translators: %s: current db version */
-			esc_html__( 'Exports include all statuses, bikes, specs, and maintenance records, tagged with database version %s.', 'bikepress' ),
+			esc_html__( 'Exports include all statuses, types, bikes, specs, and maintenance records, tagged with database version %s and plugin version.', 'bikepress' ),
 			esc_html( $db_version )
 		);
 		?>

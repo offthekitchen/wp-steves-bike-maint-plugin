@@ -26,6 +26,7 @@ $list_url = admin_url( 'admin.php?page=bikes-admin' );
 $new_url  = admin_url( 'admin.php?page=bikes-admin&action=new' );
 
 $statuses = $wpdb->get_results( 'SELECT id, bike_status FROM ' . STATUS_TABLE . ' ORDER BY bike_status ASC' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$types    = $wpdb->get_results( 'SELECT id, bike_type FROM ' . TYPE_TABLE . ' ORDER BY bike_type ASC' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 $bike = null;
 if ( 'edit' === $action || 'delete' === $action ) {
@@ -49,6 +50,7 @@ $notice_messages = array(
 	'bike_delete_error'    => array( 'error', __( 'Could not delete the bike.', 'bikepress' ) ),
 	'bike_name_required'   => array( 'error', __( 'Bike name is required.', 'bikepress' ) ),
 	'bike_status_required' => array( 'error', __( 'Please choose a status.', 'bikepress' ) ),
+	'bike_type_required'   => array( 'error', __( 'Please choose a type.', 'bikepress' ) ),
 );
 
 $default_image = plugins_url( 'img/default-bike.jpg', dirname( dirname( __FILE__ ) ) . '/wp-bikepress.php' );
@@ -59,6 +61,7 @@ $form_make           = '';
 $form_model          = '';
 $form_serial         = '';
 $form_status_id      = 0;
+$form_type_id        = 0;
 $form_desc           = '';
 $form_image_id       = 0;
 $form_purchase_date  = '';
@@ -70,6 +73,7 @@ if ( $bike ) {
 	$form_model         = $bike->bike_model;
 	$form_serial        = $bike->serial_number;
 	$form_status_id     = absint( $bike->bike_status_id );
+	$form_type_id       = absint( $bike->bike_type_id );
 	$form_desc          = $bike->bike_desc;
 	$form_image_id      = absint( $bike->bike_image_id );
 	if ( ! empty( $bike->purchase_date ) && '0000-00-00 00:00:00' !== $bike->purchase_date ) {
@@ -131,6 +135,12 @@ if ( $form_image_id > 0 ) {
 			</div>
 		<?php endif; ?>
 
+		<?php if ( empty( $types ) ) : ?>
+			<div class="notice notice-error">
+				<p><?php esc_html_e( 'No types found. Add types under Manage Supporting Data.', 'bikepress' ); ?></p>
+			</div>
+		<?php endif; ?>
+
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="bikepress-bike-form">
 			<input type="hidden" name="action" value="bikepress_save_bike" />
 			<input type="hidden" name="bike_id" value="<?php echo esc_attr( (string) $form_bike_id ); ?>" />
@@ -153,6 +163,19 @@ if ( $form_image_id > 0 ) {
 					<tr>
 						<th scope="row"><label for="serial_number"><?php esc_html_e( 'Serial number', 'bikepress' ); ?></label></th>
 						<td><input name="serial_number" id="serial_number" type="text" class="regular-text" value="<?php echo esc_attr( $form_serial ); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="bike_type_id"><?php esc_html_e( 'Type', 'bikepress' ); ?></label></th>
+						<td>
+							<select name="bike_type_id" id="bike_type_id" required>
+								<option value=""><?php esc_html_e( '— Select —', 'bikepress' ); ?></option>
+								<?php foreach ( (array) $types as $type_row ) : ?>
+									<option value="<?php echo esc_attr( (string) $type_row->id ); ?>" <?php selected( $form_type_id, (int) $type_row->id ); ?>>
+										<?php echo esc_html( $type_row->bike_type ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="bike_status_id"><?php esc_html_e( 'Status', 'bikepress' ); ?></label></th>
@@ -217,8 +240,9 @@ if ( $form_image_id > 0 ) {
 	<?php else : ?>
 		<?php
 		$bikes = $wpdb->get_results(
-			'SELECT b.*, s.bike_status FROM ' . BIKES_TABLE . ' b
+			'SELECT b.*, s.bike_status, t.bike_type FROM ' . BIKES_TABLE . ' b
 			LEFT JOIN ' . STATUS_TABLE . ' s ON b.bike_status_id = s.id
+			LEFT JOIN ' . TYPE_TABLE . ' t ON b.bike_type_id = t.id
 			ORDER BY b.bike_name ASC'
 		); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		?>
@@ -228,6 +252,7 @@ if ( $form_image_id > 0 ) {
 					<th scope="col"><?php esc_html_e( 'Name', 'bikepress' ); ?></th>
 					<th scope="col"><?php esc_html_e( 'Make', 'bikepress' ); ?></th>
 					<th scope="col"><?php esc_html_e( 'Model', 'bikepress' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Type', 'bikepress' ); ?></th>
 					<th scope="col"><?php esc_html_e( 'Status', 'bikepress' ); ?></th>
 					<th scope="col"><?php esc_html_e( 'Actions', 'bikepress' ); ?></th>
 				</tr>
@@ -235,7 +260,7 @@ if ( $form_image_id > 0 ) {
 			<tbody>
 				<?php if ( empty( $bikes ) ) : ?>
 					<tr>
-						<td colspan="5"><?php esc_html_e( 'No bikes found.', 'bikepress' ); ?></td>
+						<td colspan="6"><?php esc_html_e( 'No bikes found.', 'bikepress' ); ?></td>
 					</tr>
 				<?php else : ?>
 					<?php foreach ( $bikes as $row ) : ?>
@@ -247,6 +272,7 @@ if ( $form_image_id > 0 ) {
 							<td><strong><a href="<?php echo esc_url( $edit_url ); ?>"><?php echo esc_html( $row->bike_name ); ?></a></strong></td>
 							<td><?php echo esc_html( $row->bike_make ); ?></td>
 							<td><?php echo esc_html( $row->bike_model ); ?></td>
+							<td><?php echo esc_html( $row->bike_type ? $row->bike_type : '—' ); ?></td>
 							<td><?php echo esc_html( $row->bike_status ? $row->bike_status : '—' ); ?></td>
 							<td>
 								<a href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit', 'bikepress' ); ?></a>
