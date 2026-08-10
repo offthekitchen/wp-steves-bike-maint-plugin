@@ -17,6 +17,7 @@ $bikes_table       = $wpdb->prefix . 'bikes';
 $maintenance_table = $wpdb->prefix . 'bike_maintenance';
 $specs_table       = $wpdb->prefix . 'bike_specs';
 $status_table      = $wpdb->prefix . 'bike_status';
+$type_table        = $wpdb->prefix . 'bike_type';
 
 // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names are prefixed identifiers.
 $wpdb->query( "DROP TABLE IF EXISTS {$bikes_table}" );
@@ -26,6 +27,8 @@ $wpdb->query( "DROP TABLE IF EXISTS {$maintenance_table}" );
 $wpdb->query( "DROP TABLE IF EXISTS {$specs_table}" );
 // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 $wpdb->query( "DROP TABLE IF EXISTS {$status_table}" );
+// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query( "DROP TABLE IF EXISTS {$type_table}" );
 
 delete_option( 'bikepress_db_version' );
 delete_option( 'steves_bike_plugin_db_version' );
