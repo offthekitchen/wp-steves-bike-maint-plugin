@@ -23,13 +23,13 @@ class BikePress_Import_Export {
 	 */
 	public static function current_db_version() {
 		$version = get_option( 'bikepress_db_version', '' );
-		return $version ? (string) $version : '1.1';
+		return $version ? (string) $version : '1.2';
 	}
 
 	/**
 	 * Whether a file db_version can be imported into the current schema.
 	 *
-	 * Accepts exact match, or legacy 1.0 into current 1.1 (missing types → Unknown).
+	 * Accepts exact match, or older schemas (1.0 / 1.1) into newer sites.
 	 *
 	 * @param string $file_version Export db_version.
 	 * @param string $current      Site db_version.
@@ -47,8 +47,8 @@ class BikePress_Import_Export {
 			return true;
 		}
 
-		// Older 1.0 exports (no types) are accepted on 1.1 sites.
-		if ( '1.0' === $file_version && '1.1' === $current ) {
+		// Older exports are accepted on newer sites (types added in 1.1; wider columns in 1.2).
+		if ( version_compare( $file_version, '1.0', '>=' ) && version_compare( $file_version, $current, '<' ) ) {
 			return true;
 		}
 
@@ -126,7 +126,7 @@ class BikePress_Import_Export {
 		}
 
 		$data = $doc['data'];
-		$legacy_no_types = ( '1.0' === $file_version && '1.1' === $current );
+		$legacy_no_types = version_compare( $file_version, '1.1', '<' );
 
 		$stats = array(
 			'statuses'    => array( 'inserted' => 0, 'updated' => 0, 'errors' => 0 ),

@@ -43,14 +43,18 @@ if ( 'edit' === $action || 'delete' === $action ) {
 
 $notice = isset( $_GET['bikepress_notice'] ) ? sanitize_key( wp_unslash( $_GET['bikepress_notice'] ) ) : '';
 $notice_messages = array(
-	'bike_created'         => array( 'success', __( 'Bike created.', 'bikepress' ) ),
-	'bike_updated'         => array( 'success', __( 'Bike updated.', 'bikepress' ) ),
-	'bike_deleted'         => array( 'success', __( 'Bike and related specs/maintenance deleted.', 'bikepress' ) ),
-	'bike_save_error'      => array( 'error', __( 'Could not save the bike.', 'bikepress' ) ),
-	'bike_delete_error'    => array( 'error', __( 'Could not delete the bike.', 'bikepress' ) ),
-	'bike_name_required'   => array( 'error', __( 'Bike name is required.', 'bikepress' ) ),
-	'bike_status_required' => array( 'error', __( 'Please choose a status.', 'bikepress' ) ),
-	'bike_type_required'   => array( 'error', __( 'Please choose a type.', 'bikepress' ) ),
+	'bike_created'           => array( 'success', __( 'Bike created.', 'bikepress' ) ),
+	'bike_updated'           => array( 'success', __( 'Bike updated.', 'bikepress' ) ),
+	'bike_deleted'           => array( 'success', __( 'Bike and related specs/maintenance deleted.', 'bikepress' ) ),
+	'bike_save_error'        => array( 'error', __( 'Could not save the bike.', 'bikepress' ) ),
+	'bike_delete_error'      => array( 'error', __( 'Could not delete the bike.', 'bikepress' ) ),
+	'bike_name_required'     => array( 'error', __( 'Bike name is required.', 'bikepress' ) ),
+	'bike_status_required'   => array( 'error', __( 'Please choose a status.', 'bikepress' ) ),
+	'bike_type_required'     => array( 'error', __( 'Please choose a type.', 'bikepress' ) ),
+	'bike_make_too_long'     => array( 'error', __( 'Make cannot be longer than 15 characters.', 'bikepress' ) ),
+	'bike_model_too_long'    => array( 'error', __( 'Model cannot be longer than 50 characters.', 'bikepress' ) ),
+	'bike_serial_too_long'   => array( 'error', __( 'Serial number cannot be longer than 50 characters.', 'bikepress' ) ),
+	'bike_field_too_long'    => array( 'error', __( 'One or more fields are too long for the database. Shorten make (15), model (50), or serial number (50) and try again.', 'bikepress' ) ),
 );
 
 $default_image = plugins_url( 'img/default-bike.jpg', dirname( dirname( __FILE__ ) ) . '/wp-bikepress.php' );
@@ -154,15 +158,24 @@ if ( $form_image_id > 0 ) {
 					</tr>
 					<tr>
 						<th scope="row"><label for="bike_make"><?php esc_html_e( 'Make', 'bikepress' ); ?></label></th>
-						<td><input name="bike_make" id="bike_make" type="text" class="regular-text" value="<?php echo esc_attr( $form_make ); ?>" /></td>
+						<td>
+							<input name="bike_make" id="bike_make" type="text" class="regular-text" maxlength="15" value="<?php echo esc_attr( $form_make ); ?>" />
+							<p class="description"><?php esc_html_e( 'Maximum 15 characters.', 'bikepress' ); ?></p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="bike_model"><?php esc_html_e( 'Model', 'bikepress' ); ?></label></th>
-						<td><input name="bike_model" id="bike_model" type="text" class="regular-text" value="<?php echo esc_attr( $form_model ); ?>" /></td>
+						<td>
+							<input name="bike_model" id="bike_model" type="text" class="regular-text" maxlength="50" value="<?php echo esc_attr( $form_model ); ?>" />
+							<p class="description"><?php esc_html_e( 'Maximum 50 characters.', 'bikepress' ); ?></p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="serial_number"><?php esc_html_e( 'Serial number', 'bikepress' ); ?></label></th>
-						<td><input name="serial_number" id="serial_number" type="text" class="regular-text" value="<?php echo esc_attr( $form_serial ); ?>" /></td>
+						<td>
+							<input name="serial_number" id="serial_number" type="text" class="regular-text" maxlength="50" value="<?php echo esc_attr( $form_serial ); ?>" />
+							<p class="description"><?php esc_html_e( 'Maximum 50 characters.', 'bikepress' ); ?></p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="bike_type_id"><?php esc_html_e( 'Type', 'bikepress' ); ?></label></th>
@@ -196,7 +209,10 @@ if ( $form_image_id > 0 ) {
 					</tr>
 					<tr>
 						<th scope="row"><label for="bike_desc"><?php esc_html_e( 'Description', 'bikepress' ); ?></label></th>
-						<td><textarea name="bike_desc" id="bike_desc" class="large-text" rows="5"><?php echo esc_textarea( $form_desc ); ?></textarea></td>
+						<td>
+							<textarea name="bike_desc" id="bike_desc" class="large-text" rows="5"><?php echo esc_textarea( $form_desc ); ?></textarea>
+							<p class="description"><?php esc_html_e( 'Longer descriptions are supported.', 'bikepress' ); ?></p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Image', 'bikepress' ); ?></th>

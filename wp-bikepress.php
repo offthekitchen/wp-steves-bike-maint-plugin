@@ -226,6 +226,20 @@ function bikepress_handle_save_bike() {
 		bikepress_redirect_bikes_admin( 'bike_type_required', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
 	}
 
+	$make_len   = function_exists( 'mb_strlen' ) ? mb_strlen( $bike_make, 'UTF-8' ) : strlen( $bike_make );
+	$model_len  = function_exists( 'mb_strlen' ) ? mb_strlen( $bike_model, 'UTF-8' ) : strlen( $bike_model );
+	$serial_len = function_exists( 'mb_strlen' ) ? mb_strlen( $serial_number, 'UTF-8' ) : strlen( $serial_number );
+
+	if ( $make_len > 15 ) {
+		bikepress_redirect_bikes_admin( 'bike_make_too_long', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+	if ( $model_len > 50 ) {
+		bikepress_redirect_bikes_admin( 'bike_model_too_long', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+	if ( $serial_len > 50 ) {
+		bikepress_redirect_bikes_admin( 'bike_serial_too_long', array( 'action' => $bike_id ? 'edit' : 'new', 'bike_id' => $bike_id ) );
+	}
+
 	$purchase_date = '0000-00-00 00:00:00';
 	if ( $purchase_raw && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $purchase_raw ) ) {
 		$purchase_date = $purchase_raw . ' 00:00:00';
@@ -255,16 +269,36 @@ function bikepress_handle_save_bike() {
 			array( '%d' )
 		);
 		if ( false === $updated ) {
-			bikepress_redirect_bikes_admin( 'bike_save_error', array( 'action' => 'edit', 'bike_id' => $bike_id ) );
+			bikepress_redirect_bikes_admin(
+				bikepress_bike_save_error_notice( $wpdb ),
+				array( 'action' => 'edit', 'bike_id' => $bike_id )
+			);
 		}
 		bikepress_redirect_bikes_admin( 'bike_updated' );
 	}
 
 	$inserted = $wpdb->insert( BIKES_TABLE, $row, $formats );
 	if ( false === $inserted ) {
-		bikepress_redirect_bikes_admin( 'bike_save_error', array( 'action' => 'new' ) );
+		bikepress_redirect_bikes_admin(
+			bikepress_bike_save_error_notice( $wpdb ),
+			array( 'action' => 'new' )
+		);
 	}
 	bikepress_redirect_bikes_admin( 'bike_created' );
+}
+
+/**
+ * Map a failed bike save to a clearer notice slug when possible.
+ *
+ * @param wpdb $wpdb WordPress DB object after a failed write.
+ * @return string Notice slug.
+ */
+function bikepress_bike_save_error_notice( $wpdb ) {
+	$error = isset( $wpdb->last_error ) ? (string) $wpdb->last_error : '';
+	if ( $error && false !== stripos( $error, 'Data too long' ) ) {
+		return 'bike_field_too_long';
+	}
+	return 'bike_save_error';
 }
 
 /**
@@ -1201,7 +1235,23 @@ function bikepress_bike_list( $atts ) {
 		$Content .= '<div class="bike-type bike-detail"><b>TYPE:</b> ' . esc_html( $bike_type_label ) . '</div>';
 		$Content .= '<div class="bike-status bike-detail"><b>STATUS:</b> ' . esc_html( $oBike->bike_status ) . '</div>';
 		$Content .= '</div>';
-		$Content .= '<div class="bike-data"><div class="bike-desc">' . esc_html( $oBike->bike_desc ) . '</div></div>';
+
+		$desc_raw   = (string) $oBike->bike_desc;
+		$desc_limit = 64;
+		$desc_len   = function_exists( 'mb_strlen' ) ? mb_strlen( $desc_raw, 'UTF-8' ) : strlen( $desc_raw );
+		$desc_short = $desc_len > $desc_limit
+			? ( function_exists( 'mb_substr' ) ? mb_substr( $desc_raw, 0, $desc_limit, 'UTF-8' ) : substr( $desc_raw, 0, $desc_limit ) )
+			: $desc_raw;
+
+		$Content .= '<div class="bike-data"><div class="bike-desc' . ( $desc_len > $desc_limit ? ' bike-desc-truncatable' : '' ) . '">';
+		if ( $desc_len > $desc_limit ) {
+			$Content .= '<span class="bike-desc-short">' . esc_html( $desc_short ) . '</span>';
+			$Content .= '<span class="bike-desc-full">' . esc_html( $desc_raw ) . '</span>';
+			$Content .= ' <a href="#" class="bike-desc-toggle" aria-expanded="false">' . esc_html__( 'more...', 'bikepress' ) . '</a>';
+		} else {
+			$Content .= '<span class="bike-desc-full">' . esc_html( $desc_raw ) . '</span>';
+		}
+		$Content .= '</div></div>';
 		$Content .= '</div></article>';
 	}
 	$Content .= '</section>';
@@ -1252,7 +1302,7 @@ function bikepress_bike_list( $atts ) {
 	$Content .= '</div></div>';
 
 	$Content .= '<div class="spec-entries bike-entries">';
-	$Content .= '<header class="spec-entry-headers entry-headers"><div class="col">NAME</div><div class="col">DESC</div></header>';
+	$Content .= '<header class="spec-entry-headers entry-headers"><div class="col">SPEC</div><div class="col">DESC</div></header>';
 
 	foreach ( $aBikes as $oBike ) {
 		$Content .= '<div class="entry-record spec-entry row bike-' . absint( $oBike->id ) . '">';
