@@ -1,5 +1,5 @@
 /**
- * Displays a particular section for a given bike 
+ * Displays a particular section for a given bike
  *
  * @param {string} sectionName - the name of the section to be displayed
  * @param {number} bikeId - the ID of the bike being displayed
@@ -16,24 +16,24 @@ showSection = (sectionName, bikeId, bikeName) => {
 	const noRecords = document.getElementsByClassName('no-records')
 	const maintTitleBikeName = document.getElementById('maintenance-log-bike-name')
 	const specsTitleBikeName = document.getElementById('specs-list-bike-name')
-  
+
 	if (sectionName != 'bikes') {
 	  // Hide all entries
 	  for (let i = 0; i < entryRecords.length; i++) {
 		entryRecords[i].style.display = 'none'
 	  }
-  
+
 	  // Hide the No Records messages
 	  for (let i = 0; i < noRecords.length; i++) {
 		noRecords[i].style.visibility = 'hidden'
 	  }
-  
+
 	  // Show all the records for this bike
 	  for (let i = 0; i < bikeRecords.length; i++) {
 		bikeRecords[i].style.display = 'flex'
 	  }
 	}
-  
+
 	switch (sectionName) {
 	  case 'maintenance':
 		bikeList.style.display = 'none'
@@ -59,8 +59,8 @@ showSection = (sectionName, bikeId, bikeName) => {
 	  default:
 		console.error('NO SECTION NAME')
 	}
-  
-	// After the appropriate records are hidden and displayed, use visibility to determine if there are records showing 
+
+	// After the appropriate records are hidden and displayed, use visibility to determine if there are records showing
 	if (sectionName != 'bikes') {
 	  if (checkForVisibleRecords(bikeRecords, sectionName)) {
 		for (var i = 0; i < noRecords.length; i++) {
@@ -73,13 +73,13 @@ showSection = (sectionName, bikeId, bikeName) => {
 	  }
 	}
   }
-  
+
   /**
    * Checks if there are any records visible for a specific section
    *
    * @param {array} records - all records for all bikes
    * @param {string} sectionName - the name of the section in question
-   * @returns {boolean} 
+   * @returns {boolean}
    */
   checkForVisibleRecords = (records, sectionName) => {
 	let entryClass = ''
@@ -106,3 +106,26 @@ showSection = (sectionName, bikeId, bikeName) => {
 	}
 	return false
   }
+
+/**
+ * Desktop: expand/collapse long bike descriptions (more... / less...).
+ */
+document.addEventListener('click', function (event) {
+	const toggle = event.target.closest('.bike-desc-toggle')
+	if (!toggle) {
+		return
+	}
+
+	event.preventDefault()
+
+	const desc = toggle.closest('.bike-desc')
+	const card = toggle.closest('.bike')
+	if (!desc || !card) {
+		return
+	}
+
+	const expanded = desc.classList.toggle('is-expanded')
+	card.classList.toggle('bike-desc-expanded', expanded)
+	toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false')
+	toggle.textContent = expanded ? 'less...' : 'more...'
+})

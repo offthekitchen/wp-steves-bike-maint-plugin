@@ -19,7 +19,7 @@
  */
 class BikePress_Activator {
 
-	const DB_VERSION = '1.1';
+	const DB_VERSION = '1.2';
 
 	/**
 	 * Create or upgrade tables; seed plugin data; optionally load demo data.
@@ -80,10 +80,10 @@ class BikePress_Activator {
 			bike_image_id mediumint(9) DEFAULT 0 NOT NULL,
 			last_update datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			bike_name tinytext NOT NULL,
-			bike_desc varchar(255) DEFAULT '' NOT NULL,
+			bike_desc text NOT NULL,
 			bike_make varchar(15) DEFAULT '' NOT NULL,
-			bike_model varchar(15) DEFAULT '' NOT NULL,
-			serial_number varchar(30) DEFAULT '' NOT NULL,
+			bike_model varchar(50) DEFAULT '' NOT NULL,
+			serial_number varchar(50) DEFAULT '' NOT NULL,
 			purchase_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			bike_status_id mediumint(9) NOT NULL,
 			bike_type_id mediumint(9) DEFAULT 0 NOT NULL,
