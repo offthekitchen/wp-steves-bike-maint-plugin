@@ -1277,7 +1277,7 @@ function bikepress_bike_list( $atts ) {
 
 		$Content .= '<article class="bike bike-data">';
 
-		$image_attributes = wp_get_attachment_image_src( absint( $oBike->bike_image_id ) );
+		$image_attributes = wp_get_attachment_image_src( absint( $oBike->bike_image_id ), 'medium' );
 		if ( $image_attributes ) {
 			$Content .= sprintf(
 				'<img src="%s" width="%d" height="%d" class="bike-image" alt="%s" />',
