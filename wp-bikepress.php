@@ -58,6 +58,7 @@ add_action( 'admin_post_bikepress_export_data', 'bikepress_handle_export_data' )
 add_action( 'admin_post_bikepress_import_data', 'bikepress_handle_import_data' );
 add_action( 'admin_post_bikepress_import_demo_data', 'bikepress_handle_import_demo_data' );
 add_action( 'admin_post_bikepress_dismiss_demo_notice', 'bikepress_handle_dismiss_demo_notice' );
+add_action( 'admin_post_bikepress_create_bike_report', 'bikepress_handle_create_bike_report' );
 add_action( 'admin_notices', 'bikepress_render_demo_data_notice' );
 
 /**
@@ -159,6 +160,7 @@ function bike_maintenance_setup_menu() {
 	add_submenu_page( 'my-bikes', __( 'Manage Bikes', 'bikepress' ), __( 'Manage Bikes', 'bikepress' ), 'manage_options', 'bikes-admin', 'bikes_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Specs', 'bikepress' ), __( 'Manage Specs', 'bikepress' ), 'manage_options', 'specs-admin', 'specs_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Maintenance Records', 'bikepress' ), __( 'Manage Maintenance Records', 'bikepress' ), 'manage_options', 'maint-admin', 'maint_admin' );
+	add_submenu_page( 'my-bikes', __( 'Reports', 'bikepress' ), __( 'Reports', 'bikepress' ), 'manage_options', 'reports-admin', 'reports_admin' );
 	add_submenu_page( 'my-bikes', __( 'Manage Supporting Data', 'bikepress' ), __( 'Manage Supporting Data', 'bikepress' ), 'manage_options', 'supporting-data-admin', 'supporting_data_admin' );
 
 	// Hub-only pages: keep registered under My Bikes for capability checks, hide via CSS.
@@ -1036,6 +1038,72 @@ function bikepress_handle_import_data() {
 }
 
 /**
+ * Create and download a printable PDF report for one bike.
+ */
+function bikepress_handle_create_bike_report() {
+	if ( ! isset( $_POST['bikepress_report_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bikepress_report_nonce'] ) ), 'bikepress_create_bike_report' ) ) {
+		wp_die( esc_html__( 'Security check failed', 'bikepress' ) );
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'bikepress' ) );
+	}
+
+	global $wpdb;
+
+	$bike_id = isset( $_POST['bike_id'] ) ? absint( $_POST['bike_id'] ) : 0;
+	if ( $bike_id <= 0 ) {
+		bikepress_redirect_admin_page( 'reports-admin', 'report_bike_required' );
+	}
+
+	$bike = $wpdb->get_row(
+		$wpdb->prepare(
+			'SELECT b.*, s.bike_status, t.bike_type
+			FROM ' . BIKES_TABLE . ' b
+			LEFT JOIN ' . STATUS_TABLE . ' s ON b.bike_status_id = s.id
+			LEFT JOIN ' . TYPE_TABLE . ' t ON b.bike_type_id = t.id
+			WHERE b.id = %d',
+			$bike_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	if ( ! $bike ) {
+		bikepress_redirect_admin_page( 'reports-admin', 'report_bike_missing', array( 'bike_id' => $bike_id ) );
+	}
+
+	$specs = $wpdb->get_results(
+		$wpdb->prepare(
+			'SELECT * FROM ' . SPECS_TABLE . ' WHERE bike_id = %d ORDER BY spec_name ASC, id ASC',
+			$bike_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	$maintenance = $wpdb->get_results(
+		$wpdb->prepare(
+			'SELECT * FROM ' . MAINTENANCE_TABLE . ' WHERE bike_id = %d ORDER BY maintenance_date ASC, id ASC',
+			$bike_id
+		)
+	); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-bikepress-bike-report.php';
+	$report = new BikePress_Bike_Report( $bike, $specs, $maintenance );
+	$pdf    = $report->render();
+
+	if ( ! is_string( $pdf ) || '' === $pdf ) {
+		bikepress_redirect_admin_page( 'reports-admin', 'report_error', array( 'bike_id' => $bike_id ) );
+	}
+
+	$slug     = sanitize_title( $bike->bike_name );
+	$filename = 'bikepress-' . ( $slug ? $slug : 'bike-' . $bike_id ) . '-report.pdf';
+
+	nocache_headers();
+	header( 'Content-Type: application/pdf' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+	header( 'Content-Length: ' . strlen( $pdf ) );
+	echo $pdf; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- binary PDF download.
+	exit;
+}
+
+/**
  * Admin: My Bikes hub.
  */
 function my_bikes() {
@@ -1068,6 +1136,13 @@ function maint_admin() {
  */
 function supporting_data_admin() {
 	include plugin_dir_path( __FILE__ ) . 'admin/partials/supporting-data-admin-page.php';
+}
+
+/**
+ * Admin: Reports (hub-only).
+ */
+function reports_admin() {
+	include plugin_dir_path( __FILE__ ) . 'admin/partials/reports-admin-page.php';
 }
 
 /**

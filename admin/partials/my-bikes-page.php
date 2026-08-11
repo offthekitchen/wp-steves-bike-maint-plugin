@@ -91,6 +91,21 @@ $notice_messages = array(
 					</div>
 				</article>
 
+				<article class="bikepress-hub-card manage-reports-card">
+					<div class="card__info-hover">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-data.png' ); ?>" alt="<?php esc_attr_e( 'reports icon', 'bikepress' ); ?>" class="admin-icon">
+					</div>
+					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-reports-thumbnail.jpg' ); ?>');"></div>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=reports-admin' ) ); ?>" class="card_link">
+						<div class="card__img--hover" style="background-image:url('<?php echo esc_url( $img_base . 'manage-reports-thumbnail.jpg' ); ?>');"></div>
+					</a>
+					<div class="card__info">
+						<span class="card__subcategory"><?php esc_html_e( 'PDF', 'bikepress' ); ?></span>
+						<h3 class="card__title"><?php esc_html_e( 'Reports', 'bikepress' ); ?></h3>
+						<span class="card__desc"><?php esc_html_e( 'Create a printable PDF report for a bike', 'bikepress' ); ?></span>
+					</div>
+				</article>
+
 			</div>
 		</section>
 	</main>
