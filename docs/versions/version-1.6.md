@@ -5,7 +5,7 @@
 
 ## Summary
 
-Minor release line for Manage Bikes field-limit fixes / shortcode list polish, PDF bike reports, and shortcode image clarity.
+Minor release line for Manage Bikes field-limit fixes / shortcode list polish, PDF bike reports, shortcode image clarity, and admin navigation polish.
 
 ## Changes
 
@@ -40,6 +40,13 @@ Minor release line for Manage Bikes field-limit fixes / shortcode list polish, P
   - Footer: date, Page N, “Created by BikePress”
   - Built-in PDF writer (`includes/class-bikepress-pdf.php`) — no Composer/Dompdf dependency
 
+- **admin-nav-polish** (`version1.6-feature-admin-nav-polish`): Quicker jumps between related admin screens
+  - Text **edit** links beside Type/Status on Manage Bikes (→ Manage Types / Statuses)
+  - Text **edit** beside Bike dropdowns on Specs, Maintenance, and Reports (→ Edit that bike, or Manage Bikes list if none selected)
+  - Edit Bike title is **Edit {bike name}** with secondary Specs / Maintenance / Bike Report buttons; removed Phase 2 related-links block
+  - Specs/Maintenance filter: Filter button under the bike dropdown
+  - Reports hub card uses `admin/img/admin-icon-reports.png`
+
 ## Install / test notes
 
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.6.zip`
@@ -47,3 +54,4 @@ Minor release line for Manage Bikes field-limit fixes / shortcode list polish, P
 - After upgrade: long descriptions save; model/serial up to 50 chars; Reports available from My Bikes and the admin submenu
 - Test shortcode: SPEC header; mobile stacked details; desktop more/less on long descriptions; bike photos look sharp at card size
 - Test Reports: pick a bike with photo, description, specs, and maintenance; download PDF and check summary + log layout, pagination, and footer
+- Test admin nav: Type/Status/Bike **edit** links; Edit Bike secondary buttons; Reports card icon; Specs/Maint Filter under dropdown

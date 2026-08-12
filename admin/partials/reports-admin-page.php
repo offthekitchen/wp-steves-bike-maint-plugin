@@ -64,6 +64,13 @@ $selected = isset( $_GET['bike_id'] ) ? absint( $_GET['bike_id'] ) : 0;
 									</option>
 								<?php endforeach; ?>
 							</select>
+							<a
+								class="bikepress-dropdown-edit bikepress-bike-edit-link"
+								href="<?php echo esc_url( $selected > 0 ? admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' . $selected ) : admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+								data-bikepress-select="#bike_id"
+								data-bikepress-edit-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' ) ); ?>"
+								data-bikepress-list-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+							><?php esc_html_e( 'edit', 'bikepress' ); ?></a>
 						</td>
 					</tr>
 				</tbody>

@@ -134,6 +134,13 @@ if ( $spec ) {
 									</option>
 								<?php endforeach; ?>
 							</select>
+							<a
+								class="bikepress-dropdown-edit bikepress-bike-edit-link"
+								href="<?php echo esc_url( $form_bike_id > 0 ? admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' . $form_bike_id ) : admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+								data-bikepress-select="#bike_id"
+								data-bikepress-edit-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' ) ); ?>"
+								data-bikepress-list-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+							><?php esc_html_e( 'edit', 'bikepress' ); ?></a>
 						</td>
 					</tr>
 					<tr>
@@ -163,7 +170,16 @@ if ( $spec ) {
 					</option>
 				<?php endforeach; ?>
 			</select>
-			<?php submit_button( __( 'Filter', 'bikepress' ), 'secondary', '', false ); ?>
+			<a
+				class="bikepress-dropdown-edit bikepress-bike-edit-link"
+				href="<?php echo esc_url( $filter_bike_id > 0 ? admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' . $filter_bike_id ) : admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+				data-bikepress-select="#filter_bike_id"
+				data-bikepress-edit-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin&action=edit&bike_id=' ) ); ?>"
+				data-bikepress-list-url="<?php echo esc_url( admin_url( 'admin.php?page=bikes-admin' ) ); ?>"
+			><?php esc_html_e( 'edit', 'bikepress' ); ?></a>
+			<p class="bikepress-filter-actions">
+				<?php submit_button( __( 'Filter', 'bikepress' ), 'secondary', '', false ); ?>
+			</p>
 		</form>
 
 		<?php

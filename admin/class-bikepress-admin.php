@@ -61,11 +61,12 @@ class BikePress_Admin {
 			return;
 		}
 
+		$admin_js = plugin_dir_path( __FILE__ ) . 'js/bikepress-admin.js';
 		wp_enqueue_script(
 			$this->plugin_name,
 			plugin_dir_url( __FILE__ ) . 'js/bikepress-admin.js',
 			array( 'jquery' ),
-			$this->version,
+			file_exists( $admin_js ) ? (string) filemtime( $admin_js ) : $this->version,
 			false
 		);
 	}
