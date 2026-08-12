@@ -131,7 +131,26 @@ if ( $form_image_id > 0 ) {
 		</div>
 
 	<?php elseif ( 'new' === $action || 'edit' === $action ) : ?>
-		<h2><?php echo 'edit' === $action ? esc_html__( 'Edit Bike', 'bikepress' ) : esc_html__( 'Add New Bike', 'bikepress' ); ?></h2>
+		<?php if ( 'edit' === $action ) : ?>
+			<h2>
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: %s: bike name */
+						__( 'Edit %s', 'bikepress' ),
+						$form_name
+					)
+				);
+				?>
+			</h2>
+			<p class="bikepress-edit-bike-actions">
+				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=specs-admin&bike_id=' . $form_bike_id ) ); ?>"><?php esc_html_e( 'Specs', 'bikepress' ); ?></a>
+				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=maint-admin&bike_id=' . $form_bike_id ) ); ?>"><?php esc_html_e( 'Maintenance', 'bikepress' ); ?></a>
+				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=reports-admin&bike_id=' . $form_bike_id ) ); ?>"><?php esc_html_e( 'Bike Report', 'bikepress' ); ?></a>
+			</p>
+		<?php else : ?>
+			<h2><?php esc_html_e( 'Add New Bike', 'bikepress' ); ?></h2>
+		<?php endif; ?>
 
 		<?php if ( empty( $statuses ) ) : ?>
 			<div class="notice notice-error">
@@ -188,6 +207,7 @@ if ( $form_image_id > 0 ) {
 									</option>
 								<?php endforeach; ?>
 							</select>
+							<a class="bikepress-dropdown-edit" href="<?php echo esc_url( admin_url( 'admin.php?page=type-admin' ) ); ?>"><?php esc_html_e( 'edit', 'bikepress' ); ?></a>
 						</td>
 					</tr>
 					<tr>
@@ -201,6 +221,7 @@ if ( $form_image_id > 0 ) {
 									</option>
 								<?php endforeach; ?>
 							</select>
+							<a class="bikepress-dropdown-edit" href="<?php echo esc_url( admin_url( 'admin.php?page=status-admin' ) ); ?>"><?php esc_html_e( 'edit', 'bikepress' ); ?></a>
 						</td>
 					</tr>
 					<tr>
@@ -238,20 +259,6 @@ if ( $form_image_id > 0 ) {
 			?>
 			<a class="button" href="<?php echo esc_url( $list_url ); ?>"><?php esc_html_e( 'Cancel', 'bikepress' ); ?></a>
 		</form>
-
-		<?php if ( 'edit' === $action && $form_bike_id > 0 ) : ?>
-			<hr />
-			<p>
-				<strong><?php esc_html_e( 'Related records (Phase 2)', 'bikepress' ); ?></strong><br />
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=specs-admin&bike_id=' . $form_bike_id ) ); ?>">
-					<?php esc_html_e( 'Manage specs for this bike', 'bikepress' ); ?>
-				</a>
-				&nbsp;|&nbsp;
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=maint-admin&bike_id=' . $form_bike_id ) ); ?>">
-					<?php esc_html_e( 'Manage maintenance for this bike', 'bikepress' ); ?>
-				</a>
-			</p>
-		<?php endif; ?>
 
 	<?php else : ?>
 		<?php

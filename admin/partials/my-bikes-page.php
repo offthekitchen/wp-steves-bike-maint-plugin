@@ -93,7 +93,7 @@ $notice_messages = array(
 
 				<article class="bikepress-hub-card manage-reports-card">
 					<div class="card__info-hover">
-						<img src="<?php echo esc_url( $img_base . 'admin-icon-data.png' ); ?>" alt="<?php esc_attr_e( 'reports icon', 'bikepress' ); ?>" class="admin-icon">
+						<img src="<?php echo esc_url( $img_base . 'admin-icon-reports.png' ); ?>" alt="<?php esc_attr_e( 'reports icon', 'bikepress' ); ?>" class="admin-icon">
 					</div>
 					<div class="card__img" style="background-image:url('<?php echo esc_url( $img_base . 'manage-reports-thumbnail.jpg' ); ?>');"></div>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=reports-admin' ) ); ?>" class="card_link">

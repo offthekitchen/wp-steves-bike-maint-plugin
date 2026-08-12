@@ -1,32 +1,27 @@
 (function( $ ) {
 	'use strict';
 
-	/**
-	 * All of the code for your admin-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	$( function() {
+		$( document ).on( 'click', '.bikepress-bike-edit-link', function( event ) {
+			var $link = $( this );
+			var selectSelector = $link.data( 'bikepress-select' );
+			var editUrl = $link.data( 'bikepress-edit-url' );
+			var listUrl = $link.data( 'bikepress-list-url' );
+			var bikeId = 0;
+
+			if ( selectSelector ) {
+				bikeId = parseInt( $( selectSelector ).val(), 10 ) || 0;
+			}
+
+			event.preventDefault();
+
+			if ( bikeId > 0 && editUrl ) {
+				window.location.href = editUrl + bikeId;
+				return;
+			}
+
+			window.location.href = listUrl || $link.attr( 'href' );
+		} );
+	} );
 
 })( jQuery );

@@ -244,3 +244,21 @@ ul.footer-list a:active {
 		flex-basis: 100%;
 	}
 }
+
+.bikepress-dropdown-edit {
+	margin-left: 8px;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+.bikepress-edit-bike-actions {
+	margin: 0 0 1em;
+}
+
+.bikepress-edit-bike-actions .button {
+	margin-right: 6px;
+}
+
+.bikepress-filter-actions {
+	margin: 8px 0 0;
+}
