@@ -5,7 +5,7 @@
 
 ## Summary
 
-Minor release line for Manage Bikes field-limit fixes / shortcode list polish, and PDF bike reports.
+Minor release line for Manage Bikes field-limit fixes / shortcode list polish, PDF bike reports, and shortcode image clarity.
 
 ## Changes
 
@@ -21,6 +21,12 @@ Minor release line for Manage Bikes field-limit fixes / shortcode list polish, a
     - Specs list header **NAME** → **SPEC**
     - Phone: Make/Model/Type/Status stack in a column
     - Desktop: descriptions longer than 64 characters use **more...** / **less...**; card grows, photo size unchanged
+
+- **shortcode-bike-image-clarity** (`version1.6-bugfix-shortcode-bike-image-clarity`): Sharper bike photos on the public list
+  - What was wrong:
+    - Shortcode used WordPress `'thumbnail'` (often 150×150) while CSS displays at ~200×200, so images looked blurry
+  - What fixed it:
+    - Request `'medium'` from `wp_get_attachment_image_src` (same as Manage Bikes admin)
 
 ### Features
 
@@ -39,5 +45,5 @@ Minor release line for Manage Bikes field-limit fixes / shortcode list polish, a
 - Zip: `C:\Data\Web Sites\plugins\wp-steves-bike-maint-plugin\wp-bikepress-v1.6.zip`
 - Unpacks to folder: `wp-bikepress/`
 - After upgrade: long descriptions save; model/serial up to 50 chars; Reports available from My Bikes and the admin submenu
-- Test shortcode: SPEC header; mobile stacked details; desktop more/less on long descriptions
+- Test shortcode: SPEC header; mobile stacked details; desktop more/less on long descriptions; bike photos look sharp at card size
 - Test Reports: pick a bike with photo, description, specs, and maintenance; download PDF and check summary + log layout, pagination, and footer
